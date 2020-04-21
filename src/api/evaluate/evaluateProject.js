@@ -5,7 +5,7 @@ import request from "@/utils/request";
  */
 export function tableEndData(data) {
   return request({
-    url: "project/commented",
+    url: "http://192.168.0.158:9007/project/commented",
     method: "get",
     params: data
   });
@@ -16,7 +16,7 @@ export function tableEndData(data) {
  */
 export function tableData(data) {
   return request({
-    url: "project/commenting",
+    url: "http://192.168.0.158:9007/project/commenting",
     method: "get",
     params: data
   });
@@ -27,7 +27,7 @@ export function tableData(data) {
  */
 export function runButton(data) {
   return request({
-    url: "project/comment",
+    url: "http://192.168.0.158:9007/project/comment",
     method: "put",
     params: data
   });
@@ -38,7 +38,7 @@ export function runButton(data) {
  */
 export function endButton(data) {
   return request({
-    url: "project/comment",
+    url: "http://192.168.0.158:9007/project/comment",
     method: "put",
     params: data
   });
@@ -49,7 +49,7 @@ export function endButton(data) {
  */
 export function evaluateData(data) {
   return request({
-    url: "form/project",
+    url: "http://192.168.0.158:9007/form/project",
     method: "get",
     params: data
   });
@@ -60,13 +60,13 @@ export function evaluateData(data) {
  */
 // export function companyData(id) {
 //   return request({
-//     url: "synch/userEmployee/orgEmployee/" + id,
+//     url: "http://192.168.0.158:9007/synch/userEmployee/orgEmployee/" + id,
 //     method: "get",
 //   });
 // }
 export function companyData(id) {
   return request({
-    url: "http://oa.jsztgj.com:9999/synch/userEmployee/orgEmployee/" + id,
+    url: "http://192.168.0.158:9007/http://oa.jsztgj.com:9999/synch/userEmployee/orgEmployee/" + id,
     method: "get"
   });
 }
@@ -76,7 +76,7 @@ export function companyData(id) {
  */
 export function creatSubmit(data) {
   return request({
-    url: "project/comment",
+    url: "http://192.168.0.158:9007/project/comment",
     method: "post",
     data: data
   });

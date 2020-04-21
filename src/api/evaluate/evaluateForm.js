@@ -5,7 +5,7 @@ import request from "@/utils/request";
  */
 export function tableData(data) {
   return request({
-    url: "form/company",
+    url: "http://192.168.0.158:9007/form/company",
     method: "get",
     params: data
   });
@@ -16,7 +16,7 @@ export function tableData(data) {
  */
 export function copyButton(data) {
   return request({
-    url: "project/commented",
+    url: "http://192.168.0.158:9007/form/copy",
     method: "get",
     params: data
   });
@@ -27,7 +27,7 @@ export function copyButton(data) {
  */
 export function creatSubmit(data) {
   return request({
-    url: "form",
+    url: "http://192.168.0.158:9007/form",
     method: "post",
     data: data
   });
@@ -40,7 +40,7 @@ export function creatSubmit(data) {
  */
 export function treeList(data) {
   return request({
-    url: "form/class",
+    url: "http://192.168.0.158:9007/form/class",
     method: "get",
     params: data
   });
@@ -51,7 +51,7 @@ export function treeList(data) {
  */
 export function formData(data) {
   return request({
-    url: "form/class/item",
+    url: "http://192.168.0.158:9007/form/class/item",
     method: "get",
     params: data
   });
@@ -62,7 +62,7 @@ export function formData(data) {
  */
 export function formAdd(data) {
   return request({
-    url: "form/class/item",
+    url: "http://192.168.0.158:9007/form/class/item",
     method: "post",
     data: data
   });
@@ -73,7 +73,7 @@ export function formAdd(data) {
  */
 export function formEdit(data) {
   return request({
-    url: "form/item",
+    url: "http://192.168.0.158:9007/form/item",
     method: "put",
     data: data
   });
@@ -84,7 +84,7 @@ export function formEdit(data) {
  */
 export function formDelete(data) {
   return request({
-    url: "form/class/item",
+    url: "http://192.168.0.158:9007/form/class/item",
     method: "delete",
     data: data
   });
@@ -95,7 +95,7 @@ export function formDelete(data) {
  */
 export function formDetail(id) {
   return request({
-    url: "form/item/detail/" + id,
+    url: "http://192.168.0.158:9007/form/item/detail/" + id,
     method: "get"
   });
 }
@@ -105,7 +105,7 @@ export function formDetail(id) {
  */
 export function treeAdd(data) {
   return request({
-    url: "form/class",
+    url: "http://192.168.0.158:9007/form/class",
     method: "post",
     data: data
   });
@@ -116,7 +116,7 @@ export function treeAdd(data) {
  */
 export function treeEdit(data) {
   return request({
-    url: "form/class",
+    url: "http://192.168.0.158:9007/form/class",
     method: "put",
     data: data
   });
@@ -127,7 +127,7 @@ export function treeEdit(data) {
  */
 export function treeDele(data) {
   return request({
-    url: "form/class",
+    url: "http://192.168.0.158:9007/form/class",
     method: "delete",
     data: data
   });

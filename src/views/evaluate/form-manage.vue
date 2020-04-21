@@ -410,12 +410,15 @@ export default {
     doCreat () {
       if (sessionStorage.getItem('formId')) {
         this.pageParams.formId = sessionStorage.getItem('formId')
+        this.pageParams.formClassId = 0
       } else {
         let formId = this.formId
         sessionStorage.setItem('formId', formId)
         this.pageParams.formId = formId
+        this.pageParams.formClassId = 0
       }
       this.getTreeData()
+      this.doSearch()
     },
     // 查询表格数据
     doSearch (page = 0, size = 10) {
@@ -485,7 +488,7 @@ export default {
     // 点击当前节点
     doTreeClick (data) {
       this.row = data
-      if (data.pid) {
+      if (data.pid === 0) {
         this.pageParams.formClassId = 0
         this.pageParams.formId = data.id
       } else {

@@ -80,10 +80,9 @@
       </span>
     </el-dialog>
     <!-- 复制 -->
-    <el-dialog title="复制" :visible.sync="copyProp" width="25%">
-      是否复制？
+    <el-dialog title="复制" :visible.sync="copyProp" width="25%" center>
+      <div>该操作将复制当前数据，是否复制？</div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="copyProp = false">取消</el-button>
         <el-button type="primary" @click="doCopyConfirm">确定</el-button>
       </span>
     </el-dialog>
@@ -100,7 +99,7 @@ import formManage from './form-manage'
 import {
   tableData,
   creatSubmit,
-  runButton,
+  copyButton,
   endButton,
 } from '@/api/evaluate/evaluateForm'
 
@@ -115,6 +114,7 @@ export default {
       formProp: false,                // 表单管理页面弹窗
       formName: '',                   // 评价表搜索字段
       formId: '',                     // 表单管理页面字段
+      row: null,                      // 当前行数据
       tableHeight: null,              // 表格最大高度
       tableData: [],                  // 表格数据
       pageData: {                     // 分页查询返回数据
@@ -160,13 +160,14 @@ export default {
     },
     // 查询表格数据
     doSearch (page = 0, size = 10) {
-      this.pageParams.pageNum = page
-      this.pageParams.pageSize = size
+      this.pageParams.pageNum = page || 0
+      this.pageParams.pageSize = size || 10
       this.getData()
     },
     // 获取评价中表格数据
     getData () {
       let params = this.pageParams
+
       tableData(params).then(res => {
         if (res.code === 0) {
           let data = res.data
@@ -214,33 +215,10 @@ export default {
       if (status === 0) {
         this.formId = row.id
         this.formProp = true
-        return
+      } else {
+        this.copyProp = true
+        this.row = row
       }
-      let params = {
-        projectCommentId: row.projectCommentId,
-        status: status
-      }
-      runButton(params).then(res => {
-        if (res.code === 0) {
-          this.$message({ message: '操作成功', type: 'success' })
-        } else {
-          this.$message({ message: '操作失败', type: 'error' })
-        }
-      })
-    },
-    // 评价结束数据列表操作按钮
-    doEndButton (row) {
-      let params = {
-        projectCommentId: row.projectCommentId,
-        employeeId: getEmployeeId()
-      }
-      endButton(params).then(res => {
-        if (res.code === 0) {
-          this.$message({ message: '操作成功', type: 'success' })
-        } else {
-          this.$message({ message: '操作失败', type: 'error' })
-        }
-      })
     },
     // 表单管理页面返回
     doChildClose () {
@@ -252,7 +230,19 @@ export default {
     },
     // 确定添加评价表
     doCopyConfirm () {
-      this.copyProp = false
+      let params = {
+        formId: this.row.id,
+        employeeId: getEmployeeId()
+      }
+      copyButton(params).then(res => {
+        if (res.code === 0) {
+          this.copyProp = false
+          this.doSearch()
+          this.$message({ message: res.msg, type: 'success' })
+        } else {
+          this.$message({ message: res.msg, type: 'error' })
+        }
+      })
     },
     // 主页面表格 点击分页
     doSizeChange (size) {
