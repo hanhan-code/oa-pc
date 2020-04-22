@@ -56,6 +56,17 @@ export function evaluateData(data) {
 }
 
 /**
+ * @description 获取评价项目接口数据
+ */
+export function projectData(data) {
+  return request({
+    url: "http://192.168.0.158:9007/project/comment",
+    method: "get",
+    params: data
+  });
+}
+
+/**
  * @description 获取组织架构人员接口数据
  */
 // export function companyData(id) {
@@ -66,7 +77,7 @@ export function evaluateData(data) {
 // }
 export function companyData(id) {
   return request({
-    url: "http://192.168.0.158:9007/http://oa.jsztgj.com:9999/synch/userEmployee/orgEmployee/" + id,
+    url: "http://oa.jsztgj.com:9999/synch/userEmployee/orgEmployee/" + id,
     method: "get"
   });
 }
@@ -77,6 +88,17 @@ export function companyData(id) {
 export function creatSubmit(data) {
   return request({
     url: "http://192.168.0.158:9007/project/comment",
+    method: "post",
+    data: data
+  });
+}
+
+/**
+ * @description 调用评价设置接口
+ */
+export function setSubmit(data) {
+  return request({
+    url: "http://192.168.0.158:9007/project/setting",
     method: "post",
     data: data
   });

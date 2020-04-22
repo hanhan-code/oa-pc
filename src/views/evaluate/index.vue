@@ -410,7 +410,6 @@ export default {
             this.$message({ message: '请添加项目评价表', type: 'error' })
             return
           }
-          console.log(this.evaluateList.length)
           creatSubmit(form).then(res => {
             if (res.code === 0) {
               this.createProp = false

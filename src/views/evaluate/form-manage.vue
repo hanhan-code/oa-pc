@@ -734,9 +734,6 @@ export default {
   top: -3px;
   position: relative;
 }
-.san-color {
-  border-color: transparent transparent red transparent;
-}
 </style>
 <style>
 .custom-tree-node span button:first-child {
