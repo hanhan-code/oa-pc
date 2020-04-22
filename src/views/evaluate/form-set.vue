@@ -91,8 +91,8 @@
         </el-checkbox-group>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="doReset('setForm')">取消</el-button>
-        <el-button @click="doSubmit('setForm')">提交</el-button>
+        <el-button @click="doReset('setForm')">取消</el-button>
+        <el-button type="primary" @click="doSubmit('setForm')">提交</el-button>
       </el-form-item>
     </el-form>
   </div>
