@@ -21,6 +21,7 @@
           @click="doSearch"
         >搜索</el-button>
         <el-button size="small" @click="createProp = true" type="primary">创建评价表</el-button>
+        <el-button size="small" @click="addProp = true" type="primary">添加现有表</el-button>
       </div>
       <br />
       <!-- 数据内容 -->
@@ -35,6 +36,7 @@
               <template slot-scope="scope">
                 <el-button type="primary" @click="doRunButton(scope.row, 0)" plain size="mini">设置</el-button>
                 <el-button type="primary" @click="doRunButton(scope.row, 1)" plain size="mini">复制</el-button>
+                <el-button type="primary" @click="doRunButton(scope.row, 2)" plain size="mini">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -110,7 +112,8 @@ export default {
   data () {
     return {
       createProp: false,              // 创建评价弹窗
-      copyProp: false,                // 添加评价表
+      addProp: false,                 // 添加现有表
+      copyProp: false,                // 复制评价表
       formProp: false,                // 表单管理页面弹窗
       formName: '',                   // 评价表搜索字段
       formId: '',                     // 表单管理页面字段
@@ -130,7 +133,8 @@ export default {
         companyId: getCompanyId(),
         keyword: null,                // 查询关键字
         pageSize: 10,                 // 每页个数
-        pageNum: 0                    // 当前页数
+        pageNum: 0,                   // 当前页数
+        projectCommentId: null        // 评价项目提交id
       },
       ruleForm: {
         name: [
@@ -153,10 +157,18 @@ export default {
       return tag.clientHeight - 220
     },
   },
+  activated () {
+    this.doCreat()
+  },
   methods: {
     // 初始化
     doCreat () {
-
+      let params = this.$route.params.row
+      if (params) {
+        this.pageParams.projectCommentId = JSON.parse(row).projectCommentId
+      } else {
+        this.pageParams.projectCommentId = null
+      }
     },
     // 查询表格数据
     doSearch (page = 0, size = 10) {
@@ -215,7 +227,7 @@ export default {
       if (status === 0) {
         this.formId = row.id
         this.formProp = true
-      } else {
+      } else if (status === 1){
         this.copyProp = true
         this.row = row
       }

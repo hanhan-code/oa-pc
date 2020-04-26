@@ -17,7 +17,7 @@
         size="small"
         type="success"
         icon="el-icon-search"
-        @click="doSearch"
+        @click="doSearch(0)"
       >搜索</el-button>
       <el-button size="small" @click="createProp = true" type="primary">创建评价项目</el-button>
     </div>
@@ -31,8 +31,12 @@
             <el-table size="small" :data="tableData" :max-height="tableHeight" border>
               <el-table-column type="index" label="序号" align="center"></el-table-column>
               <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
-              <el-table-column prop="submitEmployeeName" label="提交人" align="center"></el-table-column>
-              <el-table-column prop="commentUserNameList" label="评审人" align="center"></el-table-column>
+              <el-table-column label="提交人" align="center">
+                <template slot-scope="scope">{{scope.row.submitEmployeeIdList.toString()}}</template>
+              </el-table-column>
+              <el-table-column label="评审人" align="center">
+                <template slot-scope="scope">{{scope.row.commentUserNameList.toString()}}</template>
+              </el-table-column>
               <el-table-column prop="score" label="得分" align="center"></el-table-column>
               <el-table-column prop="process" label="进度" align="center"></el-table-column>
               <el-table-column width="300" label="操作" align="center">
@@ -52,12 +56,15 @@
             <el-table size="small" :data="tableData" :max-height="tableHeight" border>
               <el-table-column type="index" label="序号" align="center"></el-table-column>
               <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
-              <el-table-column prop="submitEmployeeName" label="提交人" align="center"></el-table-column>
-              <el-table-column prop="commentUserNameList" label="评审人" align="center"></el-table-column>
-              <el-table-column prop="commentUserNameList" label="结束时时间" align="center"></el-table-column>
+              <el-table-column label="提交人" align="center">
+                <template slot-scope="scope">{{scope.row.submitEmployeeIdList.toString()}}</template>
+              </el-table-column>
+              <el-table-column label="评审人" align="center">
+                <template slot-scope="scope">{{scope.row.commentUserNameList.toString()}}</template>
+              </el-table-column>
               <el-table-column prop="score" label="得分率" align="center"></el-table-column>
               <el-table-column prop="process" label="得分" align="center"></el-table-column>
-              <el-table-column prop="commentUserNameList" label="失分" sortable align="center"></el-table-column>
+              <el-table-column prop="deductScore" label="失分" sortable align="center"></el-table-column>
               <el-table-column width="300" label="操作" align="center">
                 <template slot-scope="scope">
                   <el-button type="primary" @click="doRunButton(scope.row, 3)" plain size="mini">打印</el-button>
@@ -280,7 +287,7 @@ export default {
     }
   },
   created () {
-    this.doSearch()
+    this.doSearch(0)
     this.getCompanyData()
     this.doCreat()
   },
@@ -311,41 +318,41 @@ export default {
         label: '项目1',
         id: '1'
       }]
-      this.companyList = [
-        {
-          "id": "694933565493055488",
-          "label": "任淑凡"
-        },
-        {
-          "id": "627531100963835904",
-          "label": "范伟伟"
-        },
-        {
-          "id": "627531101530066944",
-          "label": "戴宪锁"
-        },
-        {
-          "id": "456253109877458796",
-          "label": "葛浩天"
-        },
-        {
-          "id": "684720845036556288",
-          "label": "聂方龙"
-        },
-        {
-          "id": "684721784237690880",
-          "label": "陈韩"
-        },
-        {
-          "id": "689844882410672128",
-          "label": "曾飞"
-        }
-      ]
+      // this.companyList = [
+      //   {
+      //     "id": "694933565493055488",
+      //     "label": "任淑凡"
+      //   },
+      //   {
+      //     "id": "627531100963835904",
+      //     "label": "范伟伟"
+      //   },
+      //   {
+      //     "id": "627531101530066944",
+      //     "label": "戴宪锁"
+      //   },
+      //   {
+      //     "id": "456253109877458796",
+      //     "label": "葛浩天"
+      //   },
+      //   {
+      //     "id": "684720845036556288",
+      //     "label": "聂方龙"
+      //   },
+      //   {
+      //     "id": "684721784237690880",
+      //     "label": "陈韩"
+      //   },
+      //   {
+      //     "id": "689844882410672128",
+      //     "label": "曾飞"
+      //   }
+      // ]
     },
     // 查询表格数据
-    doSearch (page = 0, size = 10) {
-      this.pageParams.pageNum = page
-      this.pageParams.pageSize = size
+    doSearch (num, size = 10) {
+      this.pageParams.pageNum = num
+      this.pageParams.pageSize = size || 10
       if (this.activeName === '1') {
         this.getData()
       } else {
@@ -390,7 +397,7 @@ export default {
     },
     // 点击tab标签页
     doTabClick () {
-      this.doSearch()
+      this.doSearch(0)
       this.doRefresh()
     },
     // 创建评价项提交操作
@@ -415,7 +422,7 @@ export default {
               this.createProp = false
               this.$refs[ruleForm].resetFields()
               this.$message({ message: '创建成功', type: 'success' })
-              this.doSearch()
+              this.doSearch(0)
             } else {
               this.$message({ message: res.msg, type: 'error' })
             }
@@ -426,7 +433,7 @@ export default {
     // 评价中数据列表操作按钮
     doRunButton (row, status) {
       if (status === 4) {
-        this.$router.push({ name: 'evaluate-form' })
+        this.$router.push({ name: 'evaluate-form', params: {row: row} })
         return
       }
       let params = {
