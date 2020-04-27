@@ -17,7 +17,7 @@ import store from './store'
 import '@/icons' // icon
 import './router/index' // permission control
 
-import moment from 'moment'  // 时间格式化工具
+import moment from 'moment' // 时间格式化工具
 
 // 融合 == 全局文件上传 Headers 设置
 import uploadHeaders from './utils/uploadHeaders'
@@ -26,19 +26,21 @@ Vue.mixin(uploadHeaders)
 
 Vue.use(mavonEditor)
 Vue.use(permission)
-Vue.use(ElementUI, { locale })
+Vue.use(ElementUI, {
+  locale
+})
 Vue.config.productionTip = false
 
-// Vue.prototype.$filePrefix = 'http://192.168.0.180/'                                 // 文件访问前缀
-// Vue.prototype.$network = 'http://192.168.0.185:9999/'                               // 全局网关地址
-// Vue.prototype.$upload = 'http://192.168.0.185:10005/'                               // 全局文件上传地址（绕过网关）
+Vue.prototype.$filePrefix = 'http://192.168.0.180/' // 文件访问前缀
+Vue.prototype.$network = 'http://192.168.0.185:9999/' // 全局网关地址
+Vue.prototype.$upload = 'http://192.168.0.185:10005/' // 全局文件上传地址（绕过网关）
 //TODO: 附件上传 this.$upload + 'attachment'    云盘中心文件上传 this.$upload + 'file'
 
-Vue.prototype.$filePrefix = 'http://fdfs.jsztgj.com/'
-Vue.prototype.$network = 'http://api.jsztgj.com/'
-Vue.prototype.$upload = 'http://upload.jsztgj.com/'
+// Vue.prototype.$filePrefix = 'http://fdfs.jsztgj.com/'
+// Vue.prototype.$network = 'http://api.jsztgj.com/'
+// Vue.prototype.$upload = 'http://upload.jsztgj.com/'
 
-Vue.prototype.$moment = moment   // 添加Vue属性
+Vue.prototype.$moment = moment // 添加Vue属性
 Vue.prototype.$utils = {
   parseDate(str) {
     if (typeof str == 'string') {
@@ -57,10 +59,10 @@ Vue.prototype.$utils = {
     }
     return null
   },
-  clone: function(obj) {
+  clone: function (obj) {
     return JSON.parse(JSON.stringify(obj))
   },
-  getSize: function(size) {
+  getSize: function (size) {
     if (size < 1024) {
       return '1KB'
     }
@@ -71,7 +73,7 @@ Vue.prototype.$utils = {
       return (size / 1024 / 1024).toFixed(2) + 'MB'
     }
   },
-  getSuffix: function(filename) {
+  getSuffix: function (filename) {
     var index = filename.lastIndexOf('.')
     if (index >= 0) {
       return filename.substring(index + 1, filename.length).toLowerCase()
@@ -79,16 +81,16 @@ Vue.prototype.$utils = {
       return null
     }
   },
-  getThumbnail: function(link) {
+  getThumbnail: function (link) {
     let args = link.split('.')
     return Vue.prototype.$filePrefix + args[0] + '_150x150.' + args[1]
   },
-  getIcon: function(filename) {
+  getIcon: function (filename) {
 
     var suffix = this.getSuffix(filename)
-    let document = ['log', 'txt', 'md', 'html']                               // 文档类型
-    let video = ['avi', 'mpg', 'mov', 'swf', 'rmvb', 'rm', 'FLV', 'mp4']          // 视频类型
-    let audio = ['mp3', 'wma', 'wav', 'midi', 'flac', 'aif', 'ram', 'au']         // 音频类型
+    let document = ['log', 'txt', 'md', 'html'] // 文档类型
+    let video = ['avi', 'mpg', 'mov', 'swf', 'rmvb', 'rm', 'FLV', 'mp4'] // 视频类型
+    let audio = ['mp3', 'wma', 'wav', 'midi', 'flac', 'aif', 'ram', 'au'] // 音频类型
 
     if ('pdf' === suffix) {
       return 'icon-pdf'
@@ -108,7 +110,7 @@ Vue.prototype.$utils = {
       return 'icon-other-file'
     }
   },
-  getDiskIcon: function(file) {
+  getDiskIcon: function (file) {
 
     if (file.dataType === 0) {
       return 'icon-folder'
@@ -155,8 +157,8 @@ Vue.prototype.$utils = {
   formatMsg(msg) {
     return msg.toString().replace(new RegExp('[a-zA-Z.:]', 'gm'), '')
   },
-  unique: function(arr) {
-    return arr.reduce((prev,cur) => prev.includes(cur) ? prev : [...prev,cur],[]);
+  unique: function (arr) {
+    return arr.reduce((prev, cur) => prev.includes(cur) ? prev : [...prev, cur], []);
   }
 }
 
