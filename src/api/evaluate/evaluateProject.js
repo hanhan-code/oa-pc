@@ -27,6 +27,17 @@ export function tableData(data) {
  */
 export function runButton(data) {
   return request({
+    url: "http://192.168.0.158:9007/project/comment/status",
+    method: "put",
+    params: data
+  });
+}
+
+/**
+ * @description 调用评价中操作按钮接口
+ */
+export function resetData(data) {
+  return request({
     url: "http://192.168.0.158:9007/project/comment",
     method: "put",
     params: data
@@ -34,12 +45,12 @@ export function runButton(data) {
 }
 
 /**
- * @description 调用评价结束操作按钮接口
+ * @description 调用评价结束打印按钮接口
  */
-export function endButton(data) {
+export function printData(data) {
   return request({
-    url: "http://192.168.0.158:9007/project/comment",
-    method: "put",
+    url: "http://192.168.0.158:9007/form/pdf",
+    method: "get",
     params: data
   });
 }
@@ -49,7 +60,7 @@ export function endButton(data) {
  */
 export function evaluateData(data) {
   return request({
-    url: "http://192.168.0.158:9007/form/project",
+    url: "http://192.168.0.158:9007/form/company",
     method: "get",
     params: data
   });

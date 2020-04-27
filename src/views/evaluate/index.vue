@@ -32,7 +32,7 @@
               <el-table-column type="index" label="序号" align="center"></el-table-column>
               <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
               <el-table-column label="提交人" align="center">
-                <template slot-scope="scope">{{scope.row.submitEmployeeIdList.toString()}}</template>
+                <template slot-scope="scope">{{scope.row.submitUserNameList.toString()}}</template>
               </el-table-column>
               <el-table-column label="评审人" align="center">
                 <template slot-scope="scope">{{scope.row.commentUserNameList.toString()}}</template>
@@ -45,6 +45,7 @@
                   <el-button type="primary" @click="doRunButton(scope.row, 2)" plain size="mini">暂停</el-button>
                   <el-button type="primary" @click="doRunButton(scope.row, 3)" plain size="mini">重评</el-button>
                   <el-button type="primary" @click="doRunButton(scope.row, 4)" plain size="mini">设置</el-button>
+                  <!-- <el-button type="primary" @click="doEndButton(scope.row)" plain size="mini">打印</el-button> -->
                 </template>
               </el-table-column>
             </el-table>
@@ -57,18 +58,21 @@
               <el-table-column type="index" label="序号" align="center"></el-table-column>
               <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
               <el-table-column label="提交人" align="center">
-                <template slot-scope="scope">{{scope.row.submitEmployeeIdList.toString()}}</template>
-              </el-table-column>
-              <el-table-column label="评审人" align="center">
                 <template slot-scope="scope">{{scope.row.commentUserNameList.toString()}}</template>
               </el-table-column>
+              <el-table-column label="评审人" align="center">
+                <template slot-scope="scope">{{scope.row.submitUserNameList.toString()}}</template>
+              </el-table-column>
+              <el-table-column label="结束时间" align="center">
+                <template slot-scope="scope">{{scope.row.endTime}}</template>
+              </el-table-column>
               <el-table-column prop="score" label="得分率" align="center"></el-table-column>
-              <el-table-column prop="process" label="得分" align="center"></el-table-column>
+              <el-table-column prop="fullScore" label="得分" align="center"></el-table-column>
               <el-table-column prop="deductScore" label="失分" sortable align="center"></el-table-column>
               <el-table-column width="300" label="操作" align="center">
                 <template slot-scope="scope">
-                  <el-button type="primary" @click="doRunButton(scope.row, 3)" plain size="mini">打印</el-button>
-                  <el-button type="primary" @click="doEndButton(scope.row)" plain size="mini">重评</el-button>
+                  <el-button type="primary" @click="doEndButton(scope.row,0)" plain size="mini">打印</el-button>
+                  <el-button type="primary" @click="doEndButton(scope.row,1)" plain size="mini">重评</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -108,7 +112,7 @@
             autocomplete="off"
           >
             <el-option
-              :label="item.label"
+              :label="item.projectName"
               :value="item.id"
               v-for="(item, index) in projectList"
               :key="index"
@@ -224,7 +228,6 @@
 
 import initDict from '@/mixins/initDict'
 import { getCompanyId, getEmployeeId } from '@/utils/auth'
-// import { requireContent } from '@/utils/rule'
 import {
   tableData,
   tableEndData,
@@ -232,7 +235,9 @@ import {
   companyData,
   creatSubmit,
   runButton,
-  endButton,
+  printData,
+  resetData,
+  projectData
 } from '@/api/evaluate/evaluateProject'
 
 export default {
@@ -289,6 +294,7 @@ export default {
   created () {
     this.doSearch(0)
     this.getCompanyData()
+    this.getProjectData()
     this.doCreat()
   },
   mounted () {
@@ -318,36 +324,6 @@ export default {
         label: '项目1',
         id: '1'
       }]
-      // this.companyList = [
-      //   {
-      //     "id": "694933565493055488",
-      //     "label": "任淑凡"
-      //   },
-      //   {
-      //     "id": "627531100963835904",
-      //     "label": "范伟伟"
-      //   },
-      //   {
-      //     "id": "627531101530066944",
-      //     "label": "戴宪锁"
-      //   },
-      //   {
-      //     "id": "456253109877458796",
-      //     "label": "葛浩天"
-      //   },
-      //   {
-      //     "id": "684720845036556288",
-      //     "label": "聂方龙"
-      //   },
-      //   {
-      //     "id": "684721784237690880",
-      //     "label": "陈韩"
-      //   },
-      //   {
-      //     "id": "689844882410672128",
-      //     "label": "曾飞"
-      //   }
-      // ]
     },
     // 查询表格数据
     doSearch (num, size = 10) {
@@ -380,6 +356,20 @@ export default {
           let data = res.data
           this.tableData = data.records
           this.pageData.total = Number(data.total)
+        } else {
+          this.$message({ message: res.msg, type: 'error' })
+        }
+      })
+    },
+    // 获取项目列表
+    getProjectData () {
+      let params = {
+        companyId: getCompanyId()
+      }
+      projectData(params).then(res => {
+        if (res.code === 0) {
+          let data = res.data
+          this.projectList = data
         } else {
           this.$message({ message: res.msg, type: 'error' })
         }
@@ -433,34 +423,45 @@ export default {
     // 评价中数据列表操作按钮
     doRunButton (row, status) {
       if (status === 4) {
-        this.$router.push({ name: 'evaluate-form', params: {row: row} })
+        this.$router.push({ name: 'evaluate-form', params: { row: row } })
         return
       }
       let params = {
+        employeeId: getEmployeeId(),
         projectCommentId: row.projectCommentId,
         status: status
       }
       runButton(params).then(res => {
         if (res.code === 0) {
+          this.getData()
           this.$message({ message: '操作成功', type: 'success' })
         } else {
-          this.$message({ message: '操作失败', type: 'error' })
+          this.$message({ message: res.msg, type: 'error' })
         }
       })
     },
     // 评价结束数据列表操作按钮
-    doEndButton (row) {
+    doEndButton (row, type) {
       let params = {
-        projectCommentId: row.projectCommentId,
-        employeeId: getEmployeeId()
+        employeeId: getEmployeeId(),
+        projectCommentId: row.projectCommentId
       }
-      endButton(params).then(res => {
-        if (res.code === 0) {
-          this.$message({ message: '操作成功', type: 'success' })
-        } else {
-          this.$message({ message: '操作失败', type: 'error' })
-        }
-      })
+      if (type === 0) {
+        printData(params).then(res => {
+          let blob = new Blob([res], { type: 'application/pdf' })
+          let url = URL.createObjectURL(blob)
+          window.open(url)
+        })
+      } else {
+        resetData(params).then(res => {
+          if (res.code === 0) {
+            this.$message({ message: '操作成功', type: 'success' })
+            this.getData()
+          } else {
+            this.$message({ message: res.msg, type: 'error' })
+          }
+        })
+      }
     },
     // 添加评价表
     doAdd () {
@@ -501,36 +502,11 @@ export default {
         }
       })
     },
-    // // 根据公司id获取评审人员
-    // getEvaluatePerson () {
-    //   let params = {
-    //     projectCommentId: this.companyId
-    //   }
-    //   evaluateData(params).then(res => {
-    //     if (res.code === 0) {
-    //       this.evaluateList = res.data
-    //     }
-    //   })
-    // },
-    // // 根据公司id获取提交资料人员
-    // getSubmitPerson () {
-    //   let params = {
-    //     projectCommentId: this.companyId
-    //   }
-    //   evaluateData(params).then(res => {
-    //     if (res.code === 0) {
-    //       this.evaluateList = res.data
-    //     }
-    //   })
-    // },
     // 获取添加评价表数据
     getEvaluateData (type) {
       let params = {
-        // projectCommentId: this.companyId,
-        projectCommentId: '1'
-      }
-      if (type === 1) {
-        params.key = this.formName
+        companyId: getCompanyId(),
+        // key: this.formName
       }
       evaluateData(params).then(res => {
         if (res.code === 0) {

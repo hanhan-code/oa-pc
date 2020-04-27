@@ -37,7 +37,7 @@
           <el-input
             clearable
             placeholder="请输入名称"
-            v-model="pageParams.keyword"
+            v-model="pageParams.keyWord"
             size="small"
             style="width: 180px;margin-right: 10px"
             class="filter-item"
@@ -48,7 +48,7 @@
             size="small"
             type="success"
             icon="el-icon-search"
-            @click="doSearch"
+            @click="doSearch(0)"
           >搜索</el-button>
           <el-button size="small" @click="addProp = true" type="primary">添加考评项</el-button>
           <el-button size="small" @click="doBack" type="primary">返回上一级</el-button>
@@ -122,15 +122,6 @@
             placeholder="请选择考评分类"
           ></el-cascader>
         </el-form-item>
-        <el-form-item label="评价内容" prop="content">
-          <el-input
-            v-model="addForm.content"
-            filterable
-            clearable
-            placeholder="请输入内容"
-            autocomplete="off"
-          ></el-input>
-        </el-form-item>
         <el-form-item label="评价标准" prop="grading">
           <el-input
             v-model="addForm.grading"
@@ -182,15 +173,6 @@
             :placeholder="editForm.formClassName"
           ></el-cascader>
         </el-form-item>
-        <el-form-item label="评价内容" prop="content">
-          <el-input
-            v-model="editForm.content"
-            filterable
-            clearable
-            placeholder="请输入内容"
-            autocomplete="off"
-          ></el-input>
-        </el-form-item>
         <el-form-item label="评价标准" prop="grading">
           <el-input
             v-model="editForm.grading"
@@ -232,9 +214,6 @@
         <el-form-item label="所属分类" prop="formClassId">
           <el-input v-model="detailForm.formClassId" placeholder="请选择分类" disabled></el-input>
         </el-form-item>
-        <el-form-item label="评价内容" prop="content">
-          <el-input v-model="detailForm.content" disabled placeholder="请输入内容"></el-input>
-        </el-form-item>
         <el-form-item label="评价标准" prop="grading">
           <el-input v-model="detailForm.grading" disabled type="textarea" placeholder="请输入标准"></el-input>
         </el-form-item>
@@ -257,7 +236,7 @@
       </span>
     </el-dialog>
     <!-- 添加树 -->
-    <el-dialog title="添加评价表" :visible.sync="addTreeProp" width="20%" center>
+    <el-dialog title="添加分类" :visible.sync="addTreeProp" width="20%" center>
       <el-input clearable placeholder="请输入表名称" v-model="formName" size="small" class="filter-item" />
       <span slot="footer" class="dialog-footer">
         <!-- <el-button type="default" @click="addTreeProp = false">取消</el-button> -->
@@ -265,7 +244,7 @@
       </span>
     </el-dialog>
     <!-- 修改树 -->
-    <el-dialog title="修改评价表" :visible.sync="editTreeProp" width="20%" center>
+    <el-dialog title="修改分类" :visible.sync="editTreeProp" width="20%" center>
       <el-input clearable placeholder="请输入表名称" v-model="formName" size="small" class="filter-item" />
       <span slot="footer" class="dialog-footer">
         <!-- <el-button type="default" @click="editTreeProp = false">取消</el-button> -->
@@ -287,7 +266,6 @@
 
 import initDict from '@/mixins/initDict'
 import { getCompanyId, getEmployeeId } from '@/utils/auth'
-// import { requireContent } from '@/utils/rule'
 import {
   treeList,
   formData,
@@ -349,7 +327,6 @@ export default {
         grading: '',                  // 评价标准
         fullScore: 0,                 // 分值
         formId: null,                 // 表格类id
-        content: '',                  // 考评项内容
         formClassItemId: null         // 提交资料人员id列表
       },
       editForm: {                     // 查询总数
@@ -357,7 +334,6 @@ export default {
         formClassId: [],               // 考评类id
         grading: '',                  // 评价标准
         fullScore: 0,                 // 分值
-        content: '',                  // 考评项内容
         formClassItemId: null         // 提交资料人员id列表
       },
       detailForm: {                     // 查询总数
@@ -365,13 +341,12 @@ export default {
         formClassId: 0,               // 考评类id
         grading: '',                  // 评价标准
         fullScore: 0,                 // 分值
-        content: '',                  // 考评项内容
         formClassItemId: null         // 提交资料人员id列表
       },
       pageParams: {                   // 分页查询参数
         companyId: getCompanyId(),
         formId: null,
-        keyword: null,                // 查询关键字
+        keyWord: null,                // 查询关键字
         formClassId: 0,               // 表格子类id
         pageSize: 10,                 // 每页个数
         pageNum: 0                    // 当前页数
@@ -382,9 +357,6 @@ export default {
         ],
         formClassId: [
           { required: true, message: '必填字段不能为空', trigger: 'change' }
-        ],
-        content: [
-          { required: true, message: '必填字段不能为空', trigger: 'blur' }
         ],
       }
     }
@@ -418,7 +390,7 @@ export default {
         this.pageParams.formClassId = 0
       }
       this.getTreeData()
-      this.doSearch()
+      this.doSearch(0)
     },
     // 查询表格数据
     doSearch (page = 0, size = 10) {
@@ -524,12 +496,14 @@ export default {
         pid: this.row.pid
       }
       treeAdd(params).then(res => {
+        this.addTreeProp = false
         if (res.code === 0) {
-          this.addTreeProp = false
           this.doRefresh()
           this.getData()
           this.getTreeData()
           this.$message({ message: res.msg, type: 'success' })
+        } else {
+          this.$message({ message: res.msg, type: 'error' })
         }
       })
     },
@@ -543,12 +517,14 @@ export default {
         pid: 0
       }
       treeEdit(params).then(res => {
+        this.editTreeProp = false
         if (res.code === 0) {
-          this.editTreeProp = false
           this.doRefresh()
           this.getData()
           this.getTreeData()
           this.$message({ message: res.msg, type: 'success' })
+        } else {
+          this.$message({ message: res.msg, type: 'error' })
         }
       })
     },
@@ -559,19 +535,21 @@ export default {
         id: this.row.id
       }
       treeDele(params).then(res => {
+        this.deleTreeProp = false
         if (res.code === 0) {
-          this.deleTreeProp = false
           this.doRefresh()
           this.getTreeData()
           this.getData()
           this.$message({ message: res.msg, type: 'success' })
+        } else {
+          this.$message({ message: res.msg, type: 'error' })
         }
       })
     },
     // 重置评价请求参数
     doRefresh () {
       this.tableData = []
-      this.pageParams.keyword = null
+      this.pageParams.keyWord = null
       this.pageParams.pageSize = 10
       this.pageParams.pageNum = 0
     },
@@ -633,8 +611,7 @@ export default {
             employeeId: getEmployeeId(),                // 操作者职员id
             grading: this.addForm.grading,              // 评价标准
             fullScore: this.addForm.fullScore,          // 分值
-            formId: this.pageParams.formId,             // 表格类id
-            content: this.addForm.content               // 评价内容
+            formId: this.row.formClassId,             // 表格类id
           }
           formAdd(form).then(res => {
             if (res.code === 0) {
@@ -665,8 +642,7 @@ export default {
             employeeId: getEmployeeId(),                // 操作者职员id
             grading: this.editForm.grading,              // 评价标准
             fullScore: this.editForm.fullScore,          // 分值
-            formId: this.pageParams.formId,             // 表格类id
-            content: this.editForm.content           // 评价内容
+            formId: this.row.formClassId,             // 表格类id
           }
           formEdit(form).then(res => {
             if (res.code === 0) {

@@ -23,6 +23,17 @@ export function copyButton(data) {
 }
 
 /**
+ * @description 调用评价表删除考评项接口
+ */
+export function delForm(data) {
+  return request({
+    url: "http://192.168.0.158:9007/project/form",
+    method: "delete",
+    data: data
+  });
+}
+
+/**
  * @description 调用创建评价表提交接口
  */
 export function creatSubmit(data) {
@@ -30,6 +41,25 @@ export function creatSubmit(data) {
     url: "http://192.168.0.158:9007/form",
     method: "post",
     data: data
+  });
+}
+
+export function creatSubmits(data) {
+  return request({
+    url: "http://192.168.0.158:9007/project/form",
+    method: "post",
+    data: data
+  });
+}
+
+/**
+ * @description 获取评价表接口数据
+ */
+export function evaluateData(data) {
+  return request({
+    url: "http://192.168.0.158:9007/project/form",
+    method: "get",
+    params: data
   });
 }
 
@@ -73,14 +103,14 @@ export function formAdd(data) {
  */
 export function formEdit(data) {
   return request({
-    url: "http://192.168.0.158:9007/form/item",
+    url: "http://192.168.0.158:9007/form/class/item",
     method: "put",
     data: data
   });
 }
 
 /**
- * @description 调用评价表删除考评项接口
+ * @description 获取评价表接口数据
  */
 export function formDelete(data) {
   return request({

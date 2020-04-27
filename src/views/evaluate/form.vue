@@ -18,10 +18,15 @@
           size="small"
           type="success"
           icon="el-icon-search"
-          @click="doSearch"
+          @click="doSearch(0)"
         >搜索</el-button>
-        <el-button size="small" @click="createProp = true" type="primary">创建评价表</el-button>
-        <el-button size="small" @click="addProp = true" type="primary">添加现有表</el-button>
+        <el-button size="small" @click="doButton(0)" type="primary">创建评价表</el-button>
+        <el-button
+          size="small"
+          @click="doButton(1)"
+          type="primary"
+          v-show="pageParams.projectCommentId !== 0"
+        >添加现有表</el-button>
       </div>
       <br />
       <!-- 数据内容 -->
@@ -30,7 +35,7 @@
         <div class="content" style="margin-top: 10px;">
           <el-table size="small" :data="tableData" :max-height="tableHeight" border>
             <el-table-column type="index" label="序号" align="center"></el-table-column>
-            <el-table-column prop="name" label="项目名称" align="center"></el-table-column>
+            <el-table-column prop="name" label="项目名称" align="center" width="400"></el-table-column>
             <el-table-column prop="fullScore" label="得分" align="center"></el-table-column>
             <el-table-column width="300" label="操作" align="center">
               <template slot-scope="scope">
@@ -71,6 +76,7 @@
           <el-input
             v-model="createForm.name"
             filterable
+            v-show="!evaluateProp"
             clearable
             placeholder="请输入表名称"
             autocomplete="off"
@@ -81,11 +87,49 @@
         <el-button type="primary" @click="doCreatSubmit('creatForm')">创建项目</el-button>
       </span>
     </el-dialog>
+    <!-- 添加已有评价项目 -->
+    <el-dialog title="添加现有评价表" :visible.sync="evaluateProp" width="20%" center>
+      <el-form
+        :model="createForm"
+        label-position="right"
+        label-width="70px"
+        :rules="ruleForm"
+        ref="creatForms"
+      >
+        <el-form-item label="表名称" prop="name">
+          <el-select
+            v-model="createForm.formIds"
+            filterable
+            placeholder="请选择"
+            v-show="evaluateProp"
+          >
+            <el-option
+              v-for="item in evaluateList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="doCreatSubmits('creatForms')">创建项目</el-button>
+      </span>
+    </el-dialog>
     <!-- 复制 -->
-    <el-dialog title="复制" :visible.sync="copyProp" width="25%" center>
+    <el-dialog title="复制" :visible.sync="copyProp" width="25%">
       <div>该操作将复制当前数据，是否复制？</div>
       <span slot="footer" class="dialog-footer">
+        <el-button type="default" @click="copyProp = false">取消</el-button>
         <el-button type="primary" @click="doCopyConfirm">确定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 删除 -->
+    <el-dialog title :visible.sync="delProp" width="25%">
+      <div>该操作将永久删除数据，是否删除？</div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="default" @click="delProp = false">取消</el-button>
+        <el-button type="primary" @click="doDeleteConfirm">确定</el-button>
       </span>
     </el-dialog>
     <form-manage :formId="formId" v-if="formProp" @doChildClose="doChildClose"></form-manage>
@@ -97,12 +141,14 @@
 import initDict from '@/mixins/initDict'
 import { getCompanyId, getEmployeeId } from '@/utils/auth'
 import formManage from './form-manage'
-// import { requireContent } from '@/utils/rule'
 import {
   tableData,
   creatSubmit,
   copyButton,
   endButton,
+  evaluateData,
+  creatSubmits,
+  delForm
 } from '@/api/evaluate/evaluateForm'
 
 export default {
@@ -112,6 +158,8 @@ export default {
   data () {
     return {
       createProp: false,              // 创建评价弹窗
+      evaluateProp: false,            // 添加现有表弹窗
+      delProp: false,                 // 删除弹窗
       addProp: false,                 // 添加现有表
       copyProp: false,                // 复制评价表
       formProp: false,                // 表单管理页面弹窗
@@ -120,6 +168,7 @@ export default {
       row: null,                      // 当前行数据
       tableHeight: null,              // 表格最大高度
       tableData: [],                  // 表格数据
+      evaluateList: [],               // 现有表格数据
       pageData: {                     // 分页查询返回数据
         data: [],                     // 列表数据
         total: 10                     // 查询总数
@@ -129,14 +178,23 @@ export default {
         employeeId: null,             // 执行创建操作评价项目的职员id
         name: '',                     // 创建表的名称
       },
+      createForms: {
+        projectCommentId: null,       // 执行创建操作评价项目的职员id
+        formIds: [],
+      },
       pageParams: {                   // 分页查询参数
         companyId: getCompanyId(),
         keyword: null,                // 查询关键字
         pageSize: 10,                 // 每页个数
         pageNum: 0,                   // 当前页数
-        projectCommentId: null        // 评价项目提交id
+        projectCommentId: 0        // 评价项目提交id
       },
       ruleForm: {
+        name: [
+          { required: true, message: '必填字段不能为空', trigger: 'change' }
+        ],
+      },
+      ruleForms: {
         name: [
           { required: true, message: '必填字段不能为空', trigger: 'change' }
         ],
@@ -144,7 +202,6 @@ export default {
     }
   },
   created () {
-    this.doSearch()
     this.doCreat()
   },
   mounted () {
@@ -163,17 +220,18 @@ export default {
   methods: {
     // 初始化
     doCreat () {
-      let params = this.$route.params.row
-      if (params) {
-        this.pageParams.projectCommentId = JSON.parse(row).projectCommentId
+      let row = this.$route.params.row
+      if (row) {
+        this.pageParams.projectCommentId = row.projectCommentId
       } else {
-        this.pageParams.projectCommentId = null
+        this.pageParams.projectCommentId = 0
       }
+      this.doSearch(0)
     },
     // 查询表格数据
     doSearch (page = 0, size = 10) {
-      this.pageParams.pageNum = page || 0
-      this.pageParams.pageSize = size || 10
+      this.pageParams.pageNum = page
+      this.pageParams.pageSize = size
       this.getData()
     },
     // 获取评价中表格数据
@@ -190,11 +248,20 @@ export default {
         }
       })
     },
+    doButton (type) {
+      if (type === 0) {
+        this.createProp = true
+      } else {
+        this.evaluateProp = true
+        this.getEvaluateData()
+      }
+    },
     // 重置评价请求参数
     doRefresh () {
       this.tableData = []
       this.pageParams = {             // 分页查询参数
         companyId: getCompanyId(),
+        projectCommentId: 0,
         keyword: null,                // 查询关键字
         pageSize: 10,                 // 每页个数
         pageNum: 0                    // 当前页数
@@ -205,11 +272,33 @@ export default {
       let form = {
         companyId: getCompanyId(),
         employeeId: getEmployeeId(),
+        projectCommentId: this.pageParams.projectCommentId,
         name: this.createForm.name,
       }
       this.$refs[ruleForm].validate((valid) => {
         if (valid) {
           creatSubmit(form).then(res => {
+            if (res.code === 0) {
+              this.createProp = false
+              this.$refs[ruleForm].resetFields()
+              this.$message({ message: '创建成功', type: 'success' })
+              this.doSearch(0)
+            } else {
+              this.$message({ message: res.msg, type: 'error' })
+            }
+          })
+        }
+      })
+    },
+    // 添加已有评价表提交
+    doCreatSubmits (ruleForm) {
+      let form = {
+        projectCommentId: this.pageParams.projectCommentId,
+        formIds: this.createForms.formIds.toString(),
+      }
+      this.$refs[ruleForm].validate((valid) => {
+        if (valid) {
+          creatSubmits(form).then(res => {
             if (res.code === 0) {
               this.createProp = false
               this.$refs[ruleForm].resetFields()
@@ -222,15 +311,51 @@ export default {
         }
       })
     },
+    // 删除表
+    doDeleteConfirm () {
+      let params = {
+        companyId: getCompanyId(),
+        employeeId: getEmployeeId(),
+        projectCommentId: this.pageParams.projectCommentId,
+        formId: this.row.id
+      }
+      if (params.projectCommentId !== 0) {
+        params.companyId = 0
+      }
+      delForm(params).then(res => {
+        this.delProp = false
+        if (res.code === 0) {
+          this.getData()
+          this.$message({ message: '删除成功', type: 'success' })
+        } else {
+          this.$message({ message: '删除失败', type: 'error' })
+        }
+      })
+    },
     // 评价中数据列表操作按钮
     doRunButton (row, status) {
+      this.row = row
       if (status === 0) {
         this.formId = row.id
         this.formProp = true
-      } else if (status === 1){
+      } else if (status === 1) {
         this.copyProp = true
-        this.row = row
+      } else {
+        this.delProp = true
       }
+    },
+    // 获取添加评价表数据
+    getEvaluateData (type) {
+      let params = {
+        projectCommentId: this.pageParams.projectCommentId,
+        pageNum: 0,
+        pageSize: 0
+      }
+      evaluateData(params).then(res => {
+        if (res.code === 0) {
+          this.evaluateList = res.data
+        }
+      })
     },
     // 表单管理页面返回
     doChildClose () {
@@ -240,7 +365,7 @@ export default {
     doCopy () {
       this.copyProp = true
     },
-    // 确定添加评价表
+    // 确定复制评价表
     doCopyConfirm () {
       let params = {
         formId: this.row.id,
@@ -249,7 +374,7 @@ export default {
       copyButton(params).then(res => {
         if (res.code === 0) {
           this.copyProp = false
-          this.doSearch()
+          this.doSearch(0)
           this.$message({ message: res.msg, type: 'success' })
         } else {
           this.$message({ message: res.msg, type: 'error' })
