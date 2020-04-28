@@ -32,6 +32,7 @@
           <el-input
             v-model="setForm.good"
             type="number"
+            @blur="doWell"
             style="width: 180px"
             placeholder="90% - 80%"
           ></el-input>
@@ -40,6 +41,7 @@
           <el-form-item label="并且单张表得分率" prop="goodSingle" label-width="160px">
             <el-input
               v-model="setForm.goodSingle"
+              @blur="doWellSingle"
               type="number"
               style="width: 180px"
               placeholder="85% - 75%"
@@ -51,6 +53,7 @@
         <el-col :span="5">
           <el-input
             v-model="setForm.common"
+            @blur="doCommon"
             type="number"
             style="width: 180px"
             placeholder="80% - 60%"
@@ -106,7 +109,7 @@ import {
   fineRules,
   wellRule,
   wellRules,
-  comRule
+  comRule,
 } from './rule'
 
 import {
@@ -137,9 +140,6 @@ export default {
         notice: [],                              // 评审完通知人 id 1546，1564，1564 逗号分隔
       },
       rules: {
-        id: [
-          { required: true, validator: requireContent, trigger: 'change' }
-        ],
         fine: [
           { required: true, validator: fineRule, trigger: 'blur' }
         ],
@@ -164,6 +164,9 @@ export default {
       }
     };
   },
+  watch: {
+
+  },
   computed: {
     // 设置选择框多选时标签数量
     setSubmitTags () {
@@ -175,6 +178,9 @@ export default {
     this.getCompanyData()
     this.getProjectData()
     this.doCreat()
+  },
+  mounted () {
+
   },
   methods: {
     doCreat () {
@@ -237,6 +243,24 @@ export default {
           })
         }
       })
+    },
+    // 良得分率
+    doWell (value) {
+      if (value >= this.setForm.fine) {
+        this.$message({ message: '良得分率不能高于优得分率', type: 'error' })
+      }
+    },
+    // 单张表良得分率
+    doWellSingle (value) {
+      if (value >= this.setForm.fineSingle) {
+        this.$message({ message: '单张表 良得分率不能高于优得分率', type: 'error' })
+      }
+    },
+    // 良得分率
+    doCommon (value) {
+      if (value >= this.setForm.good) {
+        this.$message({ message: '一般得分率不能高于良得分率', type: 'error' })
+      }
     },
     // 提交
     doSubmit (formName) {

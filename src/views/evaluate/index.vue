@@ -95,7 +95,14 @@
       </div>
     </div>
     <!-- 创建评价项目 -->
-    <el-dialog title="基本信息" :visible.sync="createProp" width="30%" center>
+    <el-dialog
+      title="基本信息"
+      :visible.sync="createProp"
+      width="30%"
+      center
+      :modal="false"
+      :modal-append-to-body="false"
+    >
       <el-form
         :model="createForm"
         label-position="right"
@@ -176,7 +183,14 @@
       </span>
     </el-dialog>
     <!-- 添加评价表 -->
-    <el-dialog title="选择评价表" :visible.sync="addProp" width="30%" center>
+    <el-dialog
+      title="选择评价表"
+      :visible.sync="addProp"
+      width="30%"
+      center
+      :modal="false"
+      :modal-append-to-body="false"
+    >
       <el-input
         clearable
         placeholder="请输入表名称"
@@ -299,6 +313,7 @@ export default {
   },
   mounted () {
     this.tableHeight = this.setHeight
+
   },
   computed: {
     // 设置表格最大高度
@@ -423,7 +438,7 @@ export default {
     // 评价中数据列表操作按钮
     doRunButton (row, status) {
       if (status === 4) {
-        this.$router.push({ name: 'evaluate-form', params: { row: row } })
+        this.$router.push({ name: 'eform', params: { row: row } })
         return
       }
       let params = {

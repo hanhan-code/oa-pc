@@ -64,7 +64,14 @@
     </div>
 
     <!-- 创建评价项目 -->
-    <el-dialog title="基本信息" :visible.sync="createProp" width="20%" center>
+    <el-dialog
+      title="基本信息"
+      :visible.sync="createProp"
+      width="20%"
+      center
+      :modal="false"
+      :modal-append-to-body="false"
+    >
       <el-form
         :model="createForm"
         label-position="right"
@@ -88,7 +95,14 @@
       </span>
     </el-dialog>
     <!-- 添加已有评价项目 -->
-    <el-dialog title="添加现有评价表" :visible.sync="evaluateProp" width="20%" center>
+    <el-dialog
+      title="添加现有评价表"
+      :visible.sync="evaluateProp"
+      width="20%"
+      center
+      :modal="false"
+      :modal-append-to-body="false"
+    >
       <el-form
         :model="createForm"
         label-position="right"
@@ -117,7 +131,13 @@
       </span>
     </el-dialog>
     <!-- 复制 -->
-    <el-dialog title="复制" :visible.sync="copyProp" width="25%">
+    <el-dialog
+      title="复制"
+      :visible.sync="copyProp"
+      width="25%"
+      :modal="false"
+      :modal-append-to-body="false"
+    >
       <div>该操作将复制当前数据，是否复制？</div>
       <span slot="footer" class="dialog-footer">
         <el-button type="default" @click="copyProp = false">取消</el-button>
@@ -125,7 +145,13 @@
       </span>
     </el-dialog>
     <!-- 删除 -->
-    <el-dialog title :visible.sync="delProp" width="25%">
+    <el-dialog
+      title
+      :visible.sync="delProp"
+      width="25%"
+      :modal="false"
+      :modal-append-to-body="false"
+    >
       <div>该操作将永久删除数据，是否删除？</div>
       <span slot="footer" class="dialog-footer">
         <el-button type="default" @click="delProp = false">取消</el-button>
@@ -140,7 +166,7 @@
 
 import initDict from '@/mixins/initDict'
 import { getCompanyId, getEmployeeId } from '@/utils/auth'
-import formManage from './form-manage'
+import formManage from './manage'
 import {
   tableData,
   creatSubmit,

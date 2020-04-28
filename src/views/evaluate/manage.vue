@@ -4,7 +4,7 @@
       <el-col :span="4">
         <el-tree
           :data="treeData"
-          node-key="pid"
+          node-key="id"
           accordion
           highlight-current
           :default-expanded-keys="[0]"
@@ -13,17 +13,22 @@
           <span class="custom-tree-node" slot-scope="{ node, data }">
             <span @click="doTreeClick(data)">{{ node.label }}</span>
             <span>
-              <el-button type="text" size="mini" @click="() => doAddTree(node, data)">添加</el-button>
               <el-button
                 type="text"
                 size="mini"
-                v-show="data.pid !== 0"
+                @click="() => doAddTree(node, data)"
+                v-show="node.level < 3"
+              >添加</el-button>
+              <el-button
+                type="text"
+                size="mini"
+                v-show="data.pid"
                 @click="() => doEditTree(node, data)"
               >修改</el-button>
               <el-button
                 type="text"
                 size="mini"
-                v-show="data.pid !== 0"
+                v-show="data.pid"
                 @click="() => doDeleTree(node, data)"
               >删除</el-button>
             </span>
@@ -50,7 +55,7 @@
             icon="el-icon-search"
             @click="doSearch(0)"
           >搜索</el-button>
-          <el-button size="small" @click="addProp = true" type="primary">添加考评项</el-button>
+          <el-button size="small" @click="doAdd" type="primary">添加考评项</el-button>
           <el-button size="small" @click="doBack" type="primary">返回上一级</el-button>
         </div>
         <br />
@@ -104,7 +109,14 @@
     </el-row>
 
     <!-- 添加考评评价项 -->
-    <el-dialog title="添加考评项" :visible.sync="addProp" width="30%" center>
+    <el-dialog
+      title="添加考评项"
+      :visible.sync="addProp"
+      width="30%"
+      center
+      :modal="false"
+      :modal-append-to-body="false"
+    >
       <el-form
         :model="addForm"
         label-position="right"
@@ -146,7 +158,7 @@
             placeholder="请选择分数"
             autocomplete="off"
           >
-            <el-option :label="item" :value="item" v-for="(item, index) in scoreList" :key="index"></el-option>
+            <el-option :label="item" :value="item" v-for="(item, v) in scoreList" :key="v"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -155,7 +167,14 @@
       </span>
     </el-dialog>
     <!-- 修改评价表 -->
-    <el-dialog title="修改评价项" :visible.sync="editProp" width="30%" center>
+    <el-dialog
+      title="修改评价项"
+      :visible.sync="editProp"
+      width="30%"
+      center
+      :modal="false"
+      :modal-append-to-body="false"
+    >
       <el-form
         :model="editForm"
         label-position="right"
@@ -194,7 +213,7 @@
             placeholder="请选择分数"
             autocomplete="off"
           >
-            <el-option :label="item" :value="item" v-for="(item, index) in scoreList" :key="index"></el-option>
+            <el-option :label="item" :value="item" v-for="(item, i) in scoreList" :key="i"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -203,7 +222,14 @@
       </span>
     </el-dialog>
     <!-- 查看评价表 -->
-    <el-dialog title="查看考评项" :visible.sync="detailProp" width="30%" center>
+    <el-dialog
+      title="查看考评项"
+      :visible.sync="detailProp"
+      width="30%"
+      center
+      :modal="false"
+      :modal-append-to-body="false"
+    >
       <el-form
         :model="detailForm"
         label-position="right"
@@ -228,7 +254,13 @@
       </el-form>
     </el-dialog>
     <!-- 删除评价表 -->
-    <el-dialog title="删除评价表" :visible.sync="deleteProp" width="20%">
+    <el-dialog
+      title="删除评价表"
+      :visible.sync="deleteProp"
+      width="20%"
+      :modal="false"
+      :modal-append-to-body="false"
+    >
       确定删除评价表？
       <span slot="footer" class="dialog-footer">
         <el-button type="default" @click="deleteProp = false">取消</el-button>
@@ -236,7 +268,14 @@
       </span>
     </el-dialog>
     <!-- 添加树 -->
-    <el-dialog title="添加分类" :visible.sync="addTreeProp" width="20%" center>
+    <el-dialog
+      title="添加分类"
+      :visible.sync="addTreeProp"
+      width="20%"
+      center
+      :modal="false"
+      :modal-append-to-body="false"
+    >
       <el-input clearable placeholder="请输入表名称" v-model="formName" size="small" class="filter-item" />
       <span slot="footer" class="dialog-footer">
         <!-- <el-button type="default" @click="addTreeProp = false">取消</el-button> -->
@@ -244,7 +283,14 @@
       </span>
     </el-dialog>
     <!-- 修改树 -->
-    <el-dialog title="修改分类" :visible.sync="editTreeProp" width="20%" center>
+    <el-dialog
+      title="修改分类"
+      :visible.sync="editTreeProp"
+      width="20%"
+      center
+      :modal="false"
+      :modal-append-to-body="false"
+    >
       <el-input clearable placeholder="请输入表名称" v-model="formName" size="small" class="filter-item" />
       <span slot="footer" class="dialog-footer">
         <!-- <el-button type="default" @click="editTreeProp = false">取消</el-button> -->
@@ -252,7 +298,13 @@
       </span>
     </el-dialog>
     <!-- 删除树 -->
-    <el-dialog title="系统提示" :visible.sync="deleTreeProp" width="20%">
+    <el-dialog
+      title="系统提示"
+      :visible.sync="deleTreeProp"
+      width="20%"
+      :modal="false"
+      :modal-append-to-body="false"
+    >
       确定删除评价表？
       <span slot="footer" class="dialog-footer">
         <el-button type="default" @click="deleTreeProp = false">取消</el-button>
@@ -301,7 +353,6 @@ export default {
         }
       ],                              // 表格数据
       tableData: [],                  // 表格数据
-      evaluateData: [],               // 评价表数据
       scoreList: [
         '0',
         '1',
@@ -314,9 +365,7 @@ export default {
         '8',
         '9',
         '10'
-      ],                              // 项目列表
-      evaluateList: [],               // 多选框选中评价表格数据
-      companyList: [],                // 公司组织架构-所有人员列表
+      ],                              // 分数列表
       pageData: {                     // 分页查询返回数据
         data: [],                     // 列表数据
         total: 10                     // 查询总数
@@ -327,7 +376,6 @@ export default {
         grading: '',                  // 评价标准
         fullScore: 0,                 // 分值
         formId: null,                 // 表格类id
-        formClassItemId: null         // 提交资料人员id列表
       },
       editForm: {                     // 查询总数
         important: 0,                 // 是否重要项 1：是 0：不是
@@ -381,6 +429,7 @@ export default {
     // 初始化
     doCreat () {
       if (sessionStorage.getItem('formId')) {
+        this.formId = sessionStorage.getItem('formId')
         this.pageParams.formId = sessionStorage.getItem('formId')
         this.pageParams.formClassId = 0
       } else {
@@ -413,9 +462,8 @@ export default {
     },
     // 获取树结构数据
     getTreeData () {
-      let id = this.pageParams.formId
       let params = {
-        formId: id
+        formId: this.formId
       }
       treeList(params).then(res => {
         if (res.code === 0) {
@@ -427,7 +475,6 @@ export default {
             {
               id: data.formId,
               label: data.formName,
-              pid: 0,
               children: [],
             }
           ]
@@ -443,14 +490,12 @@ export default {
         data.id = data.formClassId
         data.value = data.formClassId
         data.label = data.formClassName
-        data.pid = data.id
         data.children = data.childList
         data.children.forEach((p, i, arr) => {
           this.doFilter(p)
         })
       } else {
         data.id = data.formClassId
-        data.pid = data.id
         data.value = data.formClassId
         data.label = data.formClassName
         data.children = data.childList
@@ -460,17 +505,18 @@ export default {
     // 点击当前节点
     doTreeClick (data) {
       this.row = data
-      if (data.pid === 0) {
-        this.pageParams.formClassId = 0
-        this.pageParams.formId = data.id
-      } else {
+      if (data.pid) {
         this.pageParams.formClassId = data.id
         this.pageParams.formId = 0
+      } else {
+        this.pageParams.formClassId = 0
+        this.pageParams.formId = data.id
       }
       this.doSearch()
     },
     // 添加树子类
     doAddTree (node, data) {
+      console.log(node, data)
       this.formName = ""
       this.addTreeProp = true
       this.row = data
@@ -491,9 +537,12 @@ export default {
       let params = {
         employeeId: getEmployeeId(),
         name: this.formName,
-        formId: this.pageParams.formId,
-        id: this.row.id,
-        pid: this.row.pid
+        formId: this.formId,
+        pid: this.row.id,
+        id: 0
+      }
+      if (!this.row.pid) {
+        params.pid = 0
       }
       treeAdd(params).then(res => {
         this.addTreeProp = false
@@ -512,9 +561,9 @@ export default {
       let params = {
         employeeId: getEmployeeId(),
         name: this.formName,
-        formId: this.pageParams.formId,
+        formId: this.formId,
         id: this.row.id,
-        pid: 0
+        pid: this.row.pid,
       }
       treeEdit(params).then(res => {
         this.editTreeProp = false
@@ -555,20 +604,16 @@ export default {
     },
     // 添加表格评价表弹窗
     doAdd () {
-      if (this.row) {
-        this.addProp = true
-      } else {
-        this.$message({ message: '请选择分类', type: 'info' })
-      }
+      this.addProp = true
     },
     // 修改表格评价表弹窗
     doEdit (row) {
       this.editProp = true
       this.row = row
-      formDetail(row.id).then(res => {
+      formDetail(row.formClassItemId).then(res => {
         if (res.code === 0) {
           let data = res.data
-          data.formClassId = data.formClassName
+          // data.formClassId = data.formClassName
           data.important = data.important === 1 ? true : false
           this.editForm = JSON.parse(JSON.stringify(data))
         } else {
@@ -579,7 +624,7 @@ export default {
     // 查看表格评价表弹窗
     doDetail (row) {
       this.detailProp = true
-      formDetail(row.id).then(res => {
+      formDetail(row.formClassItemId).then(res => {
         if (res.code === 0) {
           let data = res.data
           data.formClassId = data.formClassName
@@ -611,7 +656,7 @@ export default {
             employeeId: getEmployeeId(),                // 操作者职员id
             grading: this.addForm.grading,              // 评价标准
             fullScore: this.addForm.fullScore,          // 分值
-            formId: this.row.formClassId,             // 表格类id
+            formId: this.formId,                        // 表格类id
           }
           formAdd(form).then(res => {
             if (res.code === 0) {
@@ -638,11 +683,12 @@ export default {
             formClassId = this.editForm.formClassId[this.editForm.formClassId.length - 1]
           let form = {
             important: important,                             // 是否重要项 1：是 0：不是
-            formClassId: formClassId,                   // 考评类id
-            employeeId: getEmployeeId(),                // 操作者职员id
-            grading: this.editForm.grading,              // 评价标准
-            fullScore: this.editForm.fullScore,          // 分值
-            formId: this.row.formClassId,             // 表格类id
+            formClassId: formClassId,
+            formClassItemId: this.editForm.formClassItemId,   // 考评类id
+            employeeId: getEmployeeId(),                      // 操作者职员id
+            grading: this.editForm.grading,                   // 评价标准
+            fullScore: this.editForm.fullScore,               // 分值
+            formId: this.formId,                              // 表格类id
           }
           formEdit(form).then(res => {
             if (res.code === 0) {
@@ -660,7 +706,7 @@ export default {
     // 删除考评项提交操作
     doDeleteConfirm (ruleForm) {
       let form = {
-        id: this.row.id,
+        id: this.row.formClassItemId,
         employeeId: getEmployeeId()
       }
       formDelete(form).then(res => {
