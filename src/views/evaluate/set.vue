@@ -245,20 +245,23 @@ export default {
       })
     },
     // 良得分率
-    doWell (value) {
-      if (value >= this.setForm.fine) {
+    doWell (e) {
+      let value = e.target.value
+      if (value !== '' && Number(value) >= Number(this.setForm.fine)) {
         this.$message({ message: '良得分率不能高于优得分率', type: 'error' })
       }
     },
     // 单张表良得分率
-    doWellSingle (value) {
-      if (value >= this.setForm.fineSingle) {
+    doWellSingle (e) {
+      let value = e.target.value
+      if (value !== '' && Number(value) >= Number(this.setForm.fineSingle)) {
         this.$message({ message: '单张表 良得分率不能高于优得分率', type: 'error' })
       }
     },
     // 良得分率
-    doCommon (value) {
-      if (value >= this.setForm.good) {
+    doCommon (e) {
+      let value = e.target.value
+      if (value !== '' && Number(value) >= Number(this.setForm.good)) {
         this.$message({ message: '一般得分率不能高于良得分率', type: 'error' })
       }
     },
