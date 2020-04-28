@@ -28,7 +28,7 @@
         <el-tab-pane label="评价中" name="1">
           <!-- 表格数据 -->
           <div class="content" style="margin-top: 10px;">
-            <el-table size="small" :data="tableData" :max-height="tableHeight" border>
+            <el-table size="small" :data="tableData" :max-height="600" border>
               <el-table-column type="index" label="序号" align="center"></el-table-column>
               <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
               <el-table-column label="提交人" align="center">
@@ -312,15 +312,8 @@ export default {
     this.doCreat()
   },
   mounted () {
-    this.tableHeight = this.setHeight
-
   },
   computed: {
-    // 设置表格最大高度
-    setHeight () {
-      let tag = document.getElementById('app-container')
-      return tag.clientHeight - 220
-    },
     // 设置选择框多选时标签数量
     setEmployeeTags () {
       let _this = this
@@ -438,7 +431,7 @@ export default {
     // 评价中数据列表操作按钮
     doRunButton (row, status) {
       if (status === 4) {
-        this.$router.push({ name: 'eform', params: { row: row } })
+        this.$router.push({ path: 'eform', query: { row: row } })
         return
       }
       let params = {

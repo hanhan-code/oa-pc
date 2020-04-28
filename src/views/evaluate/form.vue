@@ -246,7 +246,7 @@ export default {
   methods: {
     // 初始化
     doCreat () {
-      let row = this.$route.params.row
+      let row = this.$route.query.row
       if (row) {
         this.pageParams.projectCommentId = row.projectCommentId
       } else {
