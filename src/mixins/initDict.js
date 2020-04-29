@@ -16,6 +16,9 @@ export default {
       return "";
     }
   },
+  mounted() {
+    this.getHeight;
+  },
   methods: {
     async getDict(name) {
       return new Promise((resolve, reject) => {

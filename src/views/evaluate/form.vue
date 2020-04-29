@@ -7,7 +7,7 @@
         <el-input
           clearable
           placeholder="请输入名称"
-          v-model="pageParams.keyword"
+          v-model="pageParams.key"
           size="small"
           style="width: 180px;margin-right: 10px"
           class="filter-item"
@@ -167,6 +167,7 @@
 import initDict from '@/mixins/initDict'
 import { getCompanyId, getEmployeeId } from '@/utils/auth'
 import formManage from './manage'
+import { requireContent } from '@/utils/rule'
 import {
   tableData,
   creatSubmit,
@@ -210,21 +211,16 @@ export default {
       },
       pageParams: {                   // 分页查询参数
         companyId: getCompanyId(),
-        keyword: null,                // 查询关键字
+        key: null,                // 查询关键字
         pageSize: 10,                 // 每页个数
         pageNum: 0,                   // 当前页数
         projectCommentId: 0        // 评价项目提交id
       },
       ruleForm: {
         name: [
-          { required: true, message: '必填字段不能为空', trigger: 'change' }
+          { required: true, validator: requireContent, trigger: 'blur' }
         ],
       },
-      ruleForms: {
-        name: [
-          { required: true, message: '必填字段不能为空', trigger: 'change' }
-        ],
-      }
     }
   },
   created () {
@@ -288,7 +284,7 @@ export default {
       this.pageParams = {             // 分页查询参数
         companyId: getCompanyId(),
         projectCommentId: 0,
-        keyword: null,                // 查询关键字
+        key: null,                // 查询关键字
         pageSize: 10,                 // 每页个数
         pageNum: 0                    // 当前页数
       }
