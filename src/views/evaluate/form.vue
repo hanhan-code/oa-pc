@@ -33,9 +33,9 @@
       <div class="table-content">
         <!-- 表格数据 -->
         <div class="content" style="margin-top: 10px;">
-          <el-table size="small" :data="tableData" :max-height="tableHeight" border>
+          <el-table size="small" :data="tableData" :max-height="600" border>
             <el-table-column type="index" label="序号" align="center"></el-table-column>
-            <el-table-column prop="name" label="项目名称" align="center" width="400"></el-table-column>
+            <el-table-column prop="name" label="表名称" align="center" width="400"></el-table-column>
             <el-table-column prop="fullScore" label="得分" align="center"></el-table-column>
             <el-table-column width="300" label="操作" align="center">
               <template slot-scope="scope">
@@ -212,7 +212,7 @@ export default {
       pageParams: {                   // 分页查询参数
         companyId: getCompanyId(),
         key: null,                // 查询关键字
-        pageSize: 10,                 // 每页个数
+        pageSize: 0,                 // 每页个数
         pageNum: 0,                   // 当前页数
         projectCommentId: 0        // 评价项目提交id
       },
@@ -245,8 +245,10 @@ export default {
       let row = this.$route.query.row
       if (row) {
         this.pageParams.projectCommentId = row.projectCommentId
+        this.pageParams.companyId = 0
       } else {
         this.pageParams.projectCommentId = 0
+        this.pageParams.companyId = getCompanyId()
       }
       this.doSearch(0)
     },
@@ -285,7 +287,7 @@ export default {
         companyId: getCompanyId(),
         projectCommentId: 0,
         key: null,                // 查询关键字
-        pageSize: 10,                 // 每页个数
+        pageSize: 0,                 // 每页个数
         pageNum: 0                    // 当前页数
       }
     },
@@ -370,6 +372,7 @@ export default {
     getEvaluateData (type) {
       let params = {
         projectCommentId: this.pageParams.projectCommentId,
+        companyId: this.pageParams.companyId,
         pageNum: 0,
         pageSize: 0
       }

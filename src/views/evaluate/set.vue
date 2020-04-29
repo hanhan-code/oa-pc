@@ -12,22 +12,29 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="优得分率" prop="fine">
+      <el-form-item label="优得分率%" prop="fine">
         <el-col :span="5">
-          <el-input v-model="setForm.fine" type="number" style="width: 180px" placeholder=">=90%"></el-input>
+          <el-input
+            v-model="setForm.fine"
+            type="number"
+            style="width: 180px"
+            @blur="doFine"
+            placeholder=">=90%"
+          ></el-input>
         </el-col>
         <el-col :span="8" align="center">
-          <el-form-item label="并且单张表得分率" prop="fineSingle" label-width="160px">
+          <el-form-item label="并且单张表得分率%" prop="fineSingle" label-width="160px">
             <el-input
               v-model="setForm.fineSingle"
               type="number"
+              @blur="doFineSingle"
               style="width: 180px"
               placeholder=">=85%"
             ></el-input>
           </el-form-item>
         </el-col>
       </el-form-item>
-      <el-form-item label="良得分率" prop="good">
+      <el-form-item label="良得分率%" prop="good">
         <el-col :span="5">
           <el-input
             v-model="setForm.good"
@@ -38,7 +45,7 @@
           ></el-input>
         </el-col>
         <el-col :span="8" align="center">
-          <el-form-item label="并且单张表得分率" prop="goodSingle" label-width="160px">
+          <el-form-item label="并且单张表得分率%" prop="goodSingle" label-width="160px">
             <el-input
               v-model="setForm.goodSingle"
               @blur="doWellSingle"
@@ -49,7 +56,7 @@
           </el-form-item>
         </el-col>
       </el-form-item>
-      <el-form-item label="一般得分率" prop="common">
+      <el-form-item label="一般得分率%" prop="common">
         <el-col :span="5">
           <el-input
             v-model="setForm.common"
@@ -217,7 +224,7 @@ export default {
     },
     // 根据企业id获取所有项目id
     getProjectData () {
-      projectData({ companyId: 1 }).then(res => {
+      projectData({ companyId: getCompanyId() }).then(res => {
         if (res.code === 0) {
           let data = res.data
           this.projectList = data
@@ -244,24 +251,48 @@ export default {
         }
       })
     },
+    // 优单表得分率
+    doFine (e) {
+      let value = e.target.value
+      if (value.indexOf('.') > 0) {
+        this.setForm.fine = Number(value).toFixed(2)
+      }
+    },
+    // 优单表得分率
+    doFineSingle (e) {
+      let value = e.target.value
+      if (value.indexOf('.') > 0) {
+        this.setForm.fineSingle = Number(value).toFixed(2)
+      }
+    },
     // 良得分率
     doWell (e) {
       let value = e.target.value
-      if (value !== '' && Number(value) >= Number(this.setForm.fine)) {
+      if (value.indexOf('.') > 0) {
+        this.setForm.good = Number(value).toFixed(2)
+      }
+      if (value !== '' && value >= Number(this.setForm.fine)) {
+        this.setForm.good = this.setForm.fine
         this.$message({ message: '良得分率不能高于优得分率', type: 'error' })
       }
     },
     // 单张表良得分率
     doWellSingle (e) {
       let value = e.target.value
-      if (value !== '' && Number(value) >= Number(this.setForm.fineSingle)) {
+      if (value.indexOf('.') > 0) {
+        this.setForm.goodSingle = Number(value).toFixed(2)
+      }
+      if (value !== '' && value >= Number(this.setForm.fineSingle)) {
+        this.setForm.goodSingle = this.setForm.fineSingle
         this.$message({ message: '单张表 良得分率不能高于优得分率', type: 'error' })
       }
     },
     // 良得分率
     doCommon (e) {
       let value = e.target.value
-      if (value !== '' && Number(value) >= Number(this.setForm.good)) {
+      this.setForm.common = Number(value).toFixed(2)
+      if (value !== '' && value >= Number(this.setForm.good)) {
+        this.setForm.common = this.setForm.good
         this.$message({ message: '一般得分率不能高于良得分率', type: 'error' })
       }
     },

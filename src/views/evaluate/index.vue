@@ -54,7 +54,7 @@
         <el-tab-pane label="评价结束" name="0">
           <!-- 表格数据 -->
           <div class="content" style="margin-top: 10px;">
-            <el-table size="small" :data="tableData" :max-height="tableHeight" border>
+            <el-table size="small" :data="tableData" :max-height="600" border>
               <el-table-column type="index" label="序号" align="center"></el-table-column>
               <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
               <el-table-column label="提交人" align="center">
@@ -119,7 +119,7 @@
             autocomplete="off"
           >
             <el-option
-              :label="item.projectName"
+              :label="item.name"
               :value="item.id"
               v-for="(item, index) in projectList"
               :key="index"
@@ -155,8 +155,8 @@
             <el-option
               :label="item.label"
               :value="item.id"
-              v-for="(item, index) in companyList"
-              :key="index"
+              v-for="(item, i) in companyList"
+              :key="i"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -222,15 +222,6 @@
         <el-table-column type="selection" label="序号" align="center"></el-table-column>
         <el-table-column prop="name" label="表的名称" align="center"></el-table-column>
       </el-table>
-      <!--分页组件-->
-      <!-- <el-pagination
-        style="margin-top: 8px;"
-        @size-change="doSizeChange"
-        @current-change="doPageChange"
-        :current-page="pageParams.pageNum"
-        :total="pageData.total"
-        layout="total, prev, pager, next, sizes"
-      />-->
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="doAddConfirm">确定</el-button>
       </span>
@@ -329,10 +320,10 @@ export default {
   methods: {
     // 初始化
     doCreat () {
-      this.projectList = [{
-        label: '项目1',
-        id: '1'
-      }]
+
+    },
+    doCreatEvaluate () {
+      this.createProp = true
     },
     // 查询表格数据
     doSearch (num, size = 10) {
@@ -440,13 +431,19 @@ export default {
         projectCommentId: row.projectCommentId,
         status: status
       }
-      runButton(params).then(res => {
-        if (res.code === 0) {
-          this.getData()
-          this.$message({ message: '操作成功', type: 'success' })
-        } else {
-          this.$message({ message: res.msg, type: 'error' })
-        }
+      this.$confirm('是否继续执行此操作?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        runButton(params).then(res => {
+          if (res.code === 0) {
+            this.getData()
+            this.$message({ message: '操作成功', type: 'success' })
+          } else {
+            this.$message({ message: res.msg, type: 'error' })
+          }
+        })
       })
     },
     // 评价结束数据列表操作按钮
@@ -476,6 +473,7 @@ export default {
     doAdd () {
       this.createProp = false
       this.addProp = true
+      this.evaluateList = []
       this.getEvaluateData()
     },
     // 确定添加评价表
@@ -502,7 +500,11 @@ export default {
               p.children.forEach((k, v, arr1) => {
                 if (k.children) {
                   k.children.forEach((n, o, arr2) => {
-                    this.companyList.push({ id: n.id, label: n.label })
+                    if (n.children) {
+                      n.children.forEach(q => {
+                        this.companyList.push({ id: q.id, label: q.label })
+                      })
+                    }
                   })
                 }
               })
@@ -515,7 +517,9 @@ export default {
     getEvaluateData (type) {
       let params = {
         companyId: getCompanyId(),
-        key: this.formName
+        keyWord: this.formName,
+        pageNum: 0,
+        pageSize: 0
       }
       evaluateData(params).then(res => {
         if (res.code === 0) {
@@ -530,7 +534,6 @@ export default {
     doSelectChanges (select) {
       let evaluateList = this.evaluateList
       if (evaluateList.length === 0) {
-        console.log(select, 231)
         evaluateList.push(...select)
         evaluateList.splice(0, 0)
       } else {
@@ -547,7 +550,6 @@ export default {
     },
     // 评价表 多选框操作
     doSelectChange (select, row) {
-      console.log(select, row)
       let evaluateList = this.evaluateList
       if (evaluateList.length === 0) {
         evaluateList.push(row)
@@ -560,7 +562,6 @@ export default {
     doFilter (row) {
       let evaluateList = this.evaluateList
       evaluateList.forEach((p, i, arr) => {
-        console.log(row, p)
         if (row.id === p.id) {
           arr.splice(i, 1)
         } else {

@@ -63,7 +63,7 @@
         <div class="table-content">
           <!-- 表格数据 -->
           <div class="content" style="margin-top: 10px;">
-            <el-table size="small" :data="tableData" :max-height="tableHeight" border>
+            <el-table size="small" :data="tableData" :max-height="600" border>
               <el-table-column type="index" label="序号" align="center"></el-table-column>
               <el-table-column prop="formClassName" label="评价项目" align="center"></el-table-column>
               <el-table-column prop="content" label="评价内容" align="center"></el-table-column>
