@@ -6,7 +6,7 @@
       <el-input
         clearable
         placeholder="请输入名称"
-        v-model="pageParams.keyword"
+        v-model="pageParams.keyWord"
         size="small"
         style="width: 180px;margin-right: 10px"
         class="filter-item"
@@ -283,7 +283,7 @@ export default {
       },
       pageParams: {                   // 分页查询参数
         companyId: getCompanyId(),
-        keyword: null,                // 查询关键字
+        keyWord: null,                // 查询关键字
         pageSize: 10,                 // 每页个数
         pageNum: 0                    // 当前页数
       },
@@ -312,6 +312,7 @@ export default {
     this.doCreat()
   },
   mounted () {
+    sessionStorage.removeItem('formId')
   },
   computed: {
     // 设置选择框多选时标签数量
@@ -388,7 +389,7 @@ export default {
       this.tableData = []
       this.pageParams = {             // 分页查询参数
         companyId: getCompanyId(),
-        keyword: null,                // 查询关键字
+        keyWord: null,                // 查询关键字
         pageSize: 10,                 // 每页个数
         pageNum: 0                    // 当前页数
       }
@@ -514,7 +515,7 @@ export default {
     getEvaluateData (type) {
       let params = {
         companyId: getCompanyId(),
-        // key: this.formName
+        key: this.formName
       }
       evaluateData(params).then(res => {
         if (res.code === 0) {
