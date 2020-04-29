@@ -164,7 +164,7 @@
           node-key="id"
           accordion
           :load="loadNode"
-          @node-expand="doExpand"
+          @node-click="doExpand"
           lazy
           highlight-current
         ></el-tree>
@@ -658,7 +658,6 @@ export default {
     resetLazy () {
       // 创建新的文件夹后重新执行懒加载树结构
       this.nodes.childNodes = []
-      this.$set(this.nodes, 'childNodes', [])
       this.loadNode(this.nodes, this.resolves)
     },
     // 懒加载树结构数据
@@ -717,6 +716,7 @@ export default {
             if (res.code === 0) {
               this.init()
               this.move.visible = false
+              this.resetLazy()
               this.$message({ message: '移动成功', type: 'success' })
             } else {
               this.$message({ message: res.msg, type: 'warning' })

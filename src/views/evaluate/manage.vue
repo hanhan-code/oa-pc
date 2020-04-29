@@ -68,7 +68,7 @@
               <el-table-column prop="formClassName" label="评价项目" align="center"></el-table-column>
               <el-table-column prop="content" label="评价内容" align="center"></el-table-column>
               <el-table-column prop="grading" label="评分标准" align="center"></el-table-column>
-              <el-table-column prop="score" label="得分" align="center"></el-table-column>
+              <el-table-column prop="score" label="总分" align="center"></el-table-column>
               <el-table-column align="center">
                 <template slot="header" slot-scope="scope">
                   <span>
@@ -413,9 +413,16 @@ export default {
     this.doCreat()
   },
   mounted () {
+    this.getHeight;
     this.tableHeight = this.setHeight
   },
   computed: {
+    getHeight () {
+      let container = document.getElementById("app-container");
+      let main = document.getElementsByClassName("app-main")[0].clientHeight;
+      container.style.height = main + "px";
+      return "";
+    },
     // 设置表格最大高度
     setHeight () {
       let tag = document.getElementById('app-container')

@@ -161,7 +161,7 @@
           lazy
           highlight-current
           expand-on-click-node
-          @node-expand="doExpand"
+          @node-click="doExpand"
         ></el-tree>
         <span slot="footer" class="dialog-footer">
           <el-button type="primary" style="width: 97%" @click="fileMove">移 动</el-button>
@@ -611,6 +611,7 @@ export default {
         if (res.code === 0) {
           this.init()
           this.move.visible = false
+          this.resetLazy()
           this.$message({ message: '移动成功', type: 'success' })
         } else {
           this.$message({ message: res.msg, type: 'warning' })

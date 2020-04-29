@@ -9,15 +9,9 @@ export default {
   },
   computed: {
     // app=contaniner 继承父级高度
-    getHeight() {
-      let container = document.getElementById("app-container");
-      let main = document.getElementsByClassName("app-main")[0].clientHeight;
-      container.style.height = main + "px";
-      return "";
-    }
+   
   },
   mounted() {
-    this.getHeight;
   },
   methods: {
     async getDict(name) {

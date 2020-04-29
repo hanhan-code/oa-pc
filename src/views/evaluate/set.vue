@@ -234,7 +234,7 @@ export default {
     // 根据公司id获取所有项目
     getCompanyData () {
       // this.companyId // 公司id暂时先默认为1001
-      companyData(getCompanyId()).then(res => {
+       companyData(getCompanyId()).then(res => {
         if (res.code === 0) {
           let data = res.data
           data.children.forEach((p, i, arr) => {
@@ -242,7 +242,11 @@ export default {
               p.children.forEach((k, v, arr1) => {
                 if (k.children) {
                   k.children.forEach((n, o, arr2) => {
-                    this.companyList.push({ id: n.id, label: n.label })
+                    if (n.children) {
+                      n.children.forEach(q => {
+                        this.companyList.push({ id: q.id, label: q.label })
+                      })
+                    }
                   })
                 }
               })
@@ -255,21 +259,21 @@ export default {
     doFine (e) {
       let value = e.target.value
       if (value.indexOf('.') > 0) {
-        this.setForm.fine = Number(value).toFixed(2)
+        this.setForm.fine = parseInt(value)
       }
     },
     // 优单表得分率
     doFineSingle (e) {
       let value = e.target.value
       if (value.indexOf('.') > 0) {
-        this.setForm.fineSingle = Number(value).toFixed(2)
+        this.setForm.fineSingle = parseInt(value)
       }
     },
     // 良得分率
     doWell (e) {
       let value = e.target.value
       if (value.indexOf('.') > 0) {
-        this.setForm.good = Number(value).toFixed(2)
+        this.setForm.good = parseInt(value)
       }
       if (value !== '' && value >= Number(this.setForm.fine)) {
         this.setForm.good = this.setForm.fine
@@ -280,7 +284,7 @@ export default {
     doWellSingle (e) {
       let value = e.target.value
       if (value.indexOf('.') > 0) {
-        this.setForm.goodSingle = Number(value).toFixed(2)
+        this.setForm.goodSingle = parseInt(value)
       }
       if (value !== '' && value >= Number(this.setForm.fineSingle)) {
         this.setForm.goodSingle = this.setForm.fineSingle
@@ -290,7 +294,7 @@ export default {
     // 良得分率
     doCommon (e) {
       let value = e.target.value
-      this.setForm.common = Number(value).toFixed(2)
+      this.setForm.common = parseInt(value)
       if (value !== '' && value >= Number(this.setForm.good)) {
         this.setForm.common = this.setForm.good
         this.$message({ message: '一般得分率不能高于良得分率', type: 'error' })

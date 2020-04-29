@@ -462,7 +462,7 @@ export default {
         resetData(params).then(res => {
           if (res.code === 0) {
             this.$message({ message: '操作成功', type: 'success' })
-            this.getData()
+            this.getEndData()
           } else {
             this.$message({ message: res.msg, type: 'error' })
           }

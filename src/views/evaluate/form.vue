@@ -227,9 +227,17 @@ export default {
     this.doCreat()
   },
   mounted () {
+    this.getHeight;
+
     this.tableHeight = this.setHeight
   },
   computed: {
+     getHeight() {
+      let container = document.getElementById("app-container");
+      let main = document.getElementsByClassName("app-main")[0].clientHeight;
+      container.style.height = main + "px";
+      return "";
+    },
     // 设置表格最大高度
     setHeight () {
       let tag = document.getElementById('app-container')
