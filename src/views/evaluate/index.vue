@@ -28,7 +28,13 @@
         <el-tab-pane label="评价中" name="1">
           <!-- 表格数据 -->
           <div class="content" style="margin-top: 10px;">
-            <el-table size="small" :data="tableData" :max-height="600" border>
+            <el-table
+              size="small"
+              :data="tableData"
+              :max-height="600"
+              border
+              :row-class-name="doRowClass"
+            >
               <el-table-column type="index" label="序号" align="center"></el-table-column>
               <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
               <el-table-column label="提交人" align="center">
@@ -322,8 +328,15 @@ export default {
     doCreat () {
 
     },
-    doCreatEvaluate () {
-      this.createProp = true
+    // 设置样式
+    doRowClass ({ row, rowIndex }) {
+      console.log(row, 33)
+      if (row.status === 0) {
+        return 'warning-row';
+      } else if (row.status === 1) {
+        return 'success-row';
+      }
+      return '';
     },
     // 查询表格数据
     doSearch (num, size = 10) {
@@ -457,6 +470,7 @@ export default {
           let blob = new Blob([res], { type: 'application/pdf' })
           let url = URL.createObjectURL(blob)
           window.open(url)
+          // window.open('/static/pdf/viewer.html?pdfUrl=' + encodeURIComponent(res))
         })
       } else {
         resetData(params).then(res => {
