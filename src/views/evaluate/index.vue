@@ -47,9 +47,21 @@
               <el-table-column prop="process" label="进度" align="center"></el-table-column>
               <el-table-column width="300" label="操作" align="center">
                 <template slot-scope="scope">
-                  <el-button type="primary" @click="doRunButton(scope.row, 1)" plain size="mini">开始</el-button>
-                  <el-button type="primary" @click="doRunButton(scope.row, 2)" plain size="mini">暂停</el-button>
-                  <el-button type="primary" @click="doRunButton(scope.row, 3)" plain size="mini">重评</el-button>
+                  <el-button
+                    type="success"
+                    @click="doRunButton(scope.row, 1)"
+                    v-show="scope.row.status === 0 || scope.row.status === 2"
+                    plain
+                    size="mini"
+                  >开始</el-button>
+                  <el-button
+                    type="warning"
+                    @click="doRunButton(scope.row, 2)"
+                    v-show="scope.row.status === 1"
+                    plain
+                    size="mini"
+                  >暂停</el-button>
+                  <el-button type="danger" @click="doRunButton(scope.row, 3)" plain size="mini">重评</el-button>
                   <el-button type="primary" @click="doRunButton(scope.row, 4)" plain size="mini">设置</el-button>
                   <!-- <el-button type="primary" @click="doEndButton(scope.row)" plain size="mini">打印</el-button> -->
                 </template>
@@ -72,7 +84,7 @@
               <el-table-column label="结束时间" align="center">
                 <template slot-scope="scope">{{scope.row.endTime}}</template>
               </el-table-column>
-              <el-table-column prop="score" label="得分率" align="center"></el-table-column>
+              <el-table-column prop="deductRate" label="得分率" align="center"></el-table-column>
               <el-table-column prop="fullScore" label="得分" align="center"></el-table-column>
               <el-table-column prop="deductScore" label="失分" sortable align="center"></el-table-column>
               <el-table-column width="300" label="操作" align="center">
@@ -185,7 +197,7 @@
         </el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doCreatSubmit('creatForm')">创建项目</el-button>
+        <el-button type="primary" @click="doCreatSubmit('creatForm')">提交</el-button>
       </span>
     </el-dialog>
     <!-- 添加评价表 -->
@@ -232,6 +244,7 @@
         <el-button type="primary" @click="doAddConfirm">确定</el-button>
       </span>
     </el-dialog>
+    <el-button type="text" v-loading.fullscreen.lock="screenLoading"></el-button>
   </div>
 </template>
 
@@ -258,6 +271,7 @@ export default {
     return {
       createProp: false,              // 创建评价弹窗
       addProp: false,                 // 添加评价表
+      screenLoading: false,           // 全局加载
       activeName: '1',                // 被激活的 tabBar标签
       formName: '',                   // 评价表搜索字段
       tableHeight: null,              // 表格最大高度
@@ -332,7 +346,7 @@ export default {
     doRowClass ({ row, rowIndex }) {
       console.log(row, 33)
       if (row.status === 0) {
-        return 'warning-row';
+        return 'danger-row';
       } else if (row.status === 1) {
         return 'success-row';
       }
@@ -351,7 +365,11 @@ export default {
     // 获取评价中表格数据
     getData () {
       let params = this.pageParams
+      this.screenLoading = true
+
       tableData(params).then(res => {
+        this.screenLoading = false
+
         if (res.code === 0) {
           let data = res.data
           this.tableData = data.records
@@ -364,7 +382,11 @@ export default {
     // 获取评价结束表格数据
     getEndData () {
       let params = this.pageParams
+      this.screenLoading = true
+
       tableEndData(params).then(res => {
+        this.screenLoading = false
+
         if (res.code === 0) {
           let data = res.data
           this.tableData = data.records
@@ -420,7 +442,11 @@ export default {
             this.$message({ message: '请添加项目评价表', type: 'error' })
             return
           }
+          this.screenLoading = true
+
           creatSubmit(form).then(res => {
+            this.screenLoading = false
+
             if (res.code === 0) {
               this.createProp = false
               this.$refs[ruleForm].resetFields()
@@ -449,7 +475,11 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        this.screenLoading = true
+
         runButton(params).then(res => {
+          this.screenLoading = false
+
           if (res.code === 0) {
             this.getData()
             this.$message({ message: '操作成功', type: 'success' })
@@ -466,7 +496,11 @@ export default {
         projectCommentId: row.projectCommentId
       }
       if (type === 0) {
+        this.screenLoading = true
+
         printData(params).then(res => {
+          this.screenLoading = false
+
           let blob = new Blob([res], { type: 'application/pdf' })
           let url = URL.createObjectURL(blob)
           window.open(url)
@@ -497,7 +531,9 @@ export default {
     },
     // 删除评价表
     doDelete (id) {
+      this.screenLoading = true
       this.evaluateList.forEach((p, i, arr) => {
+        this.screenLoading = false
         if (p.id === id) {
           arr.splice(i, 1)
         }
@@ -610,5 +646,14 @@ export default {
 <style scoped>
 .el-select {
   width: 100%;
+}
+</style>
+<style>
+.danger-row {
+  color: #e6a23c;
+}
+
+.success-row {
+  color: #67c23a;
 }
 </style>

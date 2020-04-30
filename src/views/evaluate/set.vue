@@ -105,6 +105,7 @@
         <el-button type="primary" @click="doSubmit('setForm')">提交</el-button>
       </el-form-item>
     </el-form>
+    <el-button type="text" v-loading.fullscreen.lock="screenLoading"></el-button>
   </div>
 </template>>
 
@@ -132,6 +133,7 @@ import {
 export default {
   data () {
     return {
+      screenLoading: false,                      // 全局加载
       companyList: [],                           // 公司组织架构-所有人员列表
       projectList: [],                           // 公司项目列表
       setForm: {
@@ -234,7 +236,7 @@ export default {
     // 根据公司id获取所有项目
     getCompanyData () {
       // this.companyId // 公司id暂时先默认为1001
-       companyData(getCompanyId()).then(res => {
+      companyData(getCompanyId()).then(res => {
         if (res.code === 0) {
           let data = res.data
           data.children.forEach((p, i, arr) => {
@@ -318,7 +320,9 @@ export default {
             goodSingle: this.setForm.goodSingle,
             projectId: this.setForm.id,
           }
+          this.screenLoading = true
           setSubmit(params).then(res => {
+            this.screenLoading = false
             if (res.code === 0) {
               this.$message({ message: '设置成功', type: 'success' })
               this.doReset(formName)

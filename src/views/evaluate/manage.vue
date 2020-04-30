@@ -84,8 +84,8 @@
               <el-table-column width="300" label="操作" align="center">
                 <template slot-scope="scope">
                   <el-button type="primary" @click="doEdit(scope.row)" plain size="mini">修改</el-button>
-                  <el-button type="primary" @click="doDetail(scope.row)" plain size="mini">查看</el-button>
-                  <el-button type="primary" @click="doDelete(scope.row)" plain size="mini">删除</el-button>
+                  <el-button type="info" @click="doDetail(scope.row)" plain size="mini">查看</el-button>
+                  <el-button type="danger" @click="doDelete(scope.row)" plain size="mini">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -311,6 +311,7 @@
         <el-button type="primary" @click="doDeleTrees">确定</el-button>
       </span>
     </el-dialog>
+    <el-button type="text" v-loading.fullscreen.lock="screenLoading"></el-button>
   </div>
 </template>
 
@@ -337,6 +338,7 @@ export default {
     return {
       addProp: false,                 // 添加评价表
       editProp: false,                // 修改评价表
+      screenLoading: false,           // 全局加载
       detailProp: false,              // 查看评价表
       deleteProp: false,              // 删除评价表
       addTreeProp: false,             // 添加树评价表
@@ -457,7 +459,9 @@ export default {
     // 获取评价中表格数据
     getData () {
       let params = this.pageParams
+      this.screenLoading = true
       formData(params).then(res => {
+        this.screenLoading = false
         if (res.code === 0) {
           let data = res.data
           this.tableData = data.records
@@ -472,7 +476,9 @@ export default {
       let params = {
         formId: this.formId
       }
+      this.screenLoading = true
       treeList(params).then(res => {
+        this.screenLoading = false
         if (res.code === 0) {
           let data = res.data
           data.treeList.forEach((p, i, arr) => {
@@ -551,7 +557,9 @@ export default {
       if (!this.row.pid) {
         params.pid = 0
       }
+      this.screenLoading = true
       treeAdd(params).then(res => {
+        this.screenLoading = false
         this.addTreeProp = false
         if (res.code === 0) {
           this.doRefresh()
@@ -572,7 +580,9 @@ export default {
         id: this.row.id,
         pid: this.row.pid,
       }
+      this.screenLoading = true
       treeEdit(params).then(res => {
+        this.screenLoading = false
         this.editTreeProp = false
         if (res.code === 0) {
           this.doRefresh()
@@ -590,7 +600,9 @@ export default {
         employeeId: getEmployeeId(),
         id: this.row.id
       }
+      this.screenLoading = true
       treeDele(params).then(res => {
+        this.screenLoading = false
         this.deleTreeProp = false
         if (res.code === 0) {
           this.doRefresh()
@@ -617,7 +629,9 @@ export default {
     doEdit (row) {
       this.editProp = true
       this.row = row
+      this.screenLoading = true
       formDetail(row.formClassItemId).then(res => {
+        this.screenLoading = false
         if (res.code === 0) {
           let data = res.data
           // data.formClassId = data.formClassName
@@ -631,7 +645,9 @@ export default {
     // 查看表格评价表弹窗
     doDetail (row) {
       this.detailProp = true
+      this.screenLoading = true
       formDetail(row.formClassItemId).then(res => {
+        this.screenLoading = false
         if (res.code === 0) {
           let data = res.data
           data.formClassId = data.formClassName
@@ -665,7 +681,9 @@ export default {
             fullScore: this.addForm.fullScore,          // 分值
             formId: this.formId,                        // 表格类id
           }
+          this.screenLoading = true
           formAdd(form).then(res => {
+            this.screenLoading = false
             if (res.code === 0) {
               this.addProp = false
               this.$refs[ruleForm].resetFields()
@@ -697,7 +715,9 @@ export default {
             fullScore: this.editForm.fullScore,               // 分值
             formId: this.formId,                              // 表格类id
           }
+          this.screenLoading = true
           formEdit(form).then(res => {
+            this.screenLoading = false
             if (res.code === 0) {
               this.createProp = false
               this.$refs[ruleForm].resetFields()
@@ -716,7 +736,9 @@ export default {
         id: this.row.formClassItemId,
         employeeId: getEmployeeId()
       }
+      this.screenLoading = true
       formDelete(form).then(res => {
+        this.screenLoading = false
         if (res.code === 0) {
           this.deleteProp = false
           this.$message({ message: res.msg, type: 'success' })

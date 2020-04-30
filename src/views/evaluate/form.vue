@@ -41,7 +41,7 @@
               <template slot-scope="scope">
                 <el-button type="primary" @click="doRunButton(scope.row, 0)" plain size="mini">设置</el-button>
                 <el-button type="primary" @click="doRunButton(scope.row, 1)" plain size="mini">复制</el-button>
-                <el-button type="primary" @click="doRunButton(scope.row, 2)" plain size="mini">删除</el-button>
+                <el-button type="danger" @click="doRunButton(scope.row, 2)" plain size="mini">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -91,7 +91,7 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doCreatSubmit('creatForm')">创建项目</el-button>
+        <el-button type="primary" @click="doCreatSubmit('creatForm')" :loading="creatLoad">提交</el-button>
       </span>
     </el-dialog>
     <!-- 添加已有评价项目 -->
@@ -127,7 +127,7 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doCreatSubmits('creatForms')">创建项目</el-button>
+        <el-button type="primary" @click="doCreatSubmits('creatForms')">提交</el-button>
       </span>
     </el-dialog>
     <!-- 复制 -->
@@ -154,11 +154,12 @@
     >
       <div>该操作将永久删除数据，是否删除？</div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="default" @click="delProp = false">取消</el-button>
+        <el-button type="default" @click="delProp = false" size="">取消</el-button>
         <el-button type="primary" @click="doDeleteConfirm">确定</el-button>
       </span>
     </el-dialog>
     <form-manage :formId="formId" v-if="formProp" @doChildClose="doChildClose"></form-manage>
+    <el-button type="text" v-loading.fullscreen.lock="screenLoading"></el-button>
   </div>
 </template>
 
@@ -190,6 +191,7 @@ export default {
       addProp: false,                 // 添加现有表
       copyProp: false,                // 复制评价表
       formProp: false,                // 表单管理页面弹窗
+      screenLoading: false,           // 全局加载
       formName: '',                   // 评价表搜索字段
       formId: '',                     // 表单管理页面字段
       row: null,                      // 当前行数据
@@ -232,7 +234,7 @@ export default {
     this.tableHeight = this.setHeight
   },
   computed: {
-     getHeight() {
+    getHeight () {
       let container = document.getElementById("app-container");
       let main = document.getElementsByClassName("app-main")[0].clientHeight;
       container.style.height = main + "px";
@@ -261,7 +263,7 @@ export default {
       this.doSearch(0)
     },
     // 查询表格数据
-    doSearch (page = 0, size = 10) {
+    doSearch (page, size = 0) {
       this.pageParams.pageNum = page
       this.pageParams.pageSize = size
       this.getData()
@@ -269,8 +271,9 @@ export default {
     // 获取评价中表格数据
     getData () {
       let params = this.pageParams
-
+      this.screenLoading = true
       tableData(params).then(res => {
+        this.screenLoading = false
         if (res.code === 0) {
           let data = res.data
           this.tableData = data
@@ -307,9 +310,11 @@ export default {
         projectCommentId: this.pageParams.projectCommentId,
         name: this.createForm.name,
       }
+      this.screenLoading = true
       this.$refs[ruleForm].validate((valid) => {
         if (valid) {
           creatSubmit(form).then(res => {
+            this.screenLoading = false
             if (res.code === 0) {
               this.createProp = false
               this.$refs[ruleForm].resetFields()
@@ -330,7 +335,9 @@ export default {
       }
       this.$refs[ruleForm].validate((valid) => {
         if (valid) {
+          this.screenLoading = true
           creatSubmits(form).then(res => {
+            this.screenLoading = false
             if (res.code === 0) {
               this.createProp = false
               this.$refs[ruleForm].resetFields()
@@ -354,8 +361,11 @@ export default {
       if (params.projectCommentId !== 0) {
         params.companyId = 0
       }
+      this.screenLoading = true
       delForm(params).then(res => {
         this.delProp = false
+        this.screenLoading = false
+
         if (res.code === 0) {
           this.getData()
           this.$message({ message: '删除成功', type: 'success' })
@@ -404,7 +414,11 @@ export default {
         formId: this.row.id,
         employeeId: getEmployeeId()
       }
+      this.screenLoading = true
+
       copyButton(params).then(res => {
+        this.screenLoading = false
+
         if (res.code === 0) {
           this.copyProp = false
           this.doSearch(0)
