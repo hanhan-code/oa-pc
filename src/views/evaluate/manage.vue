@@ -705,7 +705,13 @@ export default {
       this.$refs[ruleForm].validate((valid) => {
         if (valid) {
           let important = this.editForm.important ? 1 : 0,
+            formClassId
+          if (Array.isArray(this.editForm.formClassId)) {
             formClassId = this.editForm.formClassId[this.editForm.formClassId.length - 1]
+            console.log(formClassId, 33)
+          } else {
+            formClassId = this.editForm.formClassId
+          }
           let form = {
             important: important,                             // 是否重要项 1：是 0：不是
             formClassId: formClassId,
