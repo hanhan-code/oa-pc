@@ -246,19 +246,23 @@ export default {
       return tag.clientHeight - 220
     },
   },
-  activated () {
-    this.doCreat()
-  },
   methods: {
     // 初始化
     doCreat () {
       let row = this.$route.query.row
-      if (row) {
-        this.pageParams.projectCommentId = row.projectCommentId
+      let projectCommentId = sessionStorage.getItem('projectCommentId')
+      if (projectCommentId) {
+        this.pageParams.projectCommentId = projectCommentId
         this.pageParams.companyId = 0
       } else {
-        this.pageParams.projectCommentId = 0
-        this.pageParams.companyId = getCompanyId()
+        if (row) {
+          this.pageParams.projectCommentId = row.projectCommentId
+          sessionStorage.setItem('projectCommentId', row.projectCommentId)
+          this.pageParams.companyId = 0
+        } else {
+          this.pageParams.projectCommentId = 0
+          this.pageParams.companyId = getCompanyId()
+        }
       }
       this.doSearch(0)
     },

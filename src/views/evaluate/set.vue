@@ -244,9 +244,10 @@ export default {
               p.children.forEach((k, v, arr1) => {
                 if (k.children) {
                   k.children.forEach((n, o, arr2) => {
+                        this.companyList.push({ id: n.id, label: n.label })
                     if (n.children) {
                       n.children.forEach(q => {
-                        this.companyList.push({ id: q.id, label: q.label })
+                        // this.companyList.push({ id: q.id, label: q.label })
                       })
                     }
                   })
@@ -277,7 +278,7 @@ export default {
       if (value.indexOf('.') > 0) {
         this.setForm.good = parseInt(value)
       }
-      if (value !== '' && value >= Number(this.setForm.fine)) {
+      if (value !== '' && value > Number(this.setForm.fine)) {
         this.setForm.good = this.setForm.fine
         this.$message({ message: '良得分率不能高于优得分率', type: 'error' })
       }
@@ -288,7 +289,7 @@ export default {
       if (value.indexOf('.') > 0) {
         this.setForm.goodSingle = parseInt(value)
       }
-      if (value !== '' && value >= Number(this.setForm.fineSingle)) {
+      if (value !== '' && value > Number(this.setForm.fineSingle)) {
         this.setForm.goodSingle = this.setForm.fineSingle
         this.$message({ message: '单张表 良得分率不能高于优得分率', type: 'error' })
       }
@@ -297,7 +298,7 @@ export default {
     doCommon (e) {
       let value = e.target.value
       this.setForm.common = parseInt(value)
-      if (value !== '' && value >= Number(this.setForm.good)) {
+      if (value !== '' && value > Number(this.setForm.good)) {
         this.setForm.common = this.setForm.good
         this.$message({ message: '一般得分率不能高于良得分率', type: 'error' })
       }

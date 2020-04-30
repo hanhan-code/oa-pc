@@ -61,7 +61,7 @@
                     plain
                     size="mini"
                   >暂停</el-button>
-                  <el-button type="danger" @click="doRunButton(scope.row, 3)" plain size="mini">重评</el-button>
+                  <el-button type="danger" @click="doRunButton(scope.row, 3)" plain size="mini">结束</el-button>
                   <el-button type="primary" @click="doRunButton(scope.row, 4)" plain size="mini">设置</el-button>
                   <!-- <el-button type="primary" @click="doEndButton(scope.row)" plain size="mini">打印</el-button> -->
                 </template>
@@ -82,7 +82,9 @@
                 <template slot-scope="scope">{{scope.row.submitUserNameList.toString()}}</template>
               </el-table-column>
               <el-table-column label="结束时间" align="center">
-                <template slot-scope="scope">{{scope.row.endTime}}</template>
+                <template
+                  slot-scope="scope"
+                >{{$moment(scope.row.endTime).format('YYYY-MM-DD HH:mm:ss')}}</template>
               </el-table-column>
               <el-table-column prop="deductRate" label="得分率" align="center"></el-table-column>
               <el-table-column prop="fullScore" label="得分" align="center"></el-table-column>
@@ -324,6 +326,7 @@ export default {
   },
   mounted () {
     sessionStorage.removeItem('formId')
+    sessionStorage.removeItem('projectCommentId')
   },
   computed: {
     // 设置选择框多选时标签数量
@@ -344,7 +347,6 @@ export default {
     },
     // 设置样式
     doRowClass ({ row, rowIndex }) {
-      console.log(row, 33)
       if (row.status === 0) {
         return 'danger-row';
       } else if (row.status === 1) {
@@ -462,6 +464,7 @@ export default {
     // 评价中数据列表操作按钮
     doRunButton (row, status) {
       if (status === 4) {
+        sessionStorage.removeItem('projectCommentId')
         this.$router.push({ path: 'eform', query: { row: row } })
         return
       }
@@ -550,9 +553,10 @@ export default {
               p.children.forEach((k, v, arr1) => {
                 if (k.children) {
                   k.children.forEach((n, o, arr2) => {
+                    this.companyList.push({ id: n.id, label: n.label })
                     if (n.children) {
                       n.children.forEach(q => {
-                        this.companyList.push({ id: q.id, label: q.label })
+                        // this.companyList.push({ id: q.id, label: q.label })
                       })
                     }
                   })
@@ -611,13 +615,17 @@ export default {
     // 多选框数据过滤
     doFilter (row) {
       let evaluateList = this.evaluateList
-      evaluateList.forEach((p, i, arr) => {
-        if (row.id === p.id) {
-          arr.splice(i, 1)
-        } else {
-          arr.splice(i, 0, row)
-        }
-      })
+      let flag = evaluateList.some(p => p.id === row.id)
+      if (flag) {
+        evaluateList.forEach((p, i, arr) => {
+          if (row.id === p.id) {
+            arr.splice(i, 1)
+          }
+        })
+      } else {
+        evaluateList.push(row)
+      }
+
     },
     // 表格多选框是否选中
     doToggleSelect (rows) {
