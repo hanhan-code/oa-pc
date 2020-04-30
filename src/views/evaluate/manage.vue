@@ -6,8 +6,8 @@
           :data="treeData"
           node-key="id"
           accordion
+          default-expand-all
           highlight-current
-          :default-expanded-keys="[0]"
           :expand-on-click-node="false"
         >
           <span class="custom-tree-node" slot-scope="{ node, data }">

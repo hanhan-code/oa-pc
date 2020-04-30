@@ -40,7 +40,13 @@
             <el-table-column width="300" label="操作" align="center">
               <template slot-scope="scope">
                 <el-button type="primary" @click="doRunButton(scope.row, 0)" plain size="mini">设置</el-button>
-                <el-button type="primary" @click="doRunButton(scope.row, 1)" plain size="mini">复制</el-button>
+                <el-button
+                  type="primary"
+                  v-show="pageParams.projectCommentId === 0"
+                  @click="doRunButton(scope.row, 1)"
+                  plain
+                  size="mini"
+                >复制</el-button>
                 <el-button type="danger" @click="doRunButton(scope.row, 2)" plain size="mini">删除</el-button>
               </template>
             </el-table-column>
