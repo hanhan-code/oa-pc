@@ -91,7 +91,7 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doCreatSubmit('creatForm')" :loading="creatLoad">提交</el-button>
+        <el-button type="primary" @click="doCreatSubmit('creatForm')">提交</el-button>
       </span>
     </el-dialog>
     <!-- 添加已有评价项目 -->
@@ -154,7 +154,7 @@
     >
       <div>该操作将永久删除数据，是否删除？</div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="default" @click="delProp = false" size="">取消</el-button>
+        <el-button type="default" @click="delProp = false" size>取消</el-button>
         <el-button type="primary" @click="doDeleteConfirm">确定</el-button>
       </span>
     </el-dialog>
@@ -376,8 +376,10 @@ export default {
     },
     // 评价中数据列表操作按钮
     doRunButton (row, status) {
+
       this.row = row
       if (status === 0) {
+        sessionStorage.removeItem('formId')
         this.formId = row.id
         this.formProp = true
       } else if (status === 1) {

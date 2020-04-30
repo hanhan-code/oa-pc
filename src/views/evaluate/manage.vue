@@ -68,7 +68,7 @@
               <el-table-column prop="formClassName" label="评价项目" align="center"></el-table-column>
               <el-table-column prop="content" label="评价内容" align="center"></el-table-column>
               <el-table-column prop="grading" label="评分标准" align="center"></el-table-column>
-              <el-table-column prop="score" label="总分" align="center"></el-table-column>
+              <el-table-column prop="score" label="得分" align="center"></el-table-column>
               <el-table-column align="center">
                 <template slot="header" slot-scope="scope">
                   <span>
@@ -719,7 +719,7 @@ export default {
           formEdit(form).then(res => {
             this.screenLoading = false
             if (res.code === 0) {
-              this.createProp = false
+              this.editProp = false
               this.$refs[ruleForm].resetFields()
               this.$message({ message: '创建成功', type: 'success' })
               this.doSearch()
