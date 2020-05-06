@@ -5,7 +5,7 @@ import request from "@/utils/request";
  */
 export function tableEndData(data) {
   return request({
-    url: "http://192.168.0.158:9007/project/commented",
+    url: "/assessment/project/commented",
     method: "get",
     params: data
   });
@@ -16,7 +16,7 @@ export function tableEndData(data) {
  */
 export function tableData(data) {
   return request({
-    url: "http://192.168.0.158:9007/project/commenting",
+    url: "/assessment/project/commenting",
     method: "get",
     params: data
   });
@@ -27,19 +27,30 @@ export function tableData(data) {
  */
 export function runButton(data) {
   return request({
-    url: "http://192.168.0.158:9007/project/comment",
+    url: "/assessment/project/comment/status",
     method: "put",
     params: data
   });
 }
 
 /**
- * @description 调用评价结束操作按钮接口
+ * @description 调用评价中操作按钮接口
  */
-export function endButton(data) {
+export function resetData(data) {
   return request({
-    url: "http://192.168.0.158:9007/project/comment",
+    url: "/assessment/project/comment",
     method: "put",
+    params: data
+  });
+}
+
+/**
+ * @description 调用评价结束打印按钮接口
+ */
+export function printData(data) {
+  return request({
+    url: "/assessment/form/pdf",
+    method: "get",
     params: data
   });
 }
@@ -49,7 +60,7 @@ export function endButton(data) {
  */
 export function evaluateData(data) {
   return request({
-    url: "http://192.168.0.158:9007/form/project",
+    url: "/assessment/form/company",
     method: "get",
     params: data
   });
@@ -60,7 +71,7 @@ export function evaluateData(data) {
  */
 export function projectData(data) {
   return request({
-    url: "http://192.168.0.158:9007/project/comment",
+    url: "/assessment/project/comment",
     method: "get",
     params: data
   });
@@ -71,13 +82,13 @@ export function projectData(data) {
  */
 // export function companyData(id) {
 //   return request({
-//     url: "http://192.168.0.158:9007/synch/userEmployee/orgEmployee/" + id,
+//     url: "/assessment/synch/userEmployee/orgEmployee/" + id,
 //     method: "get",
 //   });
 // }
 export function companyData(id) {
   return request({
-    url: "http://oa.jsztgj.com:9999/synch/userEmployee/orgEmployee/" + id,
+    url: "/synch/userEmployee/orgEmployee/" + id,
     method: "get"
   });
 }
@@ -87,7 +98,7 @@ export function companyData(id) {
  */
 export function creatSubmit(data) {
   return request({
-    url: "http://192.168.0.158:9007/project/comment",
+    url: "/assessment/project/comment",
     method: "post",
     data: data
   });
@@ -98,7 +109,7 @@ export function creatSubmit(data) {
  */
 export function setSubmit(data) {
   return request({
-    url: "http://192.168.0.158:9007/project/setting",
+    url: "/assessment/project/setting",
     method: "post",
     data: data
   });

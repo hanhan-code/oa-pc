@@ -6,7 +6,7 @@
       <el-input
         clearable
         placeholder="请输入名称"
-        v-model="pageParams.keyword"
+        v-model="pageParams.keyWord"
         size="small"
         style="width: 180px;margin-right: 10px"
         class="filter-item"
@@ -28,11 +28,17 @@
         <el-tab-pane label="评价中" name="1">
           <!-- 表格数据 -->
           <div class="content" style="margin-top: 10px;">
-            <el-table size="small" :data="tableData" :max-height="tableHeight" border>
+            <el-table
+              size="small"
+              :data="tableData"
+              :max-height="600"
+              border
+              :row-class-name="doRowClass"
+            >
               <el-table-column type="index" label="序号" align="center"></el-table-column>
               <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
               <el-table-column label="提交人" align="center">
-                <template slot-scope="scope">{{scope.row.submitEmployeeIdList.toString()}}</template>
+                <template slot-scope="scope">{{scope.row.submitUserNameList.toString()}}</template>
               </el-table-column>
               <el-table-column label="评审人" align="center">
                 <template slot-scope="scope">{{scope.row.commentUserNameList.toString()}}</template>
@@ -41,10 +47,23 @@
               <el-table-column prop="process" label="进度" align="center"></el-table-column>
               <el-table-column width="300" label="操作" align="center">
                 <template slot-scope="scope">
-                  <el-button type="primary" @click="doRunButton(scope.row, 1)" plain size="mini">开始</el-button>
-                  <el-button type="primary" @click="doRunButton(scope.row, 2)" plain size="mini">暂停</el-button>
-                  <el-button type="primary" @click="doRunButton(scope.row, 3)" plain size="mini">重评</el-button>
+                  <el-button
+                    type="success"
+                    @click="doRunButton(scope.row, 1)"
+                    v-show="scope.row.status === 0 || scope.row.status === 2"
+                    plain
+                    size="mini"
+                  >开始</el-button>
+                  <el-button
+                    type="warning"
+                    @click="doRunButton(scope.row, 2)"
+                    v-show="scope.row.status === 1"
+                    plain
+                    size="mini"
+                  >暂停</el-button>
+                  <el-button type="danger" @click="doRunButton(scope.row, 3)" plain size="mini">结束</el-button>
                   <el-button type="primary" @click="doRunButton(scope.row, 4)" plain size="mini">设置</el-button>
+                  <!-- <el-button type="primary" @click="doEndButton(scope.row)" plain size="mini">打印</el-button> -->
                 </template>
               </el-table-column>
             </el-table>
@@ -53,22 +72,27 @@
         <el-tab-pane label="评价结束" name="0">
           <!-- 表格数据 -->
           <div class="content" style="margin-top: 10px;">
-            <el-table size="small" :data="tableData" :max-height="tableHeight" border>
+            <el-table size="small" :data="tableData" :max-height="600" border>
               <el-table-column type="index" label="序号" align="center"></el-table-column>
               <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
               <el-table-column label="提交人" align="center">
-                <template slot-scope="scope">{{scope.row.submitEmployeeIdList.toString()}}</template>
-              </el-table-column>
-              <el-table-column label="评审人" align="center">
                 <template slot-scope="scope">{{scope.row.commentUserNameList.toString()}}</template>
               </el-table-column>
-              <el-table-column prop="score" label="得分率" align="center"></el-table-column>
-              <el-table-column prop="process" label="得分" align="center"></el-table-column>
+              <el-table-column label="评审人" align="center">
+                <template slot-scope="scope">{{scope.row.submitUserNameList.toString()}}</template>
+              </el-table-column>
+              <el-table-column label="结束时间" align="center">
+                <template
+                  slot-scope="scope"
+                >{{$moment(scope.row.endTime).format('YYYY-MM-DD HH:mm:ss')}}</template>
+              </el-table-column>
+              <el-table-column prop="deductRate" label="得分率" align="center"></el-table-column>
+              <el-table-column prop="fullScore" label="得分" align="center"></el-table-column>
               <el-table-column prop="deductScore" label="失分" sortable align="center"></el-table-column>
               <el-table-column width="300" label="操作" align="center">
                 <template slot-scope="scope">
-                  <el-button type="primary" @click="doRunButton(scope.row, 3)" plain size="mini">打印</el-button>
-                  <el-button type="primary" @click="doEndButton(scope.row)" plain size="mini">重评</el-button>
+                  <el-button type="primary" @click="doEndButton(scope.row,0)" plain size="mini">打印</el-button>
+                  <el-button type="primary" @click="doEndButton(scope.row,1)" plain size="mini">重评</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -91,7 +115,14 @@
       </div>
     </div>
     <!-- 创建评价项目 -->
-    <el-dialog title="基本信息" :visible.sync="createProp" width="30%" center>
+    <el-dialog
+      title="基本信息"
+      :visible.sync="createProp"
+      width="30%"
+      center
+      :modal="false"
+      :modal-append-to-body="false"
+    >
       <el-form
         :model="createForm"
         label-position="right"
@@ -108,7 +139,7 @@
             autocomplete="off"
           >
             <el-option
-              :label="item.label"
+              :label="item.name"
               :value="item.id"
               v-for="(item, index) in projectList"
               :key="index"
@@ -144,8 +175,8 @@
             <el-option
               :label="item.label"
               :value="item.id"
-              v-for="(item, index) in companyList"
-              :key="index"
+              v-for="(item, i) in companyList"
+              :key="i"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -168,11 +199,18 @@
         </el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="doCreatSubmit('creatForm')">创建项目</el-button>
+        <el-button type="primary" @click="doCreatSubmit('creatForm')">提交</el-button>
       </span>
     </el-dialog>
     <!-- 添加评价表 -->
-    <el-dialog title="选择评价表" :visible.sync="addProp" width="30%" center>
+    <el-dialog
+      title="选择评价表"
+      :visible.sync="addProp"
+      width="30%"
+      center
+      :modal="false"
+      :modal-append-to-body="false"
+    >
       <el-input
         clearable
         placeholder="请输入表名称"
@@ -204,19 +242,11 @@
         <el-table-column type="selection" label="序号" align="center"></el-table-column>
         <el-table-column prop="name" label="表的名称" align="center"></el-table-column>
       </el-table>
-      <!--分页组件-->
-      <!-- <el-pagination
-        style="margin-top: 8px;"
-        @size-change="doSizeChange"
-        @current-change="doPageChange"
-        :current-page="pageParams.pageNum"
-        :total="pageData.total"
-        layout="total, prev, pager, next, sizes"
-      />-->
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="doAddConfirm">确定</el-button>
       </span>
     </el-dialog>
+    <el-button type="text" v-loading.fullscreen.lock="screenLoading"></el-button>
   </div>
 </template>
 
@@ -224,7 +254,6 @@
 
 import initDict from '@/mixins/initDict'
 import { getCompanyId, getEmployeeId } from '@/utils/auth'
-// import { requireContent } from '@/utils/rule'
 import {
   tableData,
   tableEndData,
@@ -232,7 +261,9 @@ import {
   companyData,
   creatSubmit,
   runButton,
-  endButton,
+  printData,
+  resetData,
+  projectData
 } from '@/api/evaluate/evaluateProject'
 
 export default {
@@ -242,6 +273,7 @@ export default {
     return {
       createProp: false,              // 创建评价弹窗
       addProp: false,                 // 添加评价表
+      screenLoading: false,           // 全局加载
       activeName: '1',                // 被激活的 tabBar标签
       formName: '',                   // 评价表搜索字段
       tableHeight: null,              // 表格最大高度
@@ -264,7 +296,7 @@ export default {
       },
       pageParams: {                   // 分页查询参数
         companyId: getCompanyId(),
-        keyword: null,                // 查询关键字
+        keyWord: null,                // 查询关键字
         pageSize: 10,                 // 每页个数
         pageNum: 0                    // 当前页数
       },
@@ -289,17 +321,14 @@ export default {
   created () {
     this.doSearch(0)
     this.getCompanyData()
+    this.getProjectData()
     this.doCreat()
   },
   mounted () {
-    this.tableHeight = this.setHeight
+    sessionStorage.removeItem('formId')
+    sessionStorage.removeItem('projectCommentId')
   },
   computed: {
-    // 设置表格最大高度
-    setHeight () {
-      let tag = document.getElementById('app-container')
-      return tag.clientHeight - 220
-    },
     // 设置选择框多选时标签数量
     setEmployeeTags () {
       let _this = this
@@ -314,40 +343,16 @@ export default {
   methods: {
     // 初始化
     doCreat () {
-      this.projectList = [{
-        label: '项目1',
-        id: '1'
-      }]
-      // this.companyList = [
-      //   {
-      //     "id": "694933565493055488",
-      //     "label": "任淑凡"
-      //   },
-      //   {
-      //     "id": "627531100963835904",
-      //     "label": "范伟伟"
-      //   },
-      //   {
-      //     "id": "627531101530066944",
-      //     "label": "戴宪锁"
-      //   },
-      //   {
-      //     "id": "456253109877458796",
-      //     "label": "葛浩天"
-      //   },
-      //   {
-      //     "id": "684720845036556288",
-      //     "label": "聂方龙"
-      //   },
-      //   {
-      //     "id": "684721784237690880",
-      //     "label": "陈韩"
-      //   },
-      //   {
-      //     "id": "689844882410672128",
-      //     "label": "曾飞"
-      //   }
-      // ]
+
+    },
+    // 设置样式
+    doRowClass ({ row, rowIndex }) {
+      if (row.status === 0) {
+        return 'danger-row';
+      } else if (row.status === 1) {
+        return 'success-row';
+      }
+      return '';
     },
     // 查询表格数据
     doSearch (num, size = 10) {
@@ -362,7 +367,11 @@ export default {
     // 获取评价中表格数据
     getData () {
       let params = this.pageParams
+      this.screenLoading = true
+
       tableData(params).then(res => {
+        this.screenLoading = false
+
         if (res.code === 0) {
           let data = res.data
           this.tableData = data.records
@@ -375,11 +384,29 @@ export default {
     // 获取评价结束表格数据
     getEndData () {
       let params = this.pageParams
+      this.screenLoading = true
+
       tableEndData(params).then(res => {
+        this.screenLoading = false
+
         if (res.code === 0) {
           let data = res.data
           this.tableData = data.records
           this.pageData.total = Number(data.total)
+        } else {
+          this.$message({ message: res.msg, type: 'error' })
+        }
+      })
+    },
+    // 获取项目列表
+    getProjectData () {
+      let params = {
+        companyId: getCompanyId()
+      }
+      projectData(params).then(res => {
+        if (res.code === 0) {
+          let data = res.data
+          this.projectList = data
         } else {
           this.$message({ message: res.msg, type: 'error' })
         }
@@ -390,7 +417,7 @@ export default {
       this.tableData = []
       this.pageParams = {             // 分页查询参数
         companyId: getCompanyId(),
-        keyword: null,                // 查询关键字
+        keyWord: null,                // 查询关键字
         pageSize: 10,                 // 每页个数
         pageNum: 0                    // 当前页数
       }
@@ -417,7 +444,11 @@ export default {
             this.$message({ message: '请添加项目评价表', type: 'error' })
             return
           }
+          this.screenLoading = true
+
           creatSubmit(form).then(res => {
+            this.screenLoading = false
+
             if (res.code === 0) {
               this.createProp = false
               this.$refs[ruleForm].resetFields()
@@ -433,39 +464,67 @@ export default {
     // 评价中数据列表操作按钮
     doRunButton (row, status) {
       if (status === 4) {
-        this.$router.push({ name: 'evaluate-form', params: {row: row} })
+        sessionStorage.removeItem('projectCommentId')
+        this.$router.push({ path: 'eform', query: { row: row } })
         return
       }
       let params = {
+        employeeId: getEmployeeId(),
         projectCommentId: row.projectCommentId,
         status: status
       }
-      runButton(params).then(res => {
-        if (res.code === 0) {
-          this.$message({ message: '操作成功', type: 'success' })
-        } else {
-          this.$message({ message: '操作失败', type: 'error' })
-        }
+      this.$confirm('是否继续执行此操作?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.screenLoading = true
+
+        runButton(params).then(res => {
+          this.screenLoading = false
+
+          if (res.code === 0) {
+            this.getData()
+            this.$message({ message: '操作成功', type: 'success' })
+          } else {
+            this.$message({ message: res.msg, type: 'error' })
+          }
+        })
       })
     },
     // 评价结束数据列表操作按钮
-    doEndButton (row) {
+    doEndButton (row, type) {
       let params = {
-        projectCommentId: row.projectCommentId,
-        employeeId: getEmployeeId()
+        employeeId: getEmployeeId(),
+        projectCommentId: row.projectCommentId
       }
-      endButton(params).then(res => {
-        if (res.code === 0) {
-          this.$message({ message: '操作成功', type: 'success' })
-        } else {
-          this.$message({ message: '操作失败', type: 'error' })
-        }
-      })
+      if (type === 0) {
+        this.screenLoading = true
+
+        printData(params).then(res => {
+          this.screenLoading = false
+
+          let blob = new Blob([res], { type: 'application/pdf' })
+          let url = URL.createObjectURL(blob)
+          window.open(url)
+          // window.open('/static/pdf/viewer.html?pdfUrl=' + encodeURIComponent(res))
+        })
+      } else {
+        resetData(params).then(res => {
+          if (res.code === 0) {
+            this.$message({ message: '操作成功', type: 'success' })
+            this.getEndData()
+          } else {
+            this.$message({ message: res.msg, type: 'error' })
+          }
+        })
+      }
     },
     // 添加评价表
     doAdd () {
       this.createProp = false
       this.addProp = true
+      this.evaluateList = []
       this.getEvaluateData()
     },
     // 确定添加评价表
@@ -475,7 +534,9 @@ export default {
     },
     // 删除评价表
     doDelete (id) {
+      this.screenLoading = true
       this.evaluateList.forEach((p, i, arr) => {
+        this.screenLoading = false
         if (p.id === id) {
           arr.splice(i, 1)
         }
@@ -493,6 +554,11 @@ export default {
                 if (k.children) {
                   k.children.forEach((n, o, arr2) => {
                     this.companyList.push({ id: n.id, label: n.label })
+                    if (n.children) {
+                      n.children.forEach(q => {
+                        // this.companyList.push({ id: q.id, label: q.label })
+                      })
+                    }
                   })
                 }
               })
@@ -501,36 +567,13 @@ export default {
         }
       })
     },
-    // // 根据公司id获取评审人员
-    // getEvaluatePerson () {
-    //   let params = {
-    //     projectCommentId: this.companyId
-    //   }
-    //   evaluateData(params).then(res => {
-    //     if (res.code === 0) {
-    //       this.evaluateList = res.data
-    //     }
-    //   })
-    // },
-    // // 根据公司id获取提交资料人员
-    // getSubmitPerson () {
-    //   let params = {
-    //     projectCommentId: this.companyId
-    //   }
-    //   evaluateData(params).then(res => {
-    //     if (res.code === 0) {
-    //       this.evaluateList = res.data
-    //     }
-    //   })
-    // },
     // 获取添加评价表数据
     getEvaluateData (type) {
       let params = {
-        // projectCommentId: this.companyId,
-        projectCommentId: '1'
-      }
-      if (type === 1) {
-        params.key = this.formName
+        companyId: getCompanyId(),
+        keyWord: this.formName,
+        pageNum: 0,
+        pageSize: 0
       }
       evaluateData(params).then(res => {
         if (res.code === 0) {
@@ -545,7 +588,6 @@ export default {
     doSelectChanges (select) {
       let evaluateList = this.evaluateList
       if (evaluateList.length === 0) {
-        console.log(select, 231)
         evaluateList.push(...select)
         evaluateList.splice(0, 0)
       } else {
@@ -562,7 +604,6 @@ export default {
     },
     // 评价表 多选框操作
     doSelectChange (select, row) {
-      console.log(select, row)
       let evaluateList = this.evaluateList
       if (evaluateList.length === 0) {
         evaluateList.push(row)
@@ -574,14 +615,17 @@ export default {
     // 多选框数据过滤
     doFilter (row) {
       let evaluateList = this.evaluateList
-      evaluateList.forEach((p, i, arr) => {
-        console.log(row, p)
-        if (row.id === p.id) {
-          arr.splice(i, 1)
-        } else {
-          arr.splice(i, 0, row)
-        }
-      })
+      let flag = evaluateList.some(p => p.id === row.id)
+      if (flag) {
+        evaluateList.forEach((p, i, arr) => {
+          if (row.id === p.id) {
+            arr.splice(i, 1)
+          }
+        })
+      } else {
+        evaluateList.push(row)
+      }
+
     },
     // 表格多选框是否选中
     doToggleSelect (rows) {
@@ -610,5 +654,14 @@ export default {
 <style scoped>
 .el-select {
   width: 100%;
+}
+</style>
+<style>
+.danger-row {
+  color: #e6a23c;
+}
+
+.success-row {
+  color: #67c23a;
 }
 </style>

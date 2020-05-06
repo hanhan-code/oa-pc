@@ -12,34 +12,43 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="优得分率" prop="fine">
+      <el-form-item label="优得分率%" prop="fine">
         <el-col :span="5">
-          <el-input v-model="setForm.fine" type="number" style="width: 180px" placeholder=">=90%"></el-input>
+          <el-input
+            v-model="setForm.fine"
+            type="number"
+            style="width: 180px"
+            @blur="doFine"
+            placeholder=">=90%"
+          ></el-input>
         </el-col>
         <el-col :span="8" align="center">
-          <el-form-item label="并且单张表得分率" prop="fineSingle" label-width="160px">
+          <el-form-item label="并且单张表得分率%" prop="fineSingle" label-width="160px">
             <el-input
               v-model="setForm.fineSingle"
               type="number"
+              @blur="doFineSingle"
               style="width: 180px"
               placeholder=">=85%"
             ></el-input>
           </el-form-item>
         </el-col>
       </el-form-item>
-      <el-form-item label="良得分率" prop="good">
+      <el-form-item label="良得分率%" prop="good">
         <el-col :span="5">
           <el-input
             v-model="setForm.good"
             type="number"
+            @blur="doWell"
             style="width: 180px"
             placeholder="90% - 80%"
           ></el-input>
         </el-col>
         <el-col :span="8" align="center">
-          <el-form-item label="并且单张表得分率" prop="goodSingle" label-width="160px">
+          <el-form-item label="并且单张表得分率%" prop="goodSingle" label-width="160px">
             <el-input
               v-model="setForm.goodSingle"
+              @blur="doWellSingle"
               type="number"
               style="width: 180px"
               placeholder="85% - 75%"
@@ -47,10 +56,11 @@
           </el-form-item>
         </el-col>
       </el-form-item>
-      <el-form-item label="一般得分率" prop="common">
+      <el-form-item label="一般得分率%" prop="common">
         <el-col :span="5">
           <el-input
             v-model="setForm.common"
+            @blur="doCommon"
             type="number"
             style="width: 180px"
             placeholder="80% - 60%"
@@ -95,6 +105,7 @@
         <el-button type="primary" @click="doSubmit('setForm')">提交</el-button>
       </el-form-item>
     </el-form>
+    <el-button type="text" v-loading.fullscreen.lock="screenLoading"></el-button>
   </div>
 </template>>
 
@@ -106,7 +117,7 @@ import {
   fineRules,
   wellRule,
   wellRules,
-  comRule
+  comRule,
 } from './rule'
 
 import {
@@ -122,6 +133,7 @@ import {
 export default {
   data () {
     return {
+      screenLoading: false,                      // 全局加载
       companyList: [],                           // 公司组织架构-所有人员列表
       projectList: [],                           // 公司项目列表
       setForm: {
@@ -137,9 +149,6 @@ export default {
         notice: [],                              // 评审完通知人 id 1546，1564，1564 逗号分隔
       },
       rules: {
-        id: [
-          { required: true, validator: requireContent, trigger: 'change' }
-        ],
         fine: [
           { required: true, validator: fineRule, trigger: 'blur' }
         ],
@@ -164,6 +173,9 @@ export default {
       }
     };
   },
+  watch: {
+
+  },
   computed: {
     // 设置选择框多选时标签数量
     setSubmitTags () {
@@ -176,42 +188,45 @@ export default {
     this.getProjectData()
     this.doCreat()
   },
+  mounted () {
+
+  },
   methods: {
     doCreat () {
-      this.companyList = [
-        {
-          "id": "694933565493055488",
-          "label": "任淑凡"
-        },
-        {
-          "id": "627531100963835904",
-          "label": "范伟伟"
-        },
-        {
-          "id": "627531101530066944",
-          "label": "戴宪锁"
-        },
-        {
-          "id": "456253109877458796",
-          "label": "葛浩天"
-        },
-        {
-          "id": "684720845036556288",
-          "label": "聂方龙"
-        },
-        {
-          "id": "684721784237690880",
-          "label": "陈韩"
-        },
-        {
-          "id": "689844882410672128",
-          "label": "曾飞"
-        }
-      ]
+      // this.companyList = [
+      //   {
+      //     "id": "694933565493055488",
+      //     "label": "任淑凡"
+      //   },
+      //   {
+      //     "id": "627531100963835904",
+      //     "label": "范伟伟"
+      //   },
+      //   {
+      //     "id": "627531101530066944",
+      //     "label": "戴宪锁"
+      //   },
+      //   {
+      //     "id": "456253109877458796",
+      //     "label": "葛浩天"
+      //   },
+      //   {
+      //     "id": "684720845036556288",
+      //     "label": "聂方龙"
+      //   },
+      //   {
+      //     "id": "684721784237690880",
+      //     "label": "陈韩"
+      //   },
+      //   {
+      //     "id": "689844882410672128",
+      //     "label": "曾飞"
+      //   }
+      // ]
     },
     // 根据企业id获取所有项目id
     getProjectData () {
-      projectData({ companyId: 1 }).then(res => {
+      projectData({ companyId: getCompanyId() }).then(res => {
         if (res.code === 0) {
           let data = res.data
           this.projectList = data
@@ -229,7 +244,12 @@ export default {
               p.children.forEach((k, v, arr1) => {
                 if (k.children) {
                   k.children.forEach((n, o, arr2) => {
-                    this.companyList.push({ id: n.id, label: n.label })
+                        this.companyList.push({ id: n.id, label: n.label })
+                    if (n.children) {
+                      n.children.forEach(q => {
+                        // this.companyList.push({ id: q.id, label: q.label })
+                      })
+                    }
                   })
                 }
               })
@@ -237,6 +257,51 @@ export default {
           })
         }
       })
+    },
+    // 优单表得分率
+    doFine (e) {
+      let value = e.target.value
+      if (value.indexOf('.') > 0) {
+        this.setForm.fine = parseInt(value)
+      }
+    },
+    // 优单表得分率
+    doFineSingle (e) {
+      let value = e.target.value
+      if (value.indexOf('.') > 0) {
+        this.setForm.fineSingle = parseInt(value)
+      }
+    },
+    // 良得分率
+    doWell (e) {
+      let value = e.target.value
+      if (value.indexOf('.') > 0) {
+        this.setForm.good = parseInt(value)
+      }
+      if (value !== '' && value > Number(this.setForm.fine)) {
+        this.setForm.good = this.setForm.fine
+        this.$message({ message: '良得分率不能高于优得分率', type: 'error' })
+      }
+    },
+    // 单张表良得分率
+    doWellSingle (e) {
+      let value = e.target.value
+      if (value.indexOf('.') > 0) {
+        this.setForm.goodSingle = parseInt(value)
+      }
+      if (value !== '' && value > Number(this.setForm.fineSingle)) {
+        this.setForm.goodSingle = this.setForm.fineSingle
+        this.$message({ message: '单张表 良得分率不能高于优得分率', type: 'error' })
+      }
+    },
+    // 良得分率
+    doCommon (e) {
+      let value = e.target.value
+      this.setForm.common = parseInt(value)
+      if (value !== '' && value > Number(this.setForm.good)) {
+        this.setForm.common = this.setForm.good
+        this.$message({ message: '一般得分率不能高于良得分率', type: 'error' })
+      }
     },
     // 提交
     doSubmit (formName) {
@@ -256,7 +321,9 @@ export default {
             goodSingle: this.setForm.goodSingle,
             projectId: this.setForm.id,
           }
+          this.screenLoading = true
           setSubmit(params).then(res => {
+            this.screenLoading = false
             if (res.code === 0) {
               this.$message({ message: '设置成功', type: 'success' })
               this.doReset(formName)

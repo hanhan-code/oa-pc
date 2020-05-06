@@ -161,7 +161,7 @@
           lazy
           highlight-current
           expand-on-click-node
-          @node-click="treeClick"
+          @node-click="doExpand"
         ></el-tree>
         <span slot="footer" class="dialog-footer">
           <el-button type="primary" style="width: 97%" @click="fileMove">移 动</el-button>
@@ -571,28 +571,31 @@ export default {
       if (node.level === 0) {
         this.nodes = node
         this.resolves = resolve
-        return resolve([{ id: '0', label: '全部文件', name: '全部文件', children: [] }])
+        return resolve([{ id: '0', label: '全部文件', name: '全部文件', children: [] }]);
       }
       setTimeout(() => {
-        tree(this.treeParams).then((res) => {
-          if (res.code === 0) {
-            let data = JSON.parse(JSON.stringify(res.data))
-            data.forEach(p => {
-              p.name = p.label
-            })
-            const list = data
-            resolve(list)
-          } else {
-            this.$message({ message: res.msg, type: 'warning' })
-          }
-        })
-      }, 100);
+        this.doNode(resolve)
+      }, 500);
     },
-    // 树结构点击当前节点
-    treeClick (option, node, current) {
+    // 获取加载数据
+    doNode (resolve) {
+      tree(this.treeParams).then((res) => {
+        if (res.code === 0) {
+          let data = JSON.parse(JSON.stringify(res.data))
+          data.forEach(p => {
+            p.name = p.label
+          })
+          const list = data
+          resolve(list)
+        } else {
+          this.$message({ message: res.msg, type: 'warning' })
+        }
+      })
+    },
+    // 展开事件
+    doExpand (option, node, data) {
       this.row = option
       this.treeParams.parentId = option.id
-      // }
     },
     // 文件移动弹窗
     moveProp (file) {
@@ -608,6 +611,7 @@ export default {
         if (res.code === 0) {
           this.init()
           this.move.visible = false
+          this.resetLazy()
           this.$message({ message: '移动成功', type: 'success' })
         } else {
           this.$message({ message: res.msg, type: 'warning' })
