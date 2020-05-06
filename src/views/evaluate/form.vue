@@ -55,17 +55,17 @@
         <br />
 
         <!-- 底部工具 -->
-        <!-- <div class="footer" style="margin-bottom: 20px"> -->
-        <!--分页组件-->
-        <!-- <el-pagination
-          style="margin-top: 8px;"
-          @size-change="doSizeChange"
-          @current-change="doPageChange"
-          :current-page="pageParams.pageNum"
-          :total="pageData.total"
-          layout="total, prev, pager, next, sizes"
-        />-->
-        <!-- </div> -->
+        <div class="footer" style="margin-bottom: 20px">
+          <!--分页组件-->
+          <el-pagination
+            style="margin-top: 8px;"
+            @size-change="doSizeChange"
+            @current-change="doPageChange"
+            :current-page="pageParams.pageNum"
+            :total="pageData.total"
+            layout="total, prev, pager, next, sizes"
+          />
+        </div>
       </div>
     </div>
 
@@ -220,7 +220,8 @@ export default {
       pageParams: {                   // 分页查询参数
         companyId: getCompanyId(),
         key: null,                // 查询关键字
-        pageSize: 0,                 // 每页个数
+        total: 1,
+        pageSize: 10,                 // 每页个数
         pageNum: 0,                   // 当前页数
         projectCommentId: 0        // 评价项目提交id
       },
@@ -273,7 +274,7 @@ export default {
       this.doSearch(0)
     },
     // 查询表格数据
-    doSearch (page, size = 0) {
+    doSearch (page, size = 10) {
       this.pageParams.pageNum = page
       this.pageParams.pageSize = size
       this.getData()
@@ -286,8 +287,8 @@ export default {
         this.screenLoading = false
         if (res.code === 0) {
           let data = res.data
-          this.tableData = data
-          // this.pageData.total = Number(data.total)
+          this.tableData = data.records
+          this.pageData.total = Number(data.total)
         } else {
           this.$message({ message: res.msg, type: 'error' })
         }
@@ -308,7 +309,7 @@ export default {
         companyId: getCompanyId(),
         projectCommentId: 0,
         key: null,                // 查询关键字
-        pageSize: 0,                 // 每页个数
+        pageSize: 10,                 // 每页个数
         pageNum: 0                    // 当前页数
       }
     },

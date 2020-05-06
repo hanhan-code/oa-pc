@@ -573,11 +573,11 @@ export default {
         companyId: getCompanyId(),
         keyWord: this.formName,
         pageNum: 0,
-        pageSize: 0
+        pageSize: 10000
       }
       evaluateData(params).then(res => {
         if (res.code === 0) {
-          this.evaluateData = res.data
+          this.evaluateData = res.data.records
           if (this.evaluateList.length > 0) {
             this.doToggleSelect(this.evaluateList)
           }
