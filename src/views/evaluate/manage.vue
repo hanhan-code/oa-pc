@@ -1,15 +1,14 @@
 <template>
   <div class="container" id="app-container">
-    <el-row :gutter="20">
-      <el-col :span="4">
-        <el-tree
-          :data="treeData"
-          node-key="id"
-          accordion
-          default-expand-all
-          highlight-current
-          :expand-on-click-node="false"
-        >
+    <div class="container-left">
+      <el-tree
+        :data="treeData"
+        node-key="id"
+        accordion
+        default-expand-all
+        highlight-current
+        :expand-on-click-node="false"
+      >
           <span class="custom-tree-node" slot-scope="{ node, data }">
             <span @click="doTreeClick(data)">{{ node.label }}</span>
             <span>
@@ -33,87 +32,86 @@
               >删除</el-button>
             </span>
           </span>
-        </el-tree>
-      </el-col>
-      <el-col :span="20">
-        <!-- 工具栏 -->
-        <div class="head-tools">
-          <!-- 搜索框 评价名称 -->
-          <el-input
-            clearable
-            placeholder="请输入名称"
-            v-model="pageParams.keyWord"
-            size="small"
-            style="width: 180px;margin-right: 10px"
-            class="filter-item"
-          />
-          <!-- 搜索按钮 -->
-          <el-button
-            class="filter-item"
-            size="small"
-            type="success"
-            icon="el-icon-search"
-            @click="doSearch(0)"
-          >搜索
-          </el-button>
-          <el-button size="small" @click="doAdd" type="primary">添加考评项</el-button>
-          <el-button size="small" @click="doBack" type="primary">返回上一级</el-button>
-        </div>
-        <br/>
-        <!-- 数据内容 -->
-        <div class="table-content">
-          <!-- 表格数据 -->
-          <div class="content" style="margin-top: 10px;">
-            <el-table size="small" :data="tableData" :max-height="600" border>
-              <el-table-column type="index" label="序号" align="center"></el-table-column>
-              <el-table-column prop="formClassName" label="评价项目" align="center"></el-table-column>
-              <el-table-column prop="content" label="评价内容" align="center"></el-table-column>
-              <el-table-column prop="grading" label="评分标准" align="center"></el-table-column>
-              <el-table-column prop="fullScore" label="总分" v-if="projectCommentId === 0"
-                               align="center"></el-table-column>
-              <el-table-column label="得分" v-else="projectCommentId !== 0" align="center">
-                <template slot-scope="scope">
-                  {{scope.row.fullScore - scope.row.score}}
-                </template>
-              </el-table-column>
-              <el-table-column align="center">
-                <template slot="header" slot-scope="scope">
+      </el-tree>
+    </div>
+    <div class="container-right">
+      <!-- 工具栏 -->
+      <div class="head-tools">
+        <!-- 搜索框 评价名称 -->
+        <el-input
+          clearable
+          placeholder="请输入名称"
+          v-model="pageParams.keyWord"
+          size="small"
+          style="width: 180px;margin-right: 10px"
+          class="filter-item"
+        />
+        <!-- 搜索按钮 -->
+        <el-button
+          class="filter-item"
+          size="small"
+          type="success"
+          icon="el-icon-search"
+          @click="doSearch(0)"
+        >搜索
+        </el-button>
+        <el-button size="small" @click="doAdd" type="primary">添加考评项</el-button>
+        <el-button size="small" @click="doBack" type="primary">返回上一级</el-button>
+      </div>
+      <br/>
+      <!-- 数据内容 -->
+      <div class="table-content">
+        <!-- 表格数据 -->
+        <div class="content" style="margin-top: 10px;">
+          <el-table size="small" :data="tableData" :max-height="600" border>
+            <el-table-column type="index" label="序号" align="center"></el-table-column>
+            <el-table-column prop="formClassName" label="评价项目" min-width="150" align="center"></el-table-column>
+            <el-table-column prop="content" label="评价内容" min-width="150" align="center"></el-table-column>
+            <el-table-column prop="grading" label="评分标准" min-width="200" align="center"></el-table-column>
+            <el-table-column prop="fullScore" label="总分" v-if="projectCommentId === 0"
+                             align="center"></el-table-column>
+            <el-table-column label="得分" v-else="projectCommentId !== 0" align="center">
+              <template slot-scope="scope">
+                {{scope.row.fullScore - scope.row.score}}
+              </template>
+            </el-table-column>
+            <el-table-column align="center">
+              <template slot="header" slot-scope="scope">
                   <span>
                     <i class="table-san"></i>
                   </span>
-                </template>
-                <template slot-scope="scope">
+              </template>
+              <template slot-scope="scope">
                   <span v-show="scope.row.important === 1">
                     <i class="table-san"></i>
                   </span>
-                </template>
-              </el-table-column>
-              <el-table-column width="300" label="操作" align="center">
-                <template slot-scope="scope">
-                  <el-button type="primary" @click="doEdit(scope.row)" plain size="mini">修改</el-button>
-                  <el-button type="info" @click="doDetail(scope.row)" plain size="mini">查看</el-button>
-                  <el-button type="danger" @click="doDelete(scope.row)" plain size="mini">删除</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div>
-          <br/>
-
-          <!-- 底部工具 -->
-          <!-- <div class="footer" style="margin-bottom: 20px"> -->
-          <!--分页组件-->
-          <!-- <el-pagination
-              style="margin-top: 8px;"
-              @size-change="doSizeChange"
-              @current-change="doPageChange"
-              :current-page="pageParams.pageNum"
-              :total="pageData.total"
-              layout="total, prev, pager, next, sizes"
-          />-->
-          <!-- </div> -->
+              </template>
+            </el-table-column>
+            <el-table-column width="300" label="操作" align="center">
+              <template slot-scope="scope">
+                <el-button type="primary" @click="doEdit(scope.row)" plain size="mini">修改</el-button>
+                <el-button type="info" @click="doDetail(scope.row)" plain size="mini">查看</el-button>
+                <el-button type="danger" @click="doDelete(scope.row)" plain size="mini">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
         </div>
-      </el-col>
-    </el-row>
+        <br/>
+
+        <!-- 底部工具 -->
+        <!-- <div class="footer" style="margin-bottom: 20px"> -->
+        <!--分页组件-->
+        <!-- <el-pagination
+            style="margin-top: 8px;"
+            @size-change="doSizeChange"
+            @current-change="doPageChange"
+            :current-page="pageParams.pageNum"
+            :total="pageData.total"
+            layout="total, prev, pager, next, sizes"
+        />-->
+        <!-- </div> -->
+      </div>
+    </div>
 
     <!-- 添加考评评价项 -->
     <el-dialog
@@ -787,9 +785,19 @@
 </script>
 
 <style scoped>
-  .el-row,
-  .el-col,
-  .el-tree {
+  .container {
+    display: flex;
+    flex: auto;
+    justify-content: left;
+  }
+
+  .container-right {
+    margin-left: 20px;
+  }
+
+  .el-tree,
+  .container-left,
+  .container-right {
     height: inherit;
   }
 
