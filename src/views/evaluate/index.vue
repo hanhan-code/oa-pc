@@ -499,16 +499,25 @@ export default {
         projectCommentId: row.projectCommentId
       }
       if (type === 0) {
-        this.screenLoading = true
-
-        printData(params).then(res => {
-          this.screenLoading = false
-
-          let blob = new Blob([res], { type: 'application/pdf' })
-          let url = URL.createObjectURL(blob)
-          window.open(url)
-          // window.open('/static/pdf/viewer.html?pdfUrl=' + encodeURIComponent(res))
-        })
+        // this.screenLoading = true
+        let link = document.createElement('a')
+        link.target="blank"
+        link.style.display="none"
+        link.href = this.$network + 'assessment/form/pdf?projectCommentId=' + row.projectCommentId
+        link.click()
+        document.body.append(link)
+        // printData(params).then(res => {
+        //   this.screenLoading = false
+        //   let blob = new Blob([res], { type: 'application/pdf' })
+        //   let url = URL.createObjectURL(blob)
+        //   let link = document.createElement('a')
+        //   link.href = url
+        //   // link.download = '下载'
+        //   link.click()
+        //   document.body.append(link)
+        //   // window.open(url)
+        //   // window.open('/static/pdf/viewer.html?pdfUrl=' + encodeURIComponent(url))
+        // })
       } else {
         resetData(params).then(res => {
           if (res.code === 0) {

@@ -54,11 +54,12 @@
             type="success"
             icon="el-icon-search"
             @click="doSearch(0)"
-          >搜索</el-button>
+          >搜索
+          </el-button>
           <el-button size="small" @click="doAdd" type="primary">添加考评项</el-button>
           <el-button size="small" @click="doBack" type="primary">返回上一级</el-button>
         </div>
-        <br />
+        <br/>
         <!-- 数据内容 -->
         <div class="table-content">
           <!-- 表格数据 -->
@@ -68,7 +69,13 @@
               <el-table-column prop="formClassName" label="评价项目" align="center"></el-table-column>
               <el-table-column prop="content" label="评价内容" align="center"></el-table-column>
               <el-table-column prop="grading" label="评分标准" align="center"></el-table-column>
-              <el-table-column prop="score" label="得分" align="center"></el-table-column>
+              <el-table-column prop="fullScore" label="总分" v-if="projectCommentId === 0"
+                               align="center"></el-table-column>
+              <el-table-column label="得分" v-else="projectCommentId !== 0" align="center">
+                <template slot-scope="scope">
+                  {{scope.row.fullScore - scope.row.score}}
+                </template>
+              </el-table-column>
               <el-table-column align="center">
                 <template slot="header" slot-scope="scope">
                   <span>
@@ -90,7 +97,7 @@
               </el-table-column>
             </el-table>
           </div>
-          <br />
+          <br/>
 
           <!-- 底部工具 -->
           <!-- <div class="footer" style="margin-bottom: 20px"> -->
@@ -139,6 +146,7 @@
             v-model="addForm.grading"
             type="textarea"
             filterable
+            maxlength="200"
             clearable
             placeholder="请输入标准"
             autocomplete="off"
@@ -197,6 +205,7 @@
             v-model="editForm.grading"
             type="textarea"
             filterable
+            maxlength="200"
             clearable
             placeholder="请输入标准"
             autocomplete="off"
@@ -276,7 +285,7 @@
       :modal="false"
       :modal-append-to-body="false"
     >
-      <el-input clearable placeholder="请输入表名称" v-model="formName" size="small" class="filter-item" />
+      <el-input clearable placeholder="请输入表名称" v-model="formName" size="small" class="filter-item"/>
       <span slot="footer" class="dialog-footer">
         <!-- <el-button type="default" @click="addTreeProp = false">取消</el-button> -->
         <el-button type="primary" @click="doAddTrees">确定</el-button>
@@ -291,7 +300,7 @@
       :modal="false"
       :modal-append-to-body="false"
     >
-      <el-input clearable placeholder="请输入表名称" v-model="formName" size="small" class="filter-item" />
+      <el-input clearable placeholder="请输入表名称" v-model="formName" size="small" class="filter-item"/>
       <span slot="footer" class="dialog-footer">
         <!-- <el-button type="default" @click="editTreeProp = false">取消</el-button> -->
         <el-button type="primary" @click="doEditTrees">确定</el-button>
@@ -317,483 +326,490 @@
 
 <script>
 
-import initDict from '@/mixins/initDict'
-import { getCompanyId, getEmployeeId } from '@/utils/auth'
-import {
-  treeList,
-  formData,
-  treeAdd,
-  treeEdit,
-  treeDele,
-  formAdd,
-  formEdit,
-  formDelete,
-  formDetail
-} from '@/api/evaluate/evaluateForm'
+  import initDict from '@/mixins/initDict'
+  import { getCompanyId, getEmployeeId } from '@/utils/auth'
+  import {
+    treeList,
+    formData,
+    treeAdd,
+    treeEdit,
+    treeDele,
+    formAdd,
+    formEdit,
+    formDelete,
+    formDetail
+  } from '@/api/evaluate/evaluateForm'
 
-export default {
-  name: 'index',
-  mixins: [initDict],
-  data () {
-    return {
-      addProp: false,                 // 添加评价表
-      editProp: false,                // 修改评价表
-      screenLoading: false,           // 全局加载
-      detailProp: false,              // 查看评价表
-      deleteProp: false,              // 删除评价表
-      addTreeProp: false,             // 添加树评价表
-      editTreeProp: false,            // 修改树评价表
-      deleTreeProp: false,            // 删除树评价表
-      activeName: '1',                // 被激活的 tabBar标签
-      formName: '',                   // 评价表搜索字段
-      tableHeight: null,              // 表格最大高度
-      row: null,                      // 行数据
-      treeData: [
-        {
-          id: 0,
-          label: '全部分类',
+  export default {
+    name: 'index',
+    mixins: [initDict],
+    data() {
+      return {
+        addProp: false,                 // 添加评价表
+        editProp: false,                // 修改评价表
+        screenLoading: false,           // 全局加载
+        detailProp: false,              // 查看评价表
+        deleteProp: false,              // 删除评价表
+        addTreeProp: false,             // 添加树评价表
+        editTreeProp: false,            // 修改树评价表
+        deleTreeProp: false,            // 删除树评价表
+        activeName: '1',                // 被激活的 tabBar标签
+        formName: '',                   // 评价表搜索字段
+        tableHeight: null,              // 表格最大高度
+        row: null,                      // 行数据
+        projectCommentId: null,
+        treeData: [
+          {
+            id: 0,
+            label: '全部分类'
+          }
+        ],                              // 表格数据
+        tableData: [],                  // 表格数据
+        scoreList: [
+          '0',
+          '1',
+          '2',
+          '3',
+          '4',
+          '5',
+          '6',
+          '7',
+          '8',
+          '9',
+          '10'
+        ],                              // 分数列表
+        pageData: {                     // 分页查询返回数据
+          data: [],                     // 列表数据
+          total: 10                     // 查询总数
+        },
+        addForm: {
+          important: 0,                 // 是否重要项 1：是 0：不是
+          formClassId: [],               // 考评类id
+          grading: '',                  // 评价标准
+          fullScore: 0,                 // 分值
+          formId: null                 // 表格类id
+        },
+        editForm: {                     // 查询总数
+          important: 0,                 // 是否重要项 1：是 0：不是
+          formClassId: [],               // 考评类id
+          grading: '',                  // 评价标准
+          fullScore: 0,                 // 分值
+          formClassItemId: null         // 提交资料人员id列表
+        },
+        detailForm: {                     // 查询总数
+          important: 0,                 // 是否重要项 1：是 0：不是
+          formClassId: 0,               // 考评类id
+          grading: '',                  // 评价标准
+          fullScore: 0,                 // 分值
+          formClassItemId: null         // 提交资料人员id列表
+        },
+        pageParams: {                   // 分页查询参数
+          companyId: getCompanyId(),
+          formId: null,
+          keyWord: null,                // 查询关键字
+          formClassId: 0,               // 表格子类id
+          pageSize: 10,                 // 每页个数
+          pageNum: 0                    // 当前页数
+        },
+        ruleForm: {
+          grading: [
+            { required: true, message: '必填字段不能为空', trigger: 'blur' }
+          ],
+          formClassId: [
+            { required: true, message: '必填字段不能为空', trigger: 'change' }
+          ]
         }
-      ],                              // 表格数据
-      tableData: [],                  // 表格数据
-      scoreList: [
-        '0',
-        '1',
-        '2',
-        '3',
-        '4',
-        '5',
-        '6',
-        '7',
-        '8',
-        '9',
-        '10'
-      ],                              // 分数列表
-      pageData: {                     // 分页查询返回数据
-        data: [],                     // 列表数据
-        total: 10                     // 查询总数
-      },
-      addForm: {
-        important: 0,                 // 是否重要项 1：是 0：不是
-        formClassId: [],               // 考评类id
-        grading: '',                  // 评价标准
-        fullScore: 0,                 // 分值
-        formId: null,                 // 表格类id
-      },
-      editForm: {                     // 查询总数
-        important: 0,                 // 是否重要项 1：是 0：不是
-        formClassId: [],               // 考评类id
-        grading: '',                  // 评价标准
-        fullScore: 0,                 // 分值
-        formClassItemId: null         // 提交资料人员id列表
-      },
-      detailForm: {                     // 查询总数
-        important: 0,                 // 是否重要项 1：是 0：不是
-        formClassId: 0,               // 考评类id
-        grading: '',                  // 评价标准
-        fullScore: 0,                 // 分值
-        formClassItemId: null         // 提交资料人员id列表
-      },
-      pageParams: {                   // 分页查询参数
-        companyId: getCompanyId(),
-        formId: null,
-        keyWord: null,                // 查询关键字
-        formClassId: 0,               // 表格子类id
-        pageSize: 10,                 // 每页个数
-        pageNum: 0                    // 当前页数
-      },
-      ruleForm: {
-        grading: [
-          { required: true, message: '必填字段不能为空', trigger: 'blur' }
-        ],
-        formClassId: [
-          { required: true, message: '必填字段不能为空', trigger: 'change' }
-        ],
       }
-    }
-  },
-  created () {
-    this.doCreat()
-  },
-  mounted () {
-    this.getHeight;
-    this.tableHeight = this.setHeight
-  },
-  computed: {
-    getHeight () {
-      let container = document.getElementById("app-container");
-      let main = document.getElementsByClassName("app-main")[0].clientHeight;
-      container.style.height = main + "px";
-      return "";
     },
-    // 设置表格最大高度
-    setHeight () {
-      let tag = document.getElementById('app-container')
-      return tag.clientHeight - 220
+    created() {
+      this.doCreat()
     },
-  },
-  props: {
-    formId: [String, Number]
-  },
-  methods: {
-    // 初始化
-    doCreat () {
-      if (sessionStorage.getItem('formId')) {
-        this.formId = sessionStorage.getItem('formId')
-        this.pageParams.formId = sessionStorage.getItem('formId')
-        this.pageParams.formClassId = 0
-      } else {
-        let formId = this.formId
-        sessionStorage.setItem('formId', formId)
-        this.pageParams.formId = formId
-        this.pageParams.formClassId = 0
+    mounted() {
+      this.getHeight
+      this.tableHeight = this.setHeight
+    },
+    computed: {
+      getHeight() {
+        let container = document.getElementById('app-container')
+        let main = document.getElementsByClassName('app-main')[0].clientHeight
+        container.style.height = main + 'px'
+        return ''
+      },
+      // 设置表格最大高度
+      setHeight() {
+        let tag = document.getElementById('app-container')
+        return tag.clientHeight - 220
       }
-      this.getTreeData()
-      this.doSearch(0)
     },
-    // 查询表格数据
-    doSearch (page = 0, size = 10) {
-      this.pageParams.pageNum = page
-      this.pageParams.pageSize = size
-      this.getData()
+    props: {
+      formId: [String, Number],
+      commentId: [String, Number]
     },
-    // 获取评价中表格数据
-    getData () {
-      let params = this.pageParams
-      this.screenLoading = true
-      formData(params).then(res => {
-        this.screenLoading = false
-        if (res.code === 0) {
-          let data = res.data
-          this.tableData = data.records
-          this.pageData.total = Number(data.total)
+    methods: {
+      // 初始化
+      doCreat() {
+        this.projectCommentId = this.commentId
+        this.pageParams.projectCommentId = this.commentId
+        if (sessionStorage.getItem('formId')) {
+          this.formId = sessionStorage.getItem('formId')
+          this.pageParams.formId = sessionStorage.getItem('formId')
+          this.pageParams.formClassId = 0
         } else {
-          this.$message({ message: res.msg, type: 'error' })
+          let formId = this.formId
+          sessionStorage.setItem('formId', formId)
+          this.pageParams.formId = formId
+          this.pageParams.formClassId = 0
         }
-      })
-    },
-    // 获取树结构数据
-    getTreeData () {
-      let params = {
-        formId: this.formId
-      }
-      this.screenLoading = true
-      treeList(params).then(res => {
-        this.screenLoading = false
-        if (res.code === 0) {
-          let data = res.data
-          data.treeList.forEach((p, i, arr) => {
+        this.getTreeData()
+        this.doSearch(0)
+      },
+      // 查询表格数据
+      doSearch(page = 0, size = 10) {
+        this.pageParams.pageNum = page
+        this.pageParams.pageSize = size
+        this.getData()
+      },
+      // 获取评价中表格数据
+      getData() {
+        let params = this.pageParams
+        this.screenLoading = true
+        formData(params).then(res => {
+          this.screenLoading = false
+          if (res.code === 0) {
+            let data = res.data
+            this.tableData = data.records
+            this.pageData.total = Number(data.total)
+          } else {
+            this.$message({ message: res.msg, type: 'error' })
+          }
+        })
+      },
+      // 获取树结构数据
+      getTreeData() {
+        let params = {
+          formId: this.formId
+        }
+        this.screenLoading = true
+        treeList(params).then(res => {
+          this.screenLoading = false
+          if (res.code === 0) {
+            let data = res.data
+            data.treeList.forEach((p, i, arr) => {
+              this.doFilter(p)
+            })
+            this.treeData = [
+              {
+                id: data.formId,
+                label: data.formName,
+                children: []
+              }
+            ]
+            this.treeData[0].children = data.treeList
+          } else {
+            this.$message({ message: res.msg, type: 'error' })
+          }
+        })
+      },
+      // 递归数据
+      doFilter(data) {
+        if (data.childList && data.childList.length > 0) {
+          data.id = data.formClassId
+          data.value = data.formClassId
+          data.label = data.formClassName
+          data.children = data.childList
+          data.children.forEach((p, i, arr) => {
             this.doFilter(p)
           })
-          this.treeData = [
-            {
-              id: data.formId,
-              label: data.formName,
-              children: [],
-            }
-          ]
-          this.treeData[0].children = data.treeList
         } else {
-          this.$message({ message: res.msg, type: 'error' })
+          data.id = data.formClassId
+          data.value = data.formClassId
+          data.label = data.formClassName
+          data.children = data.childList
+          return false
         }
-      })
-    },
-    // 递归数据
-    doFilter (data) {
-      if (data.childList && data.childList.length > 0) {
-        data.id = data.formClassId
-        data.value = data.formClassId
-        data.label = data.formClassName
-        data.children = data.childList
-        data.children.forEach((p, i, arr) => {
-          this.doFilter(p)
-        })
-      } else {
-        data.id = data.formClassId
-        data.value = data.formClassId
-        data.label = data.formClassName
-        data.children = data.childList
-        return false
-      }
-    },
-    // 点击当前节点
-    doTreeClick (data) {
-      this.row = data
-      if (data.pid) {
-        this.pageParams.formClassId = data.id
-        this.pageParams.formId = 0
-      } else {
-        this.pageParams.formClassId = 0
-        this.pageParams.formId = data.id
-      }
-      this.doSearch()
-    },
-    // 添加树子类
-    doAddTree (node, data) {
-      console.log(node, data)
-      this.formName = ""
-      this.addTreeProp = true
-      this.row = data
-    },
-    // 修改树子类
-    doEditTree (node, data) {
-      this.row = data
-      this.formName = data.label
-      this.editTreeProp = true
-    },
-    // 删除树子类
-    doDeleTree (node, data) {
-      this.row = data
-      this.deleTreeProp = true
-    },
-    // 确定添加树子类
-    doAddTrees (data) {
-      let params = {
-        employeeId: getEmployeeId(),
-        name: this.formName,
-        formId: this.formId,
-        pid: this.row.id,
-        id: 0
-      }
-      if (!this.row.pid) {
-        params.pid = 0
-      }
-      this.screenLoading = true
-      treeAdd(params).then(res => {
-        this.screenLoading = false
-        this.addTreeProp = false
-        if (res.code === 0) {
-          this.doRefresh()
-          this.getData()
-          this.getTreeData()
-          this.$message({ message: res.msg, type: 'success' })
+      },
+      // 点击当前节点
+      doTreeClick(data) {
+        this.row = data
+        if (data.pid) {
+          this.pageParams.formClassId = data.id
+          this.pageParams.formId = 0
         } else {
-          this.$message({ message: res.msg, type: 'error' })
+          this.pageParams.formClassId = 0
+          this.pageParams.formId = data.id
         }
-      })
-    },
-    // 确定修改树子类
-    doEditTrees () {
-      let params = {
-        employeeId: getEmployeeId(),
-        name: this.formName,
-        formId: this.formId,
-        id: this.row.id,
-        pid: this.row.pid,
-      }
-      this.screenLoading = true
-      treeEdit(params).then(res => {
-        this.screenLoading = false
-        this.editTreeProp = false
-        if (res.code === 0) {
-          this.doRefresh()
-          this.getData()
-          this.getTreeData()
-          this.$message({ message: res.msg, type: 'success' })
-        } else {
-          this.$message({ message: res.msg, type: 'error' })
+        this.doSearch()
+      },
+      // 添加树子类
+      doAddTree(node, data) {
+        console.log(node, data)
+        this.formName = ''
+        this.addTreeProp = true
+        this.row = data
+      },
+      // 修改树子类
+      doEditTree(node, data) {
+        this.row = data
+        this.formName = data.label
+        this.editTreeProp = true
+      },
+      // 删除树子类
+      doDeleTree(node, data) {
+        this.row = data
+        this.deleTreeProp = true
+      },
+      // 确定添加树子类
+      doAddTrees(data) {
+        let params = {
+          employeeId: getEmployeeId(),
+          name: this.formName,
+          formId: this.formId,
+          pid: this.row.id,
+          id: 0
         }
-      })
-    },
-    // 确定删除树子类
-    doDeleTrees () {
-      let params = {
-        employeeId: getEmployeeId(),
-        id: this.row.id
-      }
-      this.screenLoading = true
-      treeDele(params).then(res => {
-        this.screenLoading = false
-        this.deleTreeProp = false
-        if (res.code === 0) {
-          this.doRefresh()
-          this.getTreeData()
-          this.getData()
-          this.$message({ message: res.msg, type: 'success' })
-        } else {
-          this.$message({ message: res.msg, type: 'error' })
+        if (!this.row.pid) {
+          params.pid = 0
         }
-      })
-    },
-    // 重置评价请求参数
-    doRefresh () {
-      this.tableData = []
-      this.pageParams.keyWord = null
-      this.pageParams.pageSize = 10
-      this.pageParams.pageNum = 0
-    },
-    // 添加表格评价表弹窗
-    doAdd () {
-      this.addProp = true
-    },
-    // 修改表格评价表弹窗
-    doEdit (row) {
-      this.editProp = true
-      this.row = row
-      this.screenLoading = true
-      formDetail(row.formClassItemId).then(res => {
-        this.screenLoading = false
-        if (res.code === 0) {
-          let data = res.data
-          // data.formClassId = data.formClassName
-          data.important = data.important === 1 ? true : false
-          this.editForm = JSON.parse(JSON.stringify(data))
-        } else {
-          this.$message({ message: res.msg, type: 'error' })
-        }
-      })
-    },
-    // 查看表格评价表弹窗
-    doDetail (row) {
-      this.detailProp = true
-      this.screenLoading = true
-      formDetail(row.formClassItemId).then(res => {
-        this.screenLoading = false
-        if (res.code === 0) {
-          let data = res.data
-          data.formClassId = data.formClassName
-          data.important = data.important === 1 ? true : false
-          this.detailForm = JSON.parse(JSON.stringify(data))
-        } else {
-          this.$message({ message: res.msg, type: 'error' })
-        }
-      })
-    },
-    // 删除表格评价表弹窗
-    doDelete (row) {
-      this.row = row
-      this.deleteProp = true
-    },
-    // 创建考评项提交操作
-    doAddConfirm (ruleForm) {
-      if (this.addForm.formClassId.length === 0) {
-        this.$message({ message: '请选择考评分类', type: 'error' })
-        return
-      }
-      this.$refs[ruleForm].validate((valid) => {
-        if (valid) {
-          let important = this.addForm.important ? 1 : 0,
-            formClassId = this.addForm.formClassId[this.addForm.formClassId.length - 1]
-          let form = {
-            important: important,                       // 是否重要项 1：是 0：不是
-            formClassId: formClassId,                   // 考评类id
-            employeeId: getEmployeeId(),                // 操作者职员id
-            grading: this.addForm.grading,              // 评价标准
-            fullScore: this.addForm.fullScore,          // 分值
-            formId: this.formId,                        // 表格类id
-          }
-          this.screenLoading = true
-          formAdd(form).then(res => {
-            this.screenLoading = false
-            if (res.code === 0) {
-              this.addProp = false
-              this.$refs[ruleForm].resetFields()
-              this.$message({ message: '创建成功', type: 'success' })
-              this.doSearch()
-            } else {
-              this.$message({ message: res.msg, type: 'error' })
-            }
-          })
-        }
-      })
-    },
-    // 修改考评项提交操作
-    doEditConfirm (ruleForm) {
-      if (this.editForm.formClassId.length === 0) {
-        this.$message({ message: '请选择考评分类', type: 'error' })
-        return
-      }
-      this.$refs[ruleForm].validate((valid) => {
-        if (valid) {
-          let important = this.editForm.important ? 1 : 0,
-            formClassId
-          if (Array.isArray(this.editForm.formClassId)) {
-            formClassId = this.editForm.formClassId[this.editForm.formClassId.length - 1]
-            console.log(formClassId, 33)
+        this.screenLoading = true
+        treeAdd(params).then(res => {
+          this.screenLoading = false
+          this.addTreeProp = false
+          if (res.code === 0) {
+            this.doRefresh()
+            this.getData()
+            this.getTreeData()
+            this.$message({ message: res.msg, type: 'success' })
           } else {
-            formClassId = this.editForm.formClassId
+            this.$message({ message: res.msg, type: 'error' })
           }
-          let form = {
-            important: important,                             // 是否重要项 1：是 0：不是
-            formClassId: formClassId,
-            formClassItemId: this.editForm.formClassItemId,   // 考评类id
-            employeeId: getEmployeeId(),                      // 操作者职员id
-            grading: this.editForm.grading,                   // 评价标准
-            fullScore: this.editForm.fullScore,               // 分值
-            formId: this.formId,                              // 表格类id
+        })
+      },
+      // 确定修改树子类
+      doEditTrees() {
+        let params = {
+          employeeId: getEmployeeId(),
+          name: this.formName,
+          formId: this.formId,
+          id: this.row.id,
+          pid: this.row.pid
+        }
+        this.screenLoading = true
+        treeEdit(params).then(res => {
+          this.screenLoading = false
+          this.editTreeProp = false
+          if (res.code === 0) {
+            this.doRefresh()
+            this.getData()
+            this.getTreeData()
+            this.$message({ message: res.msg, type: 'success' })
+          } else {
+            this.$message({ message: res.msg, type: 'error' })
           }
-          this.screenLoading = true
-          formEdit(form).then(res => {
-            this.screenLoading = false
-            if (res.code === 0) {
-              this.editProp = false
-              this.$refs[ruleForm].resetFields()
-              this.$message({ message: '创建成功', type: 'success' })
-              this.doSearch()
-            } else {
-              this.$message({ message: res.msg, type: 'error' })
+        })
+      },
+      // 确定删除树子类
+      doDeleTrees() {
+        let params = {
+          employeeId: getEmployeeId(),
+          id: this.row.id
+        }
+        this.screenLoading = true
+        treeDele(params).then(res => {
+          this.screenLoading = false
+          this.deleTreeProp = false
+          if (res.code === 0) {
+            this.doRefresh()
+            this.getTreeData()
+            this.getData()
+            this.$message({ message: res.msg, type: 'success' })
+          } else {
+            this.$message({ message: res.msg, type: 'error' })
+          }
+        })
+      },
+      // 重置评价请求参数
+      doRefresh() {
+        this.tableData = []
+        this.pageParams.keyWord = null
+        this.pageParams.pageSize = 10
+        this.pageParams.pageNum = 0
+      },
+      // 添加表格评价表弹窗
+      doAdd() {
+        this.addProp = true
+      },
+      // 修改表格评价表弹窗
+      doEdit(row) {
+        this.editProp = true
+        this.row = row
+        this.screenLoading = true
+        formDetail(row.formClassItemId).then(res => {
+          this.screenLoading = false
+          if (res.code === 0) {
+            let data = res.data
+            // data.formClassId = data.formClassName
+            data.important = data.important === 1 ? true : false
+            this.editForm = JSON.parse(JSON.stringify(data))
+          } else {
+            this.$message({ message: res.msg, type: 'error' })
+          }
+        })
+      },
+      // 查看表格评价表弹窗
+      doDetail(row) {
+        this.detailProp = true
+        this.screenLoading = true
+        formDetail(row.formClassItemId).then(res => {
+          this.screenLoading = false
+          if (res.code === 0) {
+            let data = res.data
+            data.formClassId = data.formClassName
+            data.important = data.important === 1 ? true : false
+            this.detailForm = JSON.parse(JSON.stringify(data))
+          } else {
+            this.$message({ message: res.msg, type: 'error' })
+          }
+        })
+      },
+      // 删除表格评价表弹窗
+      doDelete(row) {
+        this.row = row
+        this.deleteProp = true
+      },
+      // 创建考评项提交操作
+      doAddConfirm(ruleForm) {
+        if (this.addForm.formClassId.length === 0) {
+          this.$message({ message: '请选择考评分类', type: 'error' })
+          return
+        }
+        this.$refs[ruleForm].validate((valid) => {
+          if (valid) {
+            let important = this.addForm.important ? 1 : 0,
+              formClassId = this.addForm.formClassId[this.addForm.formClassId.length - 1]
+            let form = {
+              important: important,                       // 是否重要项 1：是 0：不是
+              formClassId: formClassId,                   // 考评类id
+              employeeId: getEmployeeId(),                // 操作者职员id
+              grading: this.addForm.grading,              // 评价标准
+              fullScore: this.addForm.fullScore,          // 分值
+              formId: this.formId                        // 表格类id
             }
-          })
+            this.screenLoading = true
+            formAdd(form).then(res => {
+              this.screenLoading = false
+              if (res.code === 0) {
+                this.addProp = false
+                this.$refs[ruleForm].resetFields()
+                this.$message({ message: '创建成功', type: 'success' })
+                this.doSearch()
+              } else {
+                this.$message({ message: res.msg, type: 'error' })
+              }
+            })
+          }
+        })
+      },
+      // 修改考评项提交操作
+      doEditConfirm(ruleForm) {
+        if (this.editForm.formClassId.length === 0) {
+          this.$message({ message: '请选择考评分类', type: 'error' })
+          return
         }
-      })
-    },
-    // 删除考评项提交操作
-    doDeleteConfirm (ruleForm) {
-      let form = {
-        id: this.row.formClassItemId,
-        employeeId: getEmployeeId()
+        this.$refs[ruleForm].validate((valid) => {
+          if (valid) {
+            let important = this.editForm.important ? 1 : 0,
+              formClassId
+            if (Array.isArray(this.editForm.formClassId)) {
+              formClassId = this.editForm.formClassId[this.editForm.formClassId.length - 1]
+              console.log(formClassId, 33)
+            } else {
+              formClassId = this.editForm.formClassId
+            }
+            let form = {
+              important: important,                             // 是否重要项 1：是 0：不是
+              formClassId: formClassId,
+              formClassItemId: this.editForm.formClassItemId,   // 考评类id
+              employeeId: getEmployeeId(),                      // 操作者职员id
+              grading: this.editForm.grading,                   // 评价标准
+              fullScore: this.editForm.fullScore,               // 分值
+              formId: this.formId                              // 表格类id
+            }
+            this.screenLoading = true
+            formEdit(form).then(res => {
+              this.screenLoading = false
+              if (res.code === 0) {
+                this.editProp = false
+                this.$refs[ruleForm].resetFields()
+                this.$message({ message: '创建成功', type: 'success' })
+                this.doSearch()
+              } else {
+                this.$message({ message: res.msg, type: 'error' })
+              }
+            })
+          }
+        })
+      },
+      // 删除考评项提交操作
+      doDeleteConfirm(ruleForm) {
+        let form = {
+          id: this.row.formClassItemId,
+          employeeId: getEmployeeId()
+        }
+        this.screenLoading = true
+        formDelete(form).then(res => {
+          this.screenLoading = false
+          if (res.code === 0) {
+            this.deleteProp = false
+            this.$message({ message: res.msg, type: 'success' })
+            this.doSearch()
+          } else {
+            this.$message({ message: res.msg, type: 'error' })
+          }
+        })
+      },
+      // 返回上一级
+      doBack() {
+        this.$emit('doChildClose')
+        sessionStorage.removeItem('formId')
+      },
+      // 主页面表格 点击分页
+      doSizeChange(size) {
+        this.doRefresh()
+        this.doSearch(0, size)
+      },
+      // 主页面表格 分页改变
+      doPageChange(page) {
+        this.doRefresh()
+        this.doSearch(page, 10)
       }
-      this.screenLoading = true
-      formDelete(form).then(res => {
-        this.screenLoading = false
-        if (res.code === 0) {
-          this.deleteProp = false
-          this.$message({ message: res.msg, type: 'success' })
-          this.doSearch()
-        } else {
-          this.$message({ message: res.msg, type: 'error' })
-        }
-      })
-    },
-    // 返回上一级
-    doBack () {
-      this.$emit('doChildClose')
-      sessionStorage.removeItem('formId')
-    },
-    // 主页面表格 点击分页
-    doSizeChange (size) {
-      this.doRefresh()
-      this.doSearch(0, size)
-    },
-    // 主页面表格 分页改变
-    doPageChange (page) {
-      this.doRefresh()
-      this.doSearch(page, 10)
-    },
+    }
   }
-}
 </script>
 
 <style scoped>
-.el-row,
-.el-col,
-.el-tree {
-  height: inherit;
-}
-.el-tree {
-  overflow: hidden;
-  overflow-y: auto;
-}
-.el-select {
-  width: 100%;
-}
-.table-san {
-  display: inline;
-  top: -3px;
-  position: relative;
-}
+  .el-row,
+  .el-col,
+  .el-tree {
+    height: inherit;
+  }
+
+  .el-tree {
+    overflow: hidden;
+    overflow-y: auto;
+  }
+
+  .el-select {
+    width: 100%;
+  }
+
+  .table-san {
+    display: inline;
+    top: -3px;
+    position: relative;
+  }
 </style>
 <style>
-.custom-tree-node span button:first-child {
-  padding-left: 20px;
-}
+  .custom-tree-node span button:first-child {
+    padding-left: 20px;
+  }
 </style>
