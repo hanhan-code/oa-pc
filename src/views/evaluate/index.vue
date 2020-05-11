@@ -50,14 +50,14 @@
                   <el-button
                     type="success"
                     @click="doRunButton(scope.row, 1)"
-                    v-show="scope.row.status === 0 || scope.row.status === 2"
+                    v-show="scope.row.status === 0 || scope.row.status === 1"
                     plain
                     size="mini"
                   >开始</el-button>
                   <el-button
                     type="warning"
                     @click="doRunButton(scope.row, 2)"
-                    v-show="scope.row.status === 1"
+                    v-show="scope.row.status === 2"
                     plain
                     size="mini"
                   >暂停</el-button>
@@ -501,8 +501,8 @@ export default {
       if (type === 0) {
         // this.screenLoading = true
         let link = document.createElement('a')
-        link.target="blank"
-        link.style.display="none"
+        link.target = "blank"
+        link.style.display = "none"
         link.href = this.$network + 'assessment/form/pdf?projectCommentId=' + row.projectCommentId
         link.click()
         document.body.append(link)
