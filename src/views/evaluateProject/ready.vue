@@ -3,7 +3,7 @@
     <!-- 工具栏 -->
     <div class="head-tools">
       <!-- 搜索按钮 -->
-      <el-button size="small" type="success" @click="doSearch()">{{query.formName}}</el-button>
+      <el-button size="small" type="success" @click="getData">{{query.formName}}</el-button>
     </div>
     <br />
     <!-- 数据内容 -->
@@ -12,7 +12,7 @@
         <el-table
           size="small"
           :data="tableData"
-          :max-height="600"
+          :max-height="700"
           border
           row-key="formClassId"
           type="expand"
@@ -20,7 +20,6 @@
           >
           <el-table-column type="expand">
             <template slot-scope="scope">
-              {{scope.row}}
               <read-repeat :query="query" :params="scope.row" @doRest="doRest"></read-repeat>
             </template>
           </el-table-column>
@@ -86,7 +85,6 @@ export default {
     }
   },
   created () {
-    this.doSearch()
     this.doCreat()
   },
   mounted () {
@@ -98,9 +96,6 @@ export default {
       this.query = query
       this.pageParams.projectCommentId = query.projectCommentId
       this.pageParams.formId = query.formId
-    },
-    // 查询表格数据
-    doSearch () {
       this.getData()
     },
     // 获取评价中表格数据
@@ -163,7 +158,7 @@ export default {
       })
     },
     // 子组件返回
-    doRest (page) {
+    doRest () {
       this.getData()
     },
   }

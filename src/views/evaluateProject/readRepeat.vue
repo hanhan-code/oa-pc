@@ -8,12 +8,56 @@
         :max-height="600"
         row-key="formClassId"
         border
-        v-show="!params.formClassItemList"
       >
         <el-table-column type="expand">
           <template slot-scope="scope">
-            {{scope.row}}
-            <read-repeat :query="query" :params="params" v-if="params.formClassItemList.length > 0"></read-repeat>
+            <!-- <read-repeat :query="query" :params="scope.row"></read-repeat> -->
+            <el-table size="small" :data="scope.row.formClassItemList" :max-height="600" border>
+              <el-table-column type="index" label="序号" align="center"></el-table-column>
+              <el-table-column prop="fullScore" label="满分值" align="center"></el-table-column>
+              <el-table-column prop="deductScore" label="扣分值" align="center"></el-table-column>
+              <el-table-column prop="grading" label="评价项标准" align="center"></el-table-column>
+              <el-table-column label="是否重要项" align="center">
+                <template slot-scope="scope">
+                  <div v-show="scope.row.important === 0">否</div>
+                  <div v-show="scope.row.important === 1">是</div>
+                </template>
+              </el-table-column>
+              <el-table-column label="评价状态" align="center">
+                <template slot-scope="scope">
+                  <div v-show="scope.row.status === 0">未评价</div>
+                  <div v-show="scope.row.status === 1">已评价</div>
+                  <div v-show="scope.row.status === 2">历史评价</div>
+                  <div v-show="scope.row.status === 3">重新评价</div>
+                  <div v-show="scope.row.status === 4">已经完结项目的评价</div>
+                </template>
+              </el-table-column>
+              <el-table-column width="300" label="操作" align="center">
+                <template slot-scope="scope">
+                  <el-button
+                    type="primary"
+                    v-show="scope.row.status === 0 && query.status !== 3"
+                    @click="doRemind(scope.row)"
+                    plain
+                    size="mini"
+                  >催交</el-button>
+                  <el-button
+                    type="primary"
+                    v-show="scope.row.status === 0 && query.status !== 3"
+                    @click="doEvaluate(scope.row)"
+                    plain
+                    size="mini"
+                  >评审</el-button>
+                  <el-button
+                    type="primary"
+                    v-show="scope.row.status === 1"
+                    @click="doRepeat(scope.row)"
+                    plain
+                    size="mini"
+                  >重评</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
           </template>
         </el-table-column>
         <el-table-column type="index" label="序号" align="center"></el-table-column>
@@ -35,7 +79,7 @@
         <el-table-column prop="totalChildNum" label="评价子项总数" align="center"></el-table-column>
       </el-table>
 
-      <el-table
+      <!-- <el-table
         size="small"
         :data="params.formClassItemList"
         :max-height="600"
@@ -86,7 +130,7 @@
             >重评</el-button>
           </template>
         </el-table-column>
-      </el-table>
+      </el-table>-->
     </div>
     <!-- 催交 -->
     <el-dialog
@@ -120,7 +164,7 @@
 
     <!-- 评审 -->
     <el-dialog
-      title
+      title="选择分数"
       :visible.sync="evaluateProp"
       width="20%"
       :modal="false"
@@ -174,12 +218,12 @@ export default {
   },
   props: ['query', 'params'],
   mounted () {
-    console.log(this.params, 333)
   },
   methods: {
     // 催交
-    doMind (row) {
+    doRemind (row) {
       this.row = row
+      this.remindProp = true
     },
     // 确认催交
     doRemindConfirm () {
@@ -193,8 +237,10 @@ export default {
         this.screenLoading = false
         this.remindProp = false
         if (res.code === 0) {
-          this.$emit('doReset')
+          this.$emit('doRest')
           this.$message({ message: res.msg, type: 'success' })
+        } else {
+          this.$message({ message: res.msg, type: 'error' })
         }
       })
     },
@@ -219,8 +265,10 @@ export default {
         this.screenLoading = false
         this.evaluateProp = false
         if (res.code === 0) {
-          this.$emit('doReset')
+          this.$emit('doRest')
           this.$message({ message: res.msg, type: 'success' })
+        } else {
+          this.$message({ message: res.msg, type: 'error' })
         }
       })
     },
@@ -241,8 +289,10 @@ export default {
         this.repeatProp = false
         this.screenLoading = false
         if (res.code === 0) {
-          this.$emit('doReset')
+          this.$emit('doRest')
           this.$message({ message: res.msg, type: 'success' })
+        } else {
+          this.$message({ message: res.msg, type: 'error' })
         }
       })
     },
