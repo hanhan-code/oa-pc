@@ -165,17 +165,3 @@ export default {
 }
 </script>
 
-<style scoped>
-.el-select {
-  width: 100%;
-}
-</style>
-<style>
-.danger-row {
-  color: #e6a23c;
-}
-
-.success-row {
-  color: #67c23a;
-}
-</style>

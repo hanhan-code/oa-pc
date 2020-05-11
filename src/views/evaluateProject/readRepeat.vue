@@ -55,6 +55,13 @@
                     plain
                     size="mini"
                   >重评</el-button>
+                  <el-button
+                    type="primary"
+                    v-show="scope.row.status !== 1 && query.status !== 3"
+                    @click="doUpload(scope.row)"
+                    plain
+                    size="mini"
+                  >上传</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -78,59 +85,6 @@
         <el-table-column prop="noSubmitNum" label="暂未提交项的个数" align="center"></el-table-column>
         <el-table-column prop="totalChildNum" label="评价子项总数" align="center"></el-table-column>
       </el-table>
-
-      <!-- <el-table
-        size="small"
-        :data="params.formClassItemList"
-        :max-height="600"
-        border
-        v-show="params.formClassItemList"
-      >
-        <el-table-column type="index" label="序号" align="center"></el-table-column>
-        <el-table-column prop="fullScore" label="满分值" align="center"></el-table-column>
-        <el-table-column prop="deductScore" label="扣分值" align="center"></el-table-column>
-        <el-table-column prop="grading" label="评价项标准" align="center"></el-table-column>
-        <el-table-column label="是否重要项" align="center">
-          <template slot-scope="scope">
-            <div v-show="scope.row.commentStatus === 0">否</div>
-            <div v-show="scope.row.commentStatus === 1">是</div>
-          </template>
-        </el-table-column>
-        <el-table-column label="评价状态" align="center">
-          <template slot-scope="scope">
-            <div v-show="scope.row.status === 0">未评价</div>
-            <div v-show="scope.row.status === 1">已评价</div>
-            <div v-show="scope.row.status === 2">历史评价</div>
-            <div v-show="scope.row.status === 3">重新评价</div>
-            <div v-show="scope.row.status === 4">已经完结项目的评价</div>
-          </template>
-        </el-table-column>
-        <el-table-column width="300" label="操作" align="center">
-          <template slot-scope="scope">
-            <el-button
-              type="primary"
-              v-show="query.status === 0 && query.status !== 3"
-              @click="doRemind(scope.row)"
-              plain
-              size="mini"
-            >催交</el-button>
-            <el-button
-              type="primary"
-              v-show="query.status === 0 && query.status !== 3"
-              @click="doEvaluate(scope.row)"
-              plain
-              size="mini"
-            >评审</el-button>
-            <el-button
-              type="primary"
-              v-show="query.status !== 0 && query.status !== 3"
-              @click="doRepeat(scope.row)"
-              plain
-              size="mini"
-            >重评</el-button>
-          </template>
-        </el-table-column>
-      </el-table>-->
     </div>
     <!-- 催交 -->
     <el-dialog
@@ -178,6 +132,34 @@
         <el-button type="primary" @click="doEvaluateConfirm">确定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 下载进度条 -->
+    <el-dialog
+      title="下载进度"
+      :visible="progress.visible"
+      :modal="false"
+      width="36%"
+      center
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
+    >
+      <!-- 文件进度列表 -->
+      <div class="progress-list">
+        <div class="progress-item" v-for="(file, index) in progress.files" :key="index">
+          <span>{{file.name}} ( {{file.size}} )</span>
+          <el-progress :percentage="file.percent"></el-progress>
+        </div>
+      </div>
+    </el-dialog>
+    <input type="file" ref="upload" class="upload-hide" multiple="multiple" @change="doChange" />
+    <!-- <el-upload
+      class="upload-demo"
+      multiple
+      :limit="5"
+      :on-exceed="handleExceed"
+      :file-list="fileList"
+    ></el-upload>-->
     <el-button type="text" v-loading.fullscreen.lock="screenLoading"></el-button>
   </div>
 </template>
@@ -185,7 +167,7 @@
 <script>
 
 import initDict from '@/mixins/initDict'
-import { getCompanyId, getEmployeeId } from '@/utils/auth'
+import { getCompanyId, getEmployeeId, getToken } from '@/utils/auth'
 import {
   readyData,
   personDatas,
@@ -196,7 +178,7 @@ import {
   fileDels,
   submitFile
 } from "@/api/evaluateProject/evaluateProject";
-
+import axios from 'axios'
 
 export default {
   name: 'readRepeat',
@@ -213,6 +195,12 @@ export default {
       pageParams: {
         formId: null,               // 分页查询参数
         projectCommentId: null      // 评价项目提交id
+      },
+      // 进度条参数
+      progress: {
+        files: [],
+        visible: false,
+        size: 0        // 同时上传数量
       },
     }
   },
@@ -296,12 +284,99 @@ export default {
         }
       })
     },
+    doUpload (row) {
+      this.row = row
+      this.$refs.upload.click()
+    },
+    handleRemove (file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePreview (file) {
+      console.log(file);
+    },
+    beforeRemove (file, fileList) {
+      doAfter(fileList)
+      return false
+    },
+    // 上传文件
+    doChange (e) {
+      let file = e.target.files,
+        percent,
+        uploadNum = 0, // 用来多文件上传判定条件
+        arr = []; // 用来多文件上传进度条
+      if (file.length === 0) {
+        return;
+      }
+      this.progress.visible = true
+      for (let i = 0; i < file.length; i++) {
+        let form = new FormData();
+        form.append("file", file[i]);
+        const http = axios.create({
+          headers: {
+            Authorization: "Bearer " + getToken()
+          },
+          onUploadProgress: progressEvent => {
+            // 计算进度
+            let value = Math.floor(
+              Number((progressEvent.loaded / file[i].size) * 100)
+            );
+            if (value >= 100) {
+              value = 100
+            }
+            let obj = {
+              name: file[i].name,
+              size: file[i].size,
+              percent: value
+            }
+            this.progress.files.splice(i, 1, obj)
+          }
+        });
+        http.post(this.$network + "file/attachment", form).then(response => {
+          let res = response.data
+          if (res.code === 0) {
+            uploadNum++;
+            // 如果上传文件数量大于1 手动计算进度条进度
+            if (
+              (file.length > 1 && uploadNum === file.length) ||
+              file.length === 1
+            ) {
+              this.progress.visible = false
+              this.progress.files = []
+              this.doFileData(res)
+              this.$message({ message: "上传成功", type: 'success' });
+            }
+          } else {
+            if (file.length === 1 && res.code >= 1 && res.code <= 10) {
+              this.$message({ message: res.msg, type: 'error' });
+            } else if (file.length === 1 && res.code > 10) {
+              this.$message({ message: "系统异常,请稍后再试", type: 'error' });
+            }
+          }
+        });
+      }
+    },
+    // 上传图片之前
+    doFileData (data) {
+      let params = {
+        detailId: this.row.deductDetailId,
+        employeeId: this.getEmployeeId,
+        formClassId: this.row.formClassId,
+        formId: this.row.formId,
+        projectCommentId: this.pageParams.projectCommentId,
+        url: data.data.link,
+      }
+      this.screenLoading = true
+      submitFile(params).then(res => {
+        this.screenLoading = false
+        this.$emit('doRest')
+      })
+    },
   }
 }
 </script>
 
 <style scoped>
-.el-select {
-  width: 100%;
+.upload-hide {
+  display: none;
 }
 </style>
