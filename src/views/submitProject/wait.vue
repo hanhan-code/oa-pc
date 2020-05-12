@@ -14,7 +14,7 @@
       <!-- 搜索按钮 -->
       <el-button size="small" type="success" icon="el-icon-search" @click="doSearch(0)">搜索</el-button>
       <el-button size="small" type="primary">
-        <router-link to="/evaluate/evaluateProject">返回上一级</router-link>
+        <router-link to="/submit/submitProject">返回上一级</router-link>
       </el-button>
     </div>
     <br />
@@ -209,7 +209,7 @@ export default {
         formId: row.formId,
         formName: row.formName
       }
-      this.$router.push({ path: 'evaluateReady', query: query })
+      this.$router.push({ path: '/submits/submitReady', query: query })
     },
     // 主页面表格 点击分页
     doSizeChange (size) {

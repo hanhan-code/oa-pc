@@ -19,7 +19,7 @@
         icon="el-icon-search"
         @click="doSearch(0)"
       >搜索</el-button>
-      <el-button size="small" type="primary" @click="doRemind">催交</el-button>
+      <el-button size="small" type="primary" @click="doRemind">催办</el-button>
     </div>
     <br />
     <!-- 数据内容 -->
@@ -55,13 +55,13 @@
                     plain
                     size="mini"
                   >待评价</el-button>
-                  <el-button
+                  <!-- <el-button
                     v-show="scope.row.status !== 1"
                     type="primary"
                     @click="doEnd(scope.row)"
                     plain
                     size="mini"
-                  >完结</el-button>
+                  >完结</el-button> -->
                   <span v-show="scope.row.status === 1">已暂停评价</span>
                 </template>
               </el-table-column>
@@ -167,7 +167,7 @@ export default {
         keyWord: null,                // 查询关键字
         pageSize: 10,                 // 每页个数
         pageNum: 1,                // 当前页数
-        type: 1, // 人员类别：0:提交资料人员；1：评审人员
+        type: 0, // 人员类别：0:提交资料人员；1：评审人员
         commented: 0, // 是否已评价；0：评价中，1：已评价
       },
     }
@@ -217,7 +217,7 @@ export default {
     },
     // 催办
     doRemind () {
-      this.$router.push({ path: '/evaluates/evaluateRemind' })
+      this.$router.push({ path: '/submits/submitRemind' })
     },
     // 待评价
     doWait (row) {
@@ -225,7 +225,7 @@ export default {
         projectCommentId: row.projectCommentId,
         status: row.status
       }
-      this.$router.push({ path: '/evaluates/evaluateWait', query: query })
+      this.$router.push({ path: '/submits/submitWait', query: query })
     },
     // 完结
     doEnd (row) {

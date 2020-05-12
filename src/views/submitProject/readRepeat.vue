@@ -25,6 +25,11 @@
                     v-show="scope.row.fileList.length > 0"
                     class="upload"
                   >
+                    <img
+                      src="@/assets/common/close.png"
+                      class="upload-close"
+                      @click="doDelete(item, scope.row)"
+                    />
                     <!-- 文件类型 ICON 图标处理 -->
                     <span @click="doClickImg(item)">
                       <svg-icon class="svg-icon" :icon-class="$utils.getIcon(item.url)" />
@@ -55,8 +60,8 @@
                     @click="doRemind(scope.row)"
                     plain
                     size="mini"
-                  >催交</el-button>
-                  <el-button
+                  >催办</el-button>
+                  <!-- <el-button
                     type="primary"
                     v-show="scope.row.status === 0 && query.status !== 3"
                     @click="doEvaluate(scope.row)"
@@ -69,7 +74,14 @@
                     @click="doRepeat(scope.row)"
                     plain
                     size="mini"
-                  >重评</el-button>
+                  >重评</el-button>-->
+                  <el-button
+                    type="primary"
+                    v-show="scope.row.status === 0 && query.status !== 3"
+                    @click="doUpload(scope.row)"
+                    plain
+                    size="mini"
+                  >上传</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -102,43 +114,48 @@
       :modal="false"
       :modal-append-to-body="false"
     >
-      是否确认催交？
+      是否确认催办？
       <span slot="footer" class="dialog-footer">
         <el-button type="default" @click="remindProp = false">取消</el-button>
         <el-button type="primary" @click="doRemindConfirm">确定</el-button>
       </span>
     </el-dialog>
 
-    <!-- 重评 -->
+    <!-- 删除 -->
     <el-dialog
       title="系统提示"
-      :visible.sync="repeatProp"
+      :visible.sync="deleProp"
       width="20%"
       :modal="false"
       :modal-append-to-body="false"
     >
-      是否确认重评？
+      此操作将永久删除该记录, 是否继续?
       <span slot="footer" class="dialog-footer">
-        <el-button type="default" @click="repeatProp = false">取消</el-button>
-        <el-button type="primary" @click="doRepeatConfirm">确定</el-button>
+        <el-button type="default" @click="deleProp = false">取消</el-button>
+        <el-button type="primary" @click="doDeleConfirm">确定</el-button>
       </span>
     </el-dialog>
-    <!-- 评审 -->
+
+    <!-- 下载进度条 -->
     <el-dialog
-      title="选择分数"
-      :visible.sync="evaluateProp"
-      width="20%"
+      title="上传进度"
+      :visible="progress.visible"
       :modal="false"
-      :modal-append-to-body="false"
+      width="36%"
+      center
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
     >
-      <el-select v-model="score" filterable clearable placeholder="请选择分数">
-        <el-option :label="item" :value="item" v-for="item in scoreColumns" :key="item"></el-option>
-      </el-select>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="default" @click="evaluateProp = false">取消</el-button>
-        <el-button type="primary" @click="doEvaluateConfirm">确定</el-button>
-      </span>
+      <!-- 文件进度列表 -->
+      <div class="progress-list">
+        <div class="progress-item" v-for="(file, index) in progress.files" :key="index">
+          <span>{{file.name}} ( {{$utils.getSize(file.size)}} )</span>
+          <el-progress :percentage="file.percent"></el-progress>
+        </div>
+      </div>
     </el-dialog>
+    <input type="file" ref="upload" class="upload-hide" multiple="multiple" @change="doChange" />
     <el-button type="text" v-loading.fullscreen.lock="screenLoading"></el-button>
   </div>
 </template>
@@ -173,6 +190,12 @@ export default {
       row: null,                    // 当前行数据
       file: null,                   // 文件对象
       scoreColumns: [],                // 分数列表
+      // 进度条参数
+      progress: {
+        files: [],
+        visible: false,
+        size: 0        // 同时上传数量
+      },
     }
   },
   props: ['query', 'params'],
@@ -188,7 +211,7 @@ export default {
     doRemindConfirm () {
       let idList = {
         itemDetailId: this.row.deductDetailId,
-        type: 0
+        type: 1
       }
       // 获取催交消息内容与用户id
       this.screenLoading = true
@@ -203,62 +226,78 @@ export default {
         }
       })
     },
-    // 评审
-    doEvaluate (row) {
-      this.evaluateProp = true
+    // 上传
+    doUpload (row) {
       this.row = row
-      for (let i = 0; i <= row.fullScore; i++) {
-        this.scoreColumns[i] = i
-      }
+      this.$refs.upload.click()
     },
-    // 确认评审
-    doEvaluateConfirm (value) {
-      let params = {
-        deductCore: this.score,
-        employeeId: getEmployeeId(),
-        important: this.row.important,
-        itemDetailId: this.row.deductDetailId,
+    // 上传文件
+    doChange (e) {
+      let file = e.target.files,
+        percent,
+        uploadNum = 0, // 用来多文件上传判定条件
+        arr = [], // 用来多文件上传进度条
+        reg = /.[(exe)(bat)(ibat)(sh)(cmd)(dex)(py)(apk)(ipa)]/gi // 上传文件类型限制
+      if (file.length === 0) {
+        return;
       }
-      this.screenLoading = true
-      evaluateData(params).then((res) => {
-        this.screenLoading = false
-        this.evaluateProp = false
-        if (res.code === 0) {
-          this.$emit('doRest')
-          this.$message({ message: res.msg, type: 'success' })
-        } else {
-          this.$message({ message: res.msg, type: 'error' })
+      this.progress.visible = true
+      for (let i = 0; i < file.length; i++) {
+        console.log(reg.test(file[i].name), file[i])
+        if (reg.test(file[i].name)) {
+          this.progress.visible = false
+          this.$message({ message: "暂不支持此类文件上传 " + file[i].name, type: 'error' })
+          break
         }
-      })
-    },
-    // 重评
-    doRepeat (row) {
-      this.row = row
-      this.repeatProp = true
-    },
-    // 确认重评
-    doRepeatConfirm () {
-      let params = {
-        employeeId: getEmployeeId(),
-        projectFormDetailId: this.row.deductDetailId
+        let form = new FormData();
+        form.append("file", file[i]);
+        const http = axios.create({
+          headers: {
+            Authorization: "Bearer " + getToken()
+          },
+          onUploadProgress: progressEvent => {
+            // 计算进度
+            let value = Math.floor(
+              Number((progressEvent.loaded / file[i].size) * 100)
+            );
+            if (value >= 100) {
+              value = 100
+            }
+            let obj = {
+              name: file[i].name,
+              size: file[i].size,
+              percent: value
+            }
+            this.progress.files.splice(i, 1, obj)
+          }
+        });
+        http.post(this.$network + "file/attachment", form).then(response => {
+          let res = response.data
+          if (res.code === 0) {
+            uploadNum++;
+            // 如果上传文件数量大于1 手动计算进度条进度
+            if (
+              (file.length > 1 && uploadNum === file.length) ||
+              file.length === 1
+            ) {
+              this.progress.visible = false
+              this.progress.files = []
+              this.doFileData(res.data)
+            }
+          } else {
+            if (file.length === 1 && res.code >= 1 && res.code <= 10) {
+              this.$message({ message: res.msg, type: 'error' });
+            } else if (file.length === 1 && res.code > 10) {
+              this.$message({ message: "系统异常,请稍后再试", type: 'error' });
+            }
+          }
+        });
       }
-      // 获取催交消息内容与用户id
-      this.screenLoading = true
-      resetData(params).then((res) => {
-        this.repeatProp = false
-        this.screenLoading = false
-        if (res.code === 0) {
-          this.$emit('doRest')
-          this.$message({ message: res.msg, type: 'success' })
-        } else {
-          this.$message({ message: res.msg, type: 'error' })
-        }
-      })
     },
     // 点击图片进行相关操作
     doClickImg (file) {
       let reg = /.(ppt)|(pptx)|(xlsx)|(docx)|(xls)|(doc)/gi,
-        regs = /.(image)|(pdf)/gi,
+        regs = /.(image)|(pnf)/gi,
         url = this.$filePrefix + file.url,
         previewUrl
       if (reg.test(url)) {
@@ -270,6 +309,48 @@ export default {
         return
       }
       window.open(previewUrl)
+    },
+    // 文件删除
+    doDelete (file, row) {
+      this.row = row
+      this.file = file
+      this.deleProp = true
+    },
+    // 文件删除
+    doDeleConfirm () {
+      let idList = {
+        fileId: this.file.fileId,
+        formClassItemId: this.row.formClassItemId,
+        projectCommentId: this.query.projectCommentId
+      }
+      this.screenLoading = true
+      fileDel(idList).then((res) => {
+        this.screenLoading = false
+        if (res.code === 0) {
+          this.deleProp = false
+          this.$message({ message: "删除成功", type: 'success' });
+          this.$emit('doRest')
+        } else {
+          this.$message({ message: "系统异常，请稍后再试", type: 'error' });
+        }
+      })
+    },
+    // 上传图片之前
+    doFileData (data) {
+      let params = {
+        detailId: this.row.deductDetailId,
+        employeeId: getEmployeeId(),
+        formClassId: this.row.formClassId,
+        formClassItemId: this.row.formClassItemId,
+        formId: this.row.formId,
+        projectCommentId: this.query.projectCommentId,
+        url: data.link,
+      }
+      this.screenLoading = true
+      submitFile(params).then(res => {
+        this.screenLoading = false
+        this.$emit('doRest')
+      })
     },
   }
 }

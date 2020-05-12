@@ -15,7 +15,7 @@
       <el-button size="small" type="success" icon="el-icon-search" @click="doSearch(0)">搜索</el-button>
       <el-button size="small" type="primary" @click="remindProp = true">提交</el-button>
       <el-button size="small" type="primary">
-        <router-link to="/evaluate/evaluateProject">返回上一级</router-link>
+        <router-link to="/submit/submitProject">返回上一级</router-link>
       </el-button>
     </div>
     <br />
@@ -72,7 +72,7 @@
       :modal="false"
       :modal-append-to-body="false"
     >
-      是否确认催交？
+      是否确认催办？
       <span slot="footer" class="dialog-footer">
         <el-button type="default" @click="remindProp = false">取消</el-button>
         <el-button type="primary" @click="doRemind">确定</el-button>
@@ -110,7 +110,7 @@ export default {
         keyWord: null,                // 查询关键字
         pageSize: 10,                 // 每页个数
         pageNum: 1,                // 当前页数
-        type: 1, // 人员类别：0:提交资料人员；1：评审人员
+        type: 0, // 人员类别：0:提交资料人员；1：评审人员
         commented: 0, // 是否已评价；0：评价中，1：已评价
       },
     }
@@ -162,21 +162,21 @@ export default {
     // 催交
     doRemind () {
       if (this.evaluateList.length === 0) {
-        this.$message({ message: '请选择催交项目', type: 'error' })
+        this.$message({ message: '请选择催办项目', type: 'error' })
         this.remindProp = false
         return
       }
       let idList = {
         projectCommentIds: this.evaluateList.map(p => p.projectCommentId).toString(),
         ids: this.evaluateList.map(p => p.projectCommentId).toString(),
-        type: 0
+        type: 1
       }
       // 获取催交消息内容与用户id
       this.screenLoading = true
       personData(idList).then((res) => {
         this.screenLoading = false
         if (res.code === 0) {
-          this.$router.push('/evaluateProject')
+          this.$router.push('/submitProject')
           this.remindProp = false
           this.$message({ message: res.msg, type: 'success' })
         }

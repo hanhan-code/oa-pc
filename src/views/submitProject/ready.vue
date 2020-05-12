@@ -4,7 +4,7 @@
     <div class="head-tools">
       <!-- 搜索按钮 -->
       <el-button size="small" type="primary">
-        <router-link to="/evaluate/evaluateProject">返回上一级</router-link>
+        <router-link to="/submit/submitProject">返回上一级</router-link>
       </el-button>
       <el-button size="small" type="success" @click="getData">{{query.formName}}</el-button>
     </div>
@@ -54,7 +54,7 @@
 <script>
 
 import initDict from '@/mixins/initDict'
-import readRepeat from '@/views/evaluateProject/readRepeat'
+import readRepeat from '@/views/submitProject/readRepeat'
 import { getCompanyId, getEmployeeId } from '@/utils/auth'
 import {
   readyData,
