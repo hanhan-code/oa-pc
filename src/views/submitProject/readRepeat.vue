@@ -237,13 +237,12 @@ export default {
         percent,
         uploadNum = 0, // 用来多文件上传判定条件
         arr = [], // 用来多文件上传进度条
-        reg = /.[(exe)(bat)(ibat)(sh)(cmd)(dex)(py)(apk)(ipa)]/gi // 上传文件类型限制
+        reg = /.(exe)|(bat)|(ibat)|(sh)|(cmd)|(dex)|(py)|(apk)|(ipa)/gi // 上传文件类型限制
       if (file.length === 0) {
         return;
       }
       this.progress.visible = true
       for (let i = 0; i < file.length; i++) {
-        console.log(reg.test(file[i].name), file[i])
         if (reg.test(file[i].name)) {
           this.progress.visible = false
           this.$message({ message: "暂不支持此类文件上传 " + file[i].name, type: 'error' })
@@ -305,8 +304,14 @@ export default {
       } else if (regs.test(url)) {
         previewUrl = url
       } else {
-        this.$message({ message: "暂不支持此类文件操作", type: 'error' });
-        return
+        previewUrl = url
+        // let link = document.createElement('a')
+        // link.style.display = "none"
+        // link.href = url
+        // link.click()
+        // link.target = "_blank"
+        // document.body.appendChild(link)
+        // location.href = url
       }
       window.open(previewUrl)
     },

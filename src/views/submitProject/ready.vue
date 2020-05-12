@@ -22,7 +22,7 @@
         >
           >
           <el-table-column type="expand">
-            <template slot-scope="scope">
+            <template label="展开" slot-scope="scope">
               <read-repeat :query="query" :params="scope.row" @doRest="doRest"></read-repeat>
             </template>
           </el-table-column>
