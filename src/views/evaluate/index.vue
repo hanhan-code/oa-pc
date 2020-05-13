@@ -49,14 +49,14 @@
                 <template slot-scope="scope">
                   <el-button
                     type="success"
-                    @click="doRunButton(scope.row, 1)"
+                    @click="doRunButton(scope.row, 2)"
                     v-show="scope.row.status === 0 || scope.row.status === 1"
                     plain
                     size="mini"
                   >开始</el-button>
                   <el-button
                     type="warning"
-                    @click="doRunButton(scope.row, 2)"
+                    @click="doRunButton(scope.row, 1)"
                     v-show="scope.row.status === 2"
                     plain
                     size="mini"
@@ -347,10 +347,10 @@ export default {
     },
     // 设置样式
     doRowClass ({ row, rowIndex }) {
-      if (row.status === 0) {
-        return 'danger-row';
-      } else if (row.status === 1) {
+      if (row.status === 0 || row.status === 2) {
         return 'success-row';
+      } else if (row.status === 1) {
+        return 'danger-row';
       }
       return '';
     },
