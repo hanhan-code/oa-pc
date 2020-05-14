@@ -234,9 +234,9 @@ export default {
     // 上传文件
     doChange (e) {
       let file = e.target.files,
-        percent,
-        uploadNum = 0, // 用来多文件上传判定条件
-        arr = [], // 用来多文件上传进度条
+        arr = [],
+        size = 0,
+        form = new FormData(),
         reg = /.(exe)|(bat)|(ibat)|(sh)|(cmd)|(dex)|(py)|(apk)|(ipa)/gi // 上传文件类型限制
       if (file.length === 0) {
         return;
@@ -248,50 +248,49 @@ export default {
           this.$message({ message: "暂不支持此类文件上传 " + file[i].name, type: 'error' })
           break
         }
-        let form = new FormData();
-        form.append("file", file[i]);
-        const http = axios.create({
-          headers: {
-            Authorization: "Bearer " + getToken()
-          },
-          onUploadProgress: progressEvent => {
-            // 计算进度
-            let value = Math.floor(
-              Number((progressEvent.loaded / file[i].size) * 100)
-            );
-            if (value >= 100) {
-              value = 100
-            }
-            let obj = {
-              name: file[i].name,
-              size: file[i].size,
-              percent: value
-            }
-            this.progress.files.splice(i, 1, obj)
-          }
-        });
-        http.post(this.$network + "file/attachment", form).then(response => {
-          let res = response.data
-          if (res.code === 0) {
-            uploadNum++;
-            // 如果上传文件数量大于1 手动计算进度条进度
-            if (
-              (file.length > 1 && uploadNum === file.length) ||
-              file.length === 1
-            ) {
-              this.progress.visible = false
-              this.progress.files = []
-              this.doFileData(res.data)
-            }
-          } else {
-            if (file.length === 1 && res.code >= 1 && res.code <= 10) {
-              this.$message({ message: res.msg, type: 'error' });
-            } else if (file.length === 1 && res.code > 10) {
-              this.$message({ message: "系统异常,请稍后再试", type: 'error' });
-            }
-          }
-        });
+        size += file[i].size
+        form.append('files ', file[i])
       }
+      const http = axios.create({
+        headers: {
+          Authorization: "Bearer " + getToken()
+        },
+        onUploadProgress: progressEvent => {
+          // 计算进度
+          let value = Math.floor(
+            Number((progressEvent.loaded / size) * 100)
+          );
+          if (value >= 100) {
+            value = 100
+          }
+          let obj = {
+            name: '',
+            size: '',
+            percent: value
+          }
+          this.progress.files.splice(0, 1, obj)
+        }
+      });
+      http.post(this.$network + "file/attachments", form).then(response => {
+        let res = response.data
+        if (res.code === 0) {
+          // 如果上传文件数量大于1 手动计算进度条进度
+          this.progress.visible = false
+          this.progress.files = []
+          res.data.forEach(p => {
+            this.doFileData(p)
+          })
+        } else {
+          this.progress.visible = false
+          if (res.code >= 1 && res.code <= 10) {
+            this.$message({ message: res.msg, type: 'error' });
+          } else if (res.code > 10) {
+            this.$message({ message: "系统异常,请稍后再试", type: 'error' });
+          }
+        }
+      }).catch(res => {
+        this.progress.visible = false
+      })
     },
     // 点击图片进行相关操作
     doClickImg (file) {

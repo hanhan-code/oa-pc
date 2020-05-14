@@ -3,7 +3,13 @@
     <el-form :model="setForm" :rules="rules" ref="setForm" label-width="120px">
       <el-form-item label="评价标准:" prop="name"></el-form-item>
       <el-form-item label="评价项目" prop="id">
-        <el-select v-model="setForm.id" filterable clearable placeholder="请选择项目">
+        <el-select
+          v-model="setForm.id"
+          filterable
+          clearable
+          placeholder="请选择项目"
+          @change="getSetData"
+        >
           <el-option
             :label="item.name"
             :value="item.id"
@@ -127,7 +133,8 @@ import {
 import {
   companyData,
   setSubmit,
-  projectData
+  projectData,
+  setData
 } from '@/api/evaluate/evaluateProject'
 
 export default {
@@ -193,36 +200,26 @@ export default {
   },
   methods: {
     doCreat () {
-      // this.companyList = [
-      //   {
-      //     "id": "694933565493055488",
-      //     "label": "任淑凡"
-      //   },
-      //   {
-      //     "id": "627531100963835904",
-      //     "label": "范伟伟"
-      //   },
-      //   {
-      //     "id": "627531101530066944",
-      //     "label": "戴宪锁"
-      //   },
-      //   {
-      //     "id": "456253109877458796",
-      //     "label": "葛浩天"
-      //   },
-      //   {
-      //     "id": "684720845036556288",
-      //     "label": "聂方龙"
-      //   },
-      //   {
-      //     "id": "684721784237690880",
-      //     "label": "陈韩"
-      //   },
-      //   {
-      //     "id": "689844882410672128",
-      //     "label": "曾飞"
-      //   }
-      // ]
+    },
+    getSetData (id) {
+      let params = {
+        companyId: getCompanyId(),
+        projectId: id
+      }
+      setData(params).then(res => {
+        if (res.code === 0) {
+          let data = res.data
+          this.setForm.fine = data.fine
+          this.setForm.good = data.good
+          this.setForm.common = data.common
+          this.setForm.fineSingle = data.fineSingle
+          this.setForm.goodSingle = data.goodSingle
+          this.setForm.important = data.important === 1 ? true : false
+          this.setForm.reAse = data.reAse === 1 ? true : false
+          this.setForm.noticeMethod = data.noticeMethod.split(',')
+          this.setForm.notice = data.notice.split(',')
+        }
+      })
     },
     // 根据企业id获取所有项目id
     getProjectData () {
@@ -244,7 +241,7 @@ export default {
               p.children.forEach((k, v, arr1) => {
                 if (k.children) {
                   k.children.forEach((n, o, arr2) => {
-                        this.companyList.push({ id: n.id, label: n.label })
+                    this.companyList.push({ id: n.id, label: n.label })
                     if (n.children) {
                       n.children.forEach(q => {
                         // this.companyList.push({ id: q.id, label: q.label })

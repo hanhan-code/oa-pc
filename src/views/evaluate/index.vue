@@ -76,10 +76,10 @@
               <el-table-column type="index" label="序号" align="center"></el-table-column>
               <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
               <el-table-column label="提交人" align="center">
-                <template slot-scope="scope">{{scope.row.commentUserNameList.toString()}}</template>
+                <template slot-scope="scope">{{scope.row.submitUserNameList.toString()}}</template>
               </el-table-column>
               <el-table-column label="评审人" align="center">
-                <template slot-scope="scope">{{scope.row.submitUserNameList.toString()}}</template>
+                <template slot-scope="scope">{{scope.row.commentUserNameList.toString()}}</template>
               </el-table-column>
               <el-table-column label="结束时间" align="center">
                 <template
@@ -347,10 +347,10 @@ export default {
     },
     // 设置样式
     doRowClass ({ row, rowIndex }) {
-      if (row.status === 0 || row.status === 2) {
-        return 'success-row';
-      } else if (row.status === 1) {
+      if (row.status === 0 || row.status === 1) {
         return 'danger-row';
+      } else if (row.status === 2) {
+        return 'success-row';
       }
       return '';
     },

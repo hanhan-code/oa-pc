@@ -127,7 +127,12 @@
       :modal-append-to-body="false"
       center
     >
-      <evaluate-end :num="num" :projectCommentId="projectCommentId" @doEndClose="doEndClose"></evaluate-end>
+      <evaluate-end
+        :num="num"
+        v-if="endProp"
+        :projectCommentId="projectCommentId"
+        @doEndClose="doEndClose"
+      ></evaluate-end>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="doEndConfirm">提交</el-button>
       </span>
@@ -241,6 +246,8 @@ export default {
     // 关闭完结
     doEndClose () {
       this.endProp = false
+      this.doRefresh()
+      this.doSearch(1)
     },
     // 主页面表格 点击分页
     doSizeChange (size) {

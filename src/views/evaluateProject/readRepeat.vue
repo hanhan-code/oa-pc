@@ -207,8 +207,9 @@ export default {
     doEvaluate (row) {
       this.evaluateProp = true
       this.row = row
+      this.scoreColumns = []
       for (let i = 0; i <= row.fullScore; i++) {
-        this.scoreColumns[i] = i
+        this.$set(this.scoreColumns, i, i)
       }
     },
     // 确认评审

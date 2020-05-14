@@ -41,9 +41,7 @@
             <template slot-scope="scope">{{scope.row.deductImportantNum}}项</template>
           </el-table-column>
           <el-table-column label="结束时间" align="center">
-            <template
-              slot-scope="scope"
-            >{{$moment(scope.row.dateTime).format('YYYY-MM-DD HH:mm:ss')}}</template>
+            <template slot-scope="scope">{{dateTime(scope.row.dateTime)}}</template>
           </el-table-column>
           <el-table-column width="300" label="操作" align="center">
             <template slot-scope="scope">
@@ -75,9 +73,7 @@
             <template slot-scope="scope">{{scope.row.score}}/{{scope.row.fullScore}}</template>
           </el-table-column>
           <el-table-column label="结束时间" align="center">
-            <template
-              slot-scope="scope"
-            >{{$moment(scope.row.dateTime).format('YYYY-MM-DD HH:mm:ss')}}</template>
+            <template slot-scope="scope">{{dateTime(scope.row.dateTime)}}</template>
           </el-table-column>
           <el-table-column width="300" label="操作" align="center">
             <template slot-scope="scope">
@@ -159,7 +155,17 @@ export default {
     this.doSearch(1)
     this.doCreat()
   },
-  mounted () {
+  computed: {
+    dateTime () {
+      let _this = this
+      return function (value) {
+        if (value) {
+          return _this.$moment(scope.row.dateTime).format('YYYY-MM-DD HH:mm:ss')
+        } else {
+          return ''
+        }
+      }
+    }
   },
   methods: {
     // 初始化
