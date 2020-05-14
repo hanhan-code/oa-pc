@@ -506,26 +506,23 @@ export default {
         link.href = this.$network + 'assessment/form/pdf?projectCommentId=' + row.projectCommentId
         link.click()
         document.body.append(link)
-        // printData(params).then(res => {
-        //   this.screenLoading = false
-        //   let blob = new Blob([res], { type: 'application/pdf' })
-        //   let url = URL.createObjectURL(blob)
-        //   let link = document.createElement('a')
-        //   link.href = url
-        //   // link.download = '下载'
-        //   link.click()
-        //   document.body.append(link)
-        //   // window.open(url)
-        //   // window.open('/static/pdf/viewer.html?pdfUrl=' + encodeURIComponent(url))
-        // })
+
       } else {
-        resetData(params).then(res => {
-          if (res.code === 0) {
-            this.$message({ message: '操作成功', type: 'success' })
-            this.getEndData()
-          } else {
-            this.$message({ message: res.msg, type: 'error' })
-          }
+        this.$confirm('是否继续执行此操作?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.screenLoading = true
+
+          resetData(params).then(res => {
+            if (res.code === 0) {
+              this.$message({ message: '操作成功', type: 'success' })
+              this.getEndData()
+            } else {
+              this.$message({ message: res.msg, type: 'error' })
+            }
+          })
         })
       }
     },

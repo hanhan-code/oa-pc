@@ -94,6 +94,8 @@ Vue.prototype.$utils = {
 
     if ('pdf' === suffix) {
       return 'icon-pdf'
+    } else if ('png' === suffix || 'jpg' === suffix || 'jpeg' === suffix || 'icon' === suffix) {
+      return 'icon-picture'
     } else if ('doc' === suffix || 'docx' === suffix) {
       return 'icon-word'
     } else if ('pptx' === suffix || 'ppt' === suffix) {

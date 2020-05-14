@@ -209,15 +209,29 @@ export default {
       setData(params).then(res => {
         if (res.code === 0) {
           let data = res.data
-          this.setForm.fine = data.fine
-          this.setForm.good = data.good
-          this.setForm.common = data.common
-          this.setForm.fineSingle = data.fineSingle
-          this.setForm.goodSingle = data.goodSingle
-          this.setForm.important = data.important === 1 ? true : false
-          this.setForm.reAse = data.reAse === 1 ? true : false
-          this.setForm.noticeMethod = data.noticeMethod.split(',')
-          this.setForm.notice = data.notice.split(',')
+          if (data) {
+            this.setForm.fine = data.fine
+            this.setForm.good = data.good
+            this.setForm.common = data.common
+            this.setForm.fineSingle = data.fineSingle
+            this.setForm.goodSingle = data.goodSingle
+            this.setForm.important = data.important === 1 ? true : false
+            this.setForm.reAse = data.reAse === 1 ? true : false
+            this.setForm.noticeMethod = data.noticeMethod.split(',')
+            this.setForm.notice = data.notice.split(',')
+          } else {
+            for (let v in this.setForm) {
+              if (v === 'id') {
+                continue
+              } else if (v === 'important' || v === 'reAse') {
+                this.setForm[v] = true
+              } else if (v === 'noticeMethod' || v === 'notice') {
+                this.setForm[v] = []
+              } else {
+                this.setForm[v] = ''
+              }
+            }
+          }
         }
       })
     },

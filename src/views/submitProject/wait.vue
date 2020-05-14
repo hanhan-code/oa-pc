@@ -35,7 +35,7 @@
             <template slot-scope="scope">{{scope.row.score}}/{{scope.row.fullScore}}</template>
           </el-table-column>
           <el-table-column label="评价扣分" align="center">
-            <template slot-scope="scope">{{scope.row.fullScore - scope.row.scope}}分</template>
+            <template slot-scope="scope">{{scope.row.fullScore - scope.row.score}}分</template>
           </el-table-column>
           <el-table-column label="扣分" align="center">
             <template slot-scope="scope">{{scope.row.deductImportantNum}}项</template>
@@ -160,7 +160,7 @@ export default {
       let _this = this
       return function (value) {
         if (value) {
-          return _this.$moment(scope.row.dateTime).format('YYYY-MM-DD HH:mm:ss')
+          return _this.$moment(value.dateTime).format('YYYY-MM-DD HH:mm:ss')
         } else {
           return ''
         }

@@ -33,6 +33,8 @@
                     <!-- 文件类型 ICON 图标处理 -->
                     <span @click="doClickImg(item)">
                       <svg-icon class="svg-icon" :icon-class="$utils.getIcon(item.url)" />
+                      &nbsp;&nbsp;
+                      {{item.fileName}}
                     </span>
                   </span>
                 </template>
@@ -56,7 +58,9 @@
                 <template slot-scope="scope">
                   <el-button
                     type="primary"
-                    v-show="scope.row.status === 0 && query.status !== 3"
+                    v-show="scope.row.status === 0 
+                    && query.status !== 3 &&
+                     scope.row.fileList.length > 0"
                     @click="doRemind(scope.row)"
                     plain
                     size="mini"
@@ -237,7 +241,7 @@ export default {
         arr = [],
         size = 0,
         form = new FormData(),
-        reg = /.(exe)|(bat)|(ibat)|(sh)|(cmd)|(dex)|(py)|(apk)|(ipa)/gi // 上传文件类型限制
+        reg = /.?(exe)$|(bat)$|(ibat)$|(sh)$|(cmd)$|(dex)$|(py)$|(apk)$|(ipa)$/gi // 上传文件类型限制
       if (file.length === 0) {
         return;
       }
@@ -294,8 +298,8 @@ export default {
     },
     // 点击图片进行相关操作
     doClickImg (file) {
-      let reg = /.(ppt)|(pptx)|(xlsx)|(docx)|(xls)|(doc)/gi,
-        regs = /.(image)|(pnf)/gi,
+      let reg = /.(ppt)$|(pptx)$|(xlsx)$|(docx)$|(xls)$|(doc)$/gi,
+        regs = /.(image)$|(pdf)$|(txt)$/gi,
         url = this.$filePrefix + file.url,
         previewUrl
       if (reg.test(url)) {

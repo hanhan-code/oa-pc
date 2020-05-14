@@ -28,6 +28,8 @@
                     <!-- 文件类型 ICON 图标处理 -->
                     <span @click="doClickImg(item)">
                       <svg-icon class="svg-icon" :icon-class="$utils.getIcon(item.url)" />
+                      &nbsp;&nbsp;
+                      {{item.fileName}}
                     </span>
                   </span>
                 </template>
@@ -258,8 +260,8 @@ export default {
     },
     // 点击图片进行相关操作
     doClickImg (file) {
-      let reg = /.(ppt)|(pptx)|(xlsx)|(docx)|(xls)|(doc)/gi,
-        regs = /.(image)|(pdf)/gi,
+      let reg = /.(ppt)$|(pptx)$|(xlsx)$|(docx)$|(xls)$|(doc)$/gi,
+        regs = /.(image)$|(pdf)$|(txt)$/gi,
         url = this.$filePrefix + file.url,
         previewUrl
       if (reg.test(url)) {
