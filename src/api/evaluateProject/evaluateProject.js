@@ -1,13 +1,13 @@
 import request from "@/utils/request";
 
 /**
- * @description 获取评价項目列表接口数据
+ * @description 获取评价項目列表接口数据 /assessment http://192.168.0.158:10009
  */
 export function listData(data) {
   return request({
-    url: "http://192.168.0.158:10009/project/mobile/comment/list",
+    url: "/assessment/project/mobile/comment/list",
     method: "get",
-    params: data
+    params: data,
   });
 }
 
@@ -16,9 +16,9 @@ export function listData(data) {
  */
 export function formData(data) {
   return request({
-    url: "http://192.168.0.158:10009/form/mobile",
+    url: "/assessment/form/mobile",
     method: "get",
-    params: data
+    params: data,
   });
 }
 
@@ -27,9 +27,9 @@ export function formData(data) {
  */
 export function formDatas(data) {
   return request({
-    url: "http://192.168.0.158:10009/form/mobile",
+    url: "/assessment/form/mobile",
     method: "get",
-    params: data
+    params: data,
   });
 }
 
@@ -38,9 +38,9 @@ export function formDatas(data) {
  */
 export function personData(data) {
   return request({
-    url: "http://192.168.0.158:10009/project/mobile/remind",
+    url: "/assessment/project/mobile/remind",
     method: "get",
-    params: data
+    params: data,
   });
 }
 
@@ -49,9 +49,9 @@ export function personData(data) {
  */
 export function personDatas(data) {
   return request({
-    url: "http://192.168.0.158:10009/project/mobile/remind/item",
+    url: "/assessment/project/mobile/remind/item",
     method: "get",
-    params: data
+    params: data,
   });
 }
 
@@ -60,10 +60,9 @@ export function personDatas(data) {
  */
 export function messageData(data) {
   return request({
-    url:
-      "http://192.168.0.158:10009/message/weChat/sendApplicationMsgByUserIds",
+    url: "/assessment/message/weChat/sendApplicationMsgByUserIds",
     method: "post",
-    data: data
+    data: data,
   });
 }
 
@@ -72,9 +71,9 @@ export function messageData(data) {
  */
 export function endData(data) {
   return request({
-    url: "http://192.168.0.158:10009/project/mobile/comment/info",
+    url: "/assessment/project/mobile/comment/info",
     method: "get",
-    params: data
+    params: data,
   });
 }
 
@@ -83,9 +82,9 @@ export function endData(data) {
  */
 export function endSubmit(data) {
   return request({
-    url: "http://192.168.0.158:10009/project/mobile/final/form",
+    url: "/assessment/project/mobile/final/form",
     method: "post",
-    data: data
+    data: data,
   });
 }
 
@@ -94,9 +93,9 @@ export function endSubmit(data) {
  */
 export function readyData(data) {
   return request({
-    url: "http://192.168.0.158:10009/form/mobile/class/item",
+    url: "/assessment/form/mobile/class/item",
     method: "get",
-    params: data
+    params: data,
   });
 }
 
@@ -105,9 +104,9 @@ export function readyData(data) {
  */
 export function evaluateData(data) {
   return request({
-    url: "http://192.168.0.158:10009/form/mobile/item",
+    url: "/assessment/form/mobile/item",
     method: "put",
-    data: data
+    data: data,
   });
 }
 
@@ -116,9 +115,9 @@ export function evaluateData(data) {
  */
 export function resetData(data) {
   return request({
-    url: "http://192.168.0.158:10009/form/mobile/reevaluation",
+    url: "/assessment/form/mobile/reevaluation",
     method: "put",
-    data: data
+    data: data,
   });
 }
 
@@ -127,9 +126,9 @@ export function resetData(data) {
  */
 export function fileData(data) {
   return request({
-    url: "http://192.168.0.158:10009/file/file",
+    url: "/assessment/file/file",
     method: "get",
-    params: data
+    params: data,
   });
 }
 
@@ -138,9 +137,9 @@ export function fileData(data) {
  */
 export function submitFile(data) {
   return request({
-    url: "http://192.168.0.158:10009/project/mobile/file",
+    url: "/assessment/project/mobile/file",
     method: "post",
-    data: data
+    data: data,
   });
 }
 
@@ -149,12 +148,8 @@ export function submitFile(data) {
  */
 export function fileDel(data) {
   return request({
-    url: `http://192.168.0.158:10009/project/mobile/file?fileId=${
-      data.fileId
-    }&projectCommentId=${data.projectCommentId}&formClassItemId=${
-      data.formClassItemId
-    }`,
-    method: "delete"
+    url: `/assessment/project/mobile/file?fileId=${data.fileId}&projectCommentId=${data.projectCommentId}&formClassItemId=${data.formClassItemId}`,
+    method: "delete",
   });
 }
 
@@ -165,7 +160,7 @@ export function fileDels(data) {
   return request({
     url: "/file/attachment/remote",
     method: "delete",
-    data: data
+    data: data,
   });
 }
 
@@ -175,6 +170,6 @@ export function fileDels(data) {
 export function employeeData(data) {
   return request({
     url: "/emp/base/search/" + data.companyId + "/" + data.employeeName,
-    method: "get"
+    method: "get",
   });
 }
