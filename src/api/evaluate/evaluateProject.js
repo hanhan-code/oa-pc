@@ -114,3 +114,14 @@ export function setSubmit(data) {
     data: data
   });
 }
+
+/**
+ * @description 获取评价设置接口数据
+ */
+export function setData (data) {
+  return request({
+    url: "/assessment/project/setting",
+    method: "get",
+    params: data
+  });
+}
