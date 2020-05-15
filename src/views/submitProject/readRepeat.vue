@@ -156,7 +156,14 @@
         </div>
       </div>
     </el-dialog>
-    <input type="file" ref="upload" class="upload-hide" multiple="multiple" @change="doChange" />
+    <input
+      type="file"
+      ref="upload"
+      :value="fileValue"
+      class="upload-hide"
+      multiple="multiple"
+      @change="doChange"
+    />
     <el-button type="text" v-loading.fullscreen.lock="screenLoading"></el-button>
   </div>
 </template>
@@ -191,6 +198,7 @@ export default {
       row: null,                    // 当前行数据
       file: null,                   // 文件对象
       scoreColumns: [],                // 分数列表
+      fileValue: '',                  // 解决文件无法重复提交文
       // 进度条参数
       progress: {
         files: [],
@@ -274,6 +282,8 @@ export default {
       });
       http.post(this.$network + "file/attachments", form).then(response => {
         let res = response.data
+        // 解决文件无法重复提交
+        this.fileValue = ''
         if (res.code === 0) {
           // 如果上传文件数量大于1 手动计算进度条进度
           this.progress.visible = false
@@ -376,6 +386,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 5px;
+  z-index: 0;
 }
 .upload-text {
   width: 0;
