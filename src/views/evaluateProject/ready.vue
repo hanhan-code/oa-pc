@@ -117,6 +117,8 @@ export default {
                 } else {
                   list.show = true
                 }
+                list.first = list.formClassItemList.some(sort => sort.fileList.length > 0 && sort.status === 0)
+                list.second = list.formClassItemList.some(sort => sort.fileList.length === 0 && sort.status === 0)
                 list.formClassItemList.forEach(item => {
                   item.formId = list.formId
                   item.formClassId = list.formClassId
@@ -128,6 +130,8 @@ export default {
                 p.show = false
               } else {
                 p.show = true
+                p.first = p.formClassItemList.every(sort => sort.fileList.length > 0 && sort.status === 0)
+                p.second = p.formClassItemList.every(sort => sort.fileList.length === 0 && sort.status === 0)
               }
               p.formClassItemList.forEach(item => {
                 item.formId = p.formId
@@ -147,11 +151,23 @@ export default {
               ]
             }
           })
-          this.tableData = res.data
+          this.doConcat(res.data)
         } else {
           this.$message({ message: res.msg, type: 'error' })
         }
       })
+    },
+    // 数据排序
+    doConcat (data) {
+      data.forEach((p, i, arr) => {
+        p.first = p.childList.some(list => list.first)
+        p.second = p.childList.some(list => list.second)
+      })
+      let firstList = data.filter(p => p.first)
+      let secondList = data.filter(p => !p.first && p.second)
+      let thirdList = data.filter(p => !p.first && !p.second)
+      // this.list.push(...data)
+      this.tableData = [].concat(firstList, secondList, thirdList)
     },
     // 子组件返回
     doRest () {
