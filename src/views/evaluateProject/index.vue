@@ -40,12 +40,11 @@
                 >{{scope.row.fullScore - scope.row.deductScore}}/{{scope.row.fullScore}}</template>
               </el-table-column>
               <el-table-column label="不合格数" prop="unqualifiedNum" align="center"></el-table-column>
-              <el-table-column label="扣分" prop="deductScore" align="center"></el-table-column>
+              <el-table-column label="扣分" prop="importantDeductScore" align="center"></el-table-column>
+              <el-table-column prop="fullScore" label="得分" align="center"></el-table-column>
               <el-table-column label="待评价数量" align="center">
                 <template slot-scope="scope">{{scope.row.commentAllNum - scope.row.commentedNum}}</template>
               </el-table-column>
-              <el-table-column prop="fullScore" label="得分" align="center"></el-table-column>
-              <el-table-column prop="deductScore" label="失分" sortable align="center"></el-table-column>
               <el-table-column width="300" label="操作" align="center">
                 <template slot-scope="scope">
                   <el-button

@@ -19,19 +19,21 @@
               <el-table-column prop="deductScore" label="扣分值" align="center"></el-table-column>
               <el-table-column label="提交文件">
                 <template slot-scope="scope">
-                  <span
+                  <div
                     v-for="(item, i) in scope.row.fileList"
                     :key="i"
                     v-show="scope.row.fileList.length > 0"
                     class="upload"
                   >
                     <!-- 文件类型 ICON 图标处理 -->
-                    <span @click="doClickImg(item)">
-                      <svg-icon class="svg-icon" :icon-class="$utils.getIcon(item.url)" />
-                      &nbsp;&nbsp;
-                      {{item.fileName}}
+                    <div @click="doClickImg(item)">
+                      <svg-icon class="svg-icon" :icon-class="$utils.getIcon(item.url)" />&nbsp;&nbsp;
+                    </div>
+                    <div class="upload-text">{{item.fileName}}</div>
+                    <span class="upload-close" @click="doDelete(item, scope.row)">
+                      <i class="el-icon-close"></i>
                     </span>
-                  </span>
+                  </div>
                 </template>
               </el-table-column>
               <el-table-column label="是否重要项" align="center">
