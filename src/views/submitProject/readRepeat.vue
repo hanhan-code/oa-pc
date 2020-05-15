@@ -29,7 +29,9 @@
                     <div @click="doClickImg(item)">
                       <svg-icon class="svg-icon" :icon-class="$utils.getIcon(item.url)" />&nbsp;&nbsp;
                     </div>
-                    <div class="upload-text">{{item.fileName}}</div>
+                    <el-tooltip class="item" effect="dark" :content="item.fileName" placement="top">
+                      <div class="upload-text">{{item.fileName}}</div>
+                    </el-tooltip>
                     <span class="upload-close" @click="doDelete(item, scope.row)">
                       <i class="el-icon-close"></i>
                     </span>
@@ -289,8 +291,9 @@ export default {
           this.progress.visible = false
           this.progress.files = []
           res.data.forEach(p => {
-            this.doFileData(p)
+            p.url = p.link
           })
+          this.doFileData(res.data)
         } else {
           this.progress.visible = false
           if (res.code >= 1 && res.code <= 10) {
@@ -359,13 +362,17 @@ export default {
         formClassItemId: this.row.formClassItemId,
         formId: this.row.formId,
         projectCommentId: this.query.projectCommentId,
-        url: data.link,
-        fileName: data.fileName
+        fileList: data.fileList
       }
       this.screenLoading = true
       submitFile(params).then(res => {
         this.screenLoading = false
         this.$emit('doRest')
+        if (res.code === 0) {
+          this.$message({ message: '上传成功', type: 'success' });
+        } else {
+          this.$message({ message: res.msg, type: 'error' });
+        }
       })
     },
   }

@@ -29,7 +29,11 @@
                     <div @click="doClickImg(item)">
                       <svg-icon class="svg-icon" :icon-class="$utils.getIcon(item.url)" />&nbsp;&nbsp;
                     </div>
-                    <div class="upload-text">{{item.fileName}}</div>
+
+                    <el-tooltip class="item" effect="dark" :content="item.fileName" placement="top">
+                      <div class="upload-text">{{item.fileName}}</div>
+                    </el-tooltip>
+
                     <span class="upload-close" @click="doDelete(item, scope.row)">
                       <i class="el-icon-close"></i>
                     </span>
@@ -287,33 +291,42 @@ export default {
 .upload {
   position: relative;
   display: inline-block;
-  width: 40px;
   height: 50px;
   margin-left: 10px;
+  border: 1px dotted #828181;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  z-index: 0;
 }
-
+.upload-text {
+  width: 0;
+  flex: 1;
+  color: #828181;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .upload img {
-  width: 40px;
-  height: 40px;
+  width: 80px;
+  height: 80px;
   text-align: center;
   margin-right: 0.5px;
-  margin-bottom: 0.5px;
-  position: relative;
-  top: 10px;
 }
 .upload .upload-close {
   position: absolute;
   top: -2px;
-  right: 0px;
-  width: 20px;
-  height: 20px;
+  right: -4px;
+  text-align: center;
+  width: 30px;
+  height: 30px;
   z-index: 9999;
 }
 .svg-icon {
-  width: 30px;
-  height: 30px;
-  position: absolute;
-  left: 0;
-  top: 10px;
+  width: 35px;
+  height: 35px;
+  margin-top: 3px;
+  margin-left: 10px;
 }
 </style>
