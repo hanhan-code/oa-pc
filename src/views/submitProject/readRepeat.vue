@@ -275,8 +275,8 @@ export default {
             value = 100
           }
           let obj = {
-            name: '',
-            size: '',
+            name: '正在下载...请稍等',
+            size: size,
             percent: value
           }
           this.progress.files.splice(0, 1, obj)
