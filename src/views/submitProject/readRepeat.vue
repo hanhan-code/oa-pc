@@ -25,7 +25,7 @@
                     v-show="scope.row.fileList.length > 0"
                     class="upload"
                   >
-                    <!-- 文件类型 ICON 图标处理 -->
+                    <!-- 文件类型 ICON 图标处理1 -->
                     <div @click="doClickImg(item)">
                       <svg-icon class="svg-icon" :icon-class="$utils.getIcon(item.url)" />&nbsp;&nbsp;
                     </div>

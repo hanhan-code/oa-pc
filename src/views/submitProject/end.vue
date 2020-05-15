@@ -10,10 +10,10 @@
       <el-form-item label="工程专业等级" prop="sepLevelName">
         <el-select v-model="addForm.sepLevelId" filterable clearable placeholder="请选择项目">
           <el-option
-            :label="item.text"
+            :label="item.label"
             :value="item.value"
-            v-for="item in sepLevelColumns"
-            :key="item.value"
+            v-for="item in dictMap.project_level"
+            :key="item.label"
           ></el-option>
         </el-select>
       </el-form-item>
@@ -34,7 +34,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="工程形象进度" prop="visualProgress">
-        <el-input v-model="addForm.visualProgress" type="textarea" placeholder="请填写执业证书号"></el-input>
+        <el-input v-model="addForm.visualProgress" type="textarea" placeholder="请填写工程形象进度"></el-input>
       </el-form-item>
       <el-form-item label="项目监理机构工作评价">
         <el-table size="small" :data="formInfoList" border v-show="formInfoList.length > 0">
@@ -65,6 +65,7 @@
 
 <script>
 import { getCompanyId, getEmployeeId } from '@/utils/auth'
+import initDict from '@/mixins/initDict'
 
 import {
   endSubmit,
@@ -74,28 +75,17 @@ import {
 
 
 export default {
+  mixins: [initDict],
   data () {
     return {
       screenLoading: false,
-      sepLevelColumns: [
-        {
-          text: '一级',
-          value: 1
-        },
-        {
-          text: '二级',
-          value: 2
-        },
-        {
-          text: '三级',
-          value: 3
-        },
-      ], // 工程专业等级（对应字典project_level 1：一级；2：二级；3：三级）
+      sepLevelColumns: [], // 工程专业等级（对应字典project_level 1：一级；2：二级；3：三级）
       addForm: {
         projectName: '123', // 项目名称
         sepLevelName: '一级', // 工程专业等级名称
-        sepLevelId: 1,  //工程专业等级（对应字典project_level 1：一级；2：二级；3：三级）
+        sepLevelId: '',  //工程专业等级（对应字典project_level 1：一级；2：二级；3：三级）
         majordomoName: '',  //总监姓名
+        typeName: '',
         majordomoId: 0, // 总监id
         certificateNum: '',  //执业证书号
         belongToType: '1',  //工程属于（1项目监理机构自我评价; 2监理单位对项目监理机构工作的考核评价；3 建设单位对项目监理机构工作的考核评价；4其他）
@@ -122,23 +112,6 @@ export default {
           { required: true, message: '请选择人员', trigger: 'change' }
         ]
       },
-      dictList: [  //注册专业 props: name 值为 register
-        '未知',
-        '房屋建筑工程',
-        '冶炼工程',
-        '矿山工程',
-        '化工石油工程',
-        '水利水电工程',
-        '电力工程',
-        '农林工程',
-        '铁路工程',
-        '公路工程',
-        '港口与航道工程',
-        '航天航空工程',
-        '通信工程',
-        '市政公用工程',
-        '机电安装工程',
-      ],
       formInfoList: [],  // 项目监理机构工作评价
       addRule: { // 表单验证
         sepLevelId: [{ required: true, message: ' ' }],  //工程专业等级（对应字典project_level 1：一级；2：二级；3：三级）
@@ -175,6 +148,7 @@ export default {
   },
   methods: {
     doCreat () {
+      this.getDictMap('em_register_major,project_level')
       this.getData()
     },
     // 获取展示list
@@ -185,28 +159,25 @@ export default {
       this.screenLoading = true
       endData(params).then((res) => {
         this.screenLoading = false
-        console.log(res)
         if (res.code === 0) {
           let data = res.data
-          console.log(data)
           this.$set(this.addForm, 'projectName', data.projectName)
           this.$set(this.addForm, 'typeId', data.typeId)
           this.$set(this.addForm, 'assLevel', data.assLevel)
-          this.$set(this.addForm, 'assLevel', data.assLevel)
           this.$set(this.addForm, 'projectCommentId', data.projectCommentId)
           this.$set(this.addForm, 'projectId', data.projectId)
-          this.$set(this.addForm, 'typeName', this.dictList[Number(data.typeId)])
+          this.dictMap.em_register_major.forEach(p => {
+            if (p.value === data.typeId) {
+              this.$set(this.addForm, 'typeName', p.label)
+            }
+          })
           this.formInfoList = data.formInfoList
-          this.dictProp = true
         }
       })
     },
     // 总监姓名获取
     doNameChange (value) {
-      let reg = /([^\u4e00-\u9fa5]$)/g
       if (value === '') {
-        return
-      } else if (reg.test(value)) {
         this.$message({ message: '请输入正确的名称', type: 'error' })
         return
       }
@@ -241,7 +212,6 @@ export default {
             if (res.code === 0) {
               this.$emit('doEndClose')
               this.$message({ message: res.msg, type: 'success' })
-              this.$router.push('/evaluateProject')
             } else {
               this.$message({ message: res.msg, type: 'error' })
             }
