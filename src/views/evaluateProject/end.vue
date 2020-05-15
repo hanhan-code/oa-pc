@@ -12,8 +12,8 @@
           <el-option
             :label="item.label"
             :value="item.value"
-            v-for="item in dictMap.project_levle"
-            :key="item.value"
+            v-for="item in dictMap.project_level"
+            :key="item.label"
           ></el-option>
         </el-select>
       </el-form-item>
@@ -85,6 +85,7 @@ export default {
         sepLevelName: '一级', // 工程专业等级名称
         sepLevelId: '',  //工程专业等级（对应字典project_level 1：一级；2：二级；3：三级）
         majordomoName: '',  //总监姓名
+        typeName: '',
         majordomoId: 0, // 总监id
         certificateNum: '',  //执业证书号
         belongToType: '1',  //工程属于（1项目监理机构自我评价; 2监理单位对项目监理机构工作的考核评价；3 建设单位对项目监理机构工作的考核评价；4其他）
@@ -147,7 +148,7 @@ export default {
   },
   methods: {
     doCreat () {
-      this.getDictMap('em_register_major,project_levle')
+      this.getDictMap('em_register_major,project_level')
       this.getData()
     },
     // 获取展示list
@@ -163,18 +164,11 @@ export default {
           this.$set(this.addForm, 'projectName', data.projectName)
           this.$set(this.addForm, 'typeId', data.typeId)
           this.$set(this.addForm, 'assLevel', data.assLevel)
-          this.$set(this.addForm, 'sepLevelId', data.sepLevelId)
           this.$set(this.addForm, 'projectCommentId', data.projectCommentId)
           this.$set(this.addForm, 'projectId', data.projectId)
           this.dictMap.em_register_major.forEach(p => {
             if (p.value === data.typeId) {
               this.$set(this.addForm, 'typeName', p.label)
-            }
-          })
-          this.dictMap.project_levle.forEach(p => {
-            this.sepLevelColumns[p.value] = p.label
-            if (p.value === data.typeId) {
-              this.$set(this.addForm, 'sepLevelName', p.label)
             }
           })
           this.formInfoList = data.formInfoList
