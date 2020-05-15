@@ -262,6 +262,11 @@ export default {
         size += file[i].size
         form.append('files ', file[i])
       }
+      if (size >= 209715200) {
+        this.progress.visible = false
+        this.$message({ message: "文件大小不能超过200M，请重新上传", type: 'error' });
+        return
+      }
       const http = axios.create({
         headers: {
           Authorization: "Bearer " + getToken()
@@ -275,8 +280,8 @@ export default {
             value = 100
           }
           let obj = {
-            name: '',
-            size: '',
+            name: '服务器正在上传中...请稍后',
+            size: size,
             percent: value
           }
           this.progress.files.splice(0, 1, obj)

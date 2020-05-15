@@ -34,7 +34,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="工程形象进度" prop="visualProgress">
-        <el-input v-model="addForm.visualProgress" type="textarea" placeholder="请填写执业证书号"></el-input>
+        <el-input v-model="addForm.visualProgress" type="textarea" placeholder="请填写工程形象进度"></el-input>
       </el-form-item>
       <el-form-item label="项目监理机构工作评价">
         <el-table size="small" :data="formInfoList" border v-show="formInfoList.length > 0">

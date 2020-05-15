@@ -160,4 +160,12 @@ export default {
   }
 }
 </script>
+<style scoped>
+.app-container {
+  width: 100%;
+  padding: 20px;
+  height: 100%;
+  position: absolute;
+}
+</style>
 

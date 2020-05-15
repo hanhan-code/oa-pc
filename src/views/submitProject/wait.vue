@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container" id="app-container">
+  <div class="app-container" ref="appContainer">
     <!-- 工具栏 -->
     <div class="head-tools">
       <!-- 搜索框 评价名称 -->
@@ -25,7 +25,13 @@
       <el-tag type="danger">评定: {{statusOption.level}}</el-tag>
       <br />
       <div class="content" style="margin-top: 10px;">
-        <el-table size="small" :data="tableData" :max-height="600" border v-if="query.status === 3">
+        <el-table
+          size="small"
+          :data="tableData"
+          :max-height="tableHeight"
+          border
+          v-if="query.status === 3"
+        >
           <el-table-column type="index" label="序号" align="center"></el-table-column>
           <el-table-column prop="formName" label="表单名称" align="center"></el-table-column>
           <el-table-column label="完成情况" align="center">
@@ -63,7 +69,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-table size="small" :data="tableData" :max-height="600" border v-else>
+        <el-table size="small" :data="tableData" :max-height="tableHeight" border v-else>
           <el-table-column type="index" label="序号" align="center"></el-table-column>
           <el-table-column prop="formName" label="表单名称" align="center"></el-table-column>
           <el-table-column label="完成情况" align="center">
@@ -123,7 +129,7 @@ import { formData, personData } from '@/api/evaluateProject/evaluateProject'
 
 
 export default {
-  name: 'remind',
+  name: 'wait',
   mixins: [initDict],
   data () {
     return {
@@ -156,6 +162,7 @@ export default {
     this.doCreat()
   },
   computed: {
+    // 时间日期格式化
     dateTime () {
       let _this = this
       return function (value) {
@@ -165,7 +172,16 @@ export default {
           return ''
         }
       }
+    },
+    // 获取页面高度
+    getHeight () {
+      let _this = this
+      let clientHeight = _this.$refs.appContainer.clientHeight
+      return clientHeight - 250 + 'px'
     }
+  },
+  mounted () {
+    this.tableHeight = this.getHeight
   },
   methods: {
     // 初始化
@@ -234,6 +250,15 @@ export default {
 <style scoped>
 .el-select {
   width: 100%;
+}
+.app-container {
+  width: 100%;
+  padding: 20px;
+  height: 100%;
+  position: absolute;
+}
+.table-content {
+  height: calc(100% - 50px);
 }
 </style>
 <style>
