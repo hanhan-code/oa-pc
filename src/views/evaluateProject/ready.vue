@@ -120,11 +120,6 @@ export default {
                 list.formClassItemList.forEach(item => {
                   item.formId = list.formId
                   item.formClassId = list.formClassId
-                  if (item.fileList) {
-                    item.fileList.forEach(file => {
-                      file.url = file.url + this.$network
-                    })
-                  }
                 })
               })
             } else {
@@ -137,11 +132,6 @@ export default {
               p.formClassItemList.forEach(item => {
                 item.formId = p.formId
                 item.formClassId = p.formClassId
-                if (item.fileList) {
-                  item.fileList.forEach(file => {
-                    file.url = file.url + this.$network
-                  })
-                }
               })
               p.childList = [
                 {
