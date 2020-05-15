@@ -554,24 +554,24 @@ export default {
       companyData(getCompanyId()).then(res => {
         if (res.code === 0) {
           let data = res.data
-          data.children.forEach((p, i, arr) => {
-            if (p.children) {
-              p.children.forEach((k, v, arr1) => {
-                if (k.children) {
-                  k.children.forEach((n, o, arr2) => {
-                    this.companyList.push({ id: n.id, label: n.label })
-                    if (n.children) {
-                      n.children.forEach(q => {
-                        // this.companyList.push({ id: q.id, label: q.label })
-                      })
-                    }
-                  })
-                }
-              })
-            }
-          })
+          this.getComPanyFor(data)
         }
       })
+    },
+    // 递归循环处理数据
+    getComPanyFor (data) {
+      if (data.children) {
+        data.children.forEach(p => {
+          this.getComPanyFor(p)
+        })
+      } else {
+        if (!data.dept) {
+          let flag = this.companyList.some(p => p.id === data.id)
+          if (!flag) {
+            this.companyList.push({ id: data.id, label: data.label })
+          }
+        }
+      }
     },
     // 获取添加评价表数据
     getEvaluateData (type) {

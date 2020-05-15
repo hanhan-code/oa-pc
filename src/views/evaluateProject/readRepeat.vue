@@ -261,7 +261,7 @@ export default {
     // 点击图片进行相关操作
     doClickImg (file) {
       let reg = /.(ppt)$|(pptx)$|(xlsx)$|(docx)$|(xls)$|(doc)$/gi,
-        regs = /.(image)$|(pdf)$|(txt)$/gi,
+        regs = /.(png)$|(jpg)$|(jpeg)|(svg)$|(icon)$|(pdf)$|(txt)$/gi,
         url = this.$filePrefix + file.url,
         previewUrl
       if (reg.test(url)) {

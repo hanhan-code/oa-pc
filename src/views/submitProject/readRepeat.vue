@@ -19,24 +19,21 @@
               <el-table-column prop="deductScore" label="扣分值" align="center"></el-table-column>
               <el-table-column label="提交文件">
                 <template slot-scope="scope">
-                  <span
+                  <div
                     v-for="(item, i) in scope.row.fileList"
                     :key="i"
                     v-show="scope.row.fileList.length > 0"
                     class="upload"
                   >
-                    <img
-                      src="@/assets/common/close.png"
-                      class="upload-close"
-                      @click="doDelete(item, scope.row)"
-                    />
                     <!-- 文件类型 ICON 图标处理 -->
-                    <span @click="doClickImg(item)">
-                      <svg-icon class="svg-icon" :icon-class="$utils.getIcon(item.url)" />
-                      &nbsp;&nbsp;
-                      {{item.fileName}}
+                    <div @click="doClickImg(item)">
+                      <svg-icon class="svg-icon" :icon-class="$utils.getIcon(item.url)" />&nbsp;&nbsp;
+                    </div>
+                    <div class="upload-text">{{item.fileName}}</div>
+                    <span class="upload-close" @click="doDelete(item, scope.row)">
+                      <i class="el-icon-close"></i>
                     </span>
-                  </span>
+                  </div>
                 </template>
               </el-table-column>
               <el-table-column label="是否重要项" align="center">
@@ -299,7 +296,7 @@ export default {
     // 点击图片进行相关操作
     doClickImg (file) {
       let reg = /.(ppt)$|(pptx)$|(xlsx)$|(docx)$|(xls)$|(doc)$/gi,
-        regs = /.(image)$|(pdf)$|(txt)$/gi,
+        regs = /.(png)$|(jpg)$|(jpeg)|(svg)$|(icon)$|(pdf)$|(txt)$/gi,
         url = this.$filePrefix + file.url,
         previewUrl
       if (reg.test(url)) {
@@ -353,6 +350,7 @@ export default {
         formId: this.row.formId,
         projectCommentId: this.query.projectCommentId,
         url: data.link,
+        fileName: data.fileName
       }
       this.screenLoading = true
       submitFile(params).then(res => {
@@ -371,33 +369,41 @@ export default {
 .upload {
   position: relative;
   display: inline-block;
-  width: 40px;
   height: 50px;
   margin-left: 10px;
+  border: 1px dotted #828181;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
 }
-
+.upload-text {
+  width: 0;
+  flex: 1;
+  color: #828181;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .upload img {
-  width: 40px;
-  height: 40px;
+  width: 80px;
+  height: 80px;
   text-align: center;
   margin-right: 0.5px;
-  margin-bottom: 0.5px;
-  position: relative;
-  top: 10px;
 }
 .upload .upload-close {
   position: absolute;
   top: -2px;
-  right: 0px;
-  width: 20px;
-  height: 20px;
+  right: -4px;
+  text-align: center;
+  width: 30px;
+  height: 30px;
   z-index: 9999;
 }
 .svg-icon {
-  width: 30px;
-  height: 30px;
-  position: absolute;
-  left: 0;
-  top: 10px;
+  width: 35px;
+  height: 35px;
+  margin-top: 3px;
+  margin-left: 10px;
 }
 </style>

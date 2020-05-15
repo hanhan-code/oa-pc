@@ -6,6 +6,7 @@
         <el-select
           v-model="setForm.id"
           filterable
+          style="width: 180px"
           clearable
           placeholder="请选择项目"
           @change="getSetData"
@@ -18,59 +19,59 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="优得分率%" prop="fine">
-        <el-col :span="5">
+      <el-form-item label="优得分率>=" prop="fine">
+        <el-col :span="8">
           <el-input
             v-model="setForm.fine"
             type="number"
             style="width: 180px"
             @blur="doFine"
-            placeholder=">=90%"
-          ></el-input>
+            placeholder="90"
+          ></el-input>&nbsp;%
         </el-col>
-        <el-col :span="8" align="center">
-          <el-form-item label="并且单张表得分率%" prop="fineSingle" label-width="160px">
+        <el-col :span="15">
+          <el-form-item label="并且单张表得分率>=" prop="fineSingle" label-width="160px">
             <el-input
               v-model="setForm.fineSingle"
               type="number"
               @blur="doFineSingle"
               style="width: 180px"
-              placeholder=">=85%"
-            ></el-input>
+              placeholder="85"
+            ></el-input>&nbsp;%
           </el-form-item>
         </el-col>
       </el-form-item>
-      <el-form-item label="良得分率%" prop="good">
-        <el-col :span="5">
+      <el-form-item label="良得分率>=" prop="good">
+        <el-col :span="8">
           <el-input
             v-model="setForm.good"
             type="number"
             @blur="doWell"
             style="width: 180px"
-            placeholder="90% - 80%"
-          ></el-input>
+            placeholder="80"
+          ></el-input>&nbsp;%
         </el-col>
-        <el-col :span="8" align="center">
-          <el-form-item label="并且单张表得分率%" prop="goodSingle" label-width="160px">
+        <el-col :span="15">
+          <el-form-item label="并且单张表得分率>=" prop="goodSingle" label-width="160px">
             <el-input
               v-model="setForm.goodSingle"
               @blur="doWellSingle"
               type="number"
               style="width: 180px"
-              placeholder="85% - 75%"
-            ></el-input>
+              placeholder="75"
+            ></el-input>&nbsp;%
           </el-form-item>
         </el-col>
       </el-form-item>
-      <el-form-item label="一般得分率%" prop="common">
-        <el-col :span="5">
+      <el-form-item label="一般得分率>=" prop="common">
+        <el-col :span="8">
           <el-input
             v-model="setForm.common"
             @blur="doCommon"
             type="number"
             style="width: 180px"
-            placeholder="80% - 60%"
-          ></el-input>
+            placeholder="60"
+          ></el-input>&nbsp;%
         </el-col>
       </el-form-item>
       <el-form-item prop="important">
@@ -150,8 +151,8 @@ export default {
         common: '',                              // 一般得分率
         fineSingle: '',                          // 优 单表得分率
         goodSingle: '',                          // 良 单表得分率
-        important: false,                        // 重要项(0:正常，1：重要)
-        reAse: false,                            // 是否可重评（0：不可；1可重评）
+        important: true,                        // 重要项(0:正常，1：重要)
+        reAse: true,                            // 是否可重评（0：不可；1可重评）
         noticeMethod: [],                        // 通知方式 1系统消息，2企业微信，3邮件通知 逗号分隔
         notice: [],                              // 评审完通知人 id 1546，1564，1564 逗号分隔
       },
@@ -250,24 +251,24 @@ export default {
       companyData(getCompanyId()).then(res => {
         if (res.code === 0) {
           let data = res.data
-          data.children.forEach((p, i, arr) => {
-            if (p.children) {
-              p.children.forEach((k, v, arr1) => {
-                if (k.children) {
-                  k.children.forEach((n, o, arr2) => {
-                    this.companyList.push({ id: n.id, label: n.label })
-                    if (n.children) {
-                      n.children.forEach(q => {
-                        // this.companyList.push({ id: q.id, label: q.label })
-                      })
-                    }
-                  })
-                }
-              })
-            }
-          })
+          this.getComPanyFor(data)
         }
       })
+    },
+    // 递归循环处理数据
+    getComPanyFor (data) {
+      if (data.children) {
+        data.children.forEach(p => {
+          this.getComPanyFor(p)
+        })
+      } else {
+        if (!data.dept) {
+          let flag = this.companyList.some(p => p.id === data.id)
+          if (!flag) {
+            this.companyList.push({ id: data.id, label: data.label })
+          }
+        }
+      }
     },
     // 优单表得分率
     doFine (e) {

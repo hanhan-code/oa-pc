@@ -775,12 +775,12 @@ export default {
 <style scoped>
 .container {
   display: flex;
-  flex: auto;
-  justify-content: left;
 }
 
 .container-right {
   margin-left: 20px;
+  width: 0px;
+  flex: 1;
 }
 
 .el-tree,
