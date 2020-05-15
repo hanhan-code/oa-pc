@@ -362,7 +362,7 @@ export default {
         formClassItemId: this.row.formClassItemId,
         formId: this.row.formId,
         projectCommentId: this.query.projectCommentId,
-        fileList: data.fileList
+        fileList: data
       }
       this.screenLoading = true
       submitFile(params).then(res => {
