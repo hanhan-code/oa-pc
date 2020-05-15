@@ -262,9 +262,9 @@ export default {
         size += file[i].size
         form.append('files ', file[i])
       }
-      if (size >= 209715200) {
+      if (size >= 20971520) {
         this.progress.visible = false
-        this.$message({ message: "文件大小不能超过200M，请重新上传", type: 'error' });
+        this.$message({ message: "文件大小不能超过20M，请重新上传", type: 'error' });
         return
       }
       const http = axios.create({
