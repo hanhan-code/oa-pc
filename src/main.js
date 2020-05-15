@@ -111,6 +111,7 @@ Vue.prototype.$utils = {
     } else {
       return 'icon-other-file'
     }
+    console.log('')
   },
   getDiskIcon: function (file) {
 
