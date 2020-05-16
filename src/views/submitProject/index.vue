@@ -179,6 +179,7 @@ export default {
     this.doCreat()
   },
   computed: {
+    // 获取高度
     getHeight () {
       let _this = this
       let clientHeight = _this.$refs.appContainer.clientHeight

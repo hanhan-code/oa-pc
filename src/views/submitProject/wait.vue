@@ -30,7 +30,7 @@
           :data="tableData"
           :max-height="tableHeight"
           border
-          v-if="query.status === 3"
+          v-if="query.status === 3 || query.status === 4"
         >
           <el-table-column type="index" label="序号" align="center"></el-table-column>
           <el-table-column prop="formName" label="表单名称" align="center"></el-table-column>

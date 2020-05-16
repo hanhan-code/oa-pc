@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container" id="app-container">
+  <div class="app-container" ref="appContainer">
     <!-- 工具栏 -->
     <div class="head-tools">
       <!-- 搜索框 评价名称 -->
@@ -31,7 +31,7 @@
             <el-table
               size="small"
               :data="tableData"
-              :max-height="600"
+              :max-height="tableHeight"
               border
               :row-class-name="doRowClass"
             >
@@ -72,7 +72,7 @@
         <el-tab-pane label="评价结束" name="0">
           <!-- 表格数据 -->
           <div class="content" style="margin-top: 10px;">
-            <el-table size="small" :data="tableData" :max-height="600" border>
+            <el-table size="small" :data="tableData" :max-height="tableHeight" border>
               <el-table-column type="index" label="序号" align="center"></el-table-column>
               <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
               <el-table-column label="提交人" align="center">
@@ -327,8 +327,15 @@ export default {
   mounted () {
     sessionStorage.removeItem('formId')
     sessionStorage.removeItem('projectCommentId')
+    this.tableHeight = this.getHeight
   },
   computed: {
+    // 获取高度
+    getHeight () {
+      let _this = this
+      let clientHeight = _this.$refs.appContainer.clientHeight
+      return clientHeight - 250 + 'px'
+    },
     // 设置选择框多选时标签数量
     setEmployeeTags () {
       let _this = this
@@ -660,6 +667,15 @@ export default {
 <style scoped>
 .el-select {
   width: 100%;
+}
+.app-container {
+  width: 100%;
+  padding: 20px;
+  height: 100%;
+  position: absolute;
+}
+.table-content {
+  height: calc(100% - 50px);
 }
 </style>
 <style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container" id="app-container">
+  <div class="app-container">
     <!-- 工具栏 -->
     <div class="head-tools">
       <!-- 搜索按钮 -->
@@ -10,12 +10,12 @@
     </div>
     <br />
     <!-- 数据内容 -->
-    <div class="table-content">
+    <div class="table-content" ref="tableContent">
       <div class="content" style="margin-top: 10px;">
         <el-table
           size="small"
           :data="tableData"
-          :max-height="700"
+          :max-height="tableHeight"
           border
           row-key="formClassId"
           type="expand"
@@ -90,7 +90,16 @@ export default {
   created () {
     this.doCreat()
   },
+  computed: {
+    // 获取页面高度
+    getHeight () {
+      let _this = this
+      let clientHeight = _this.$refs.tableContent.clientHeight
+      return clientHeight + 'px'
+    }
+  },
   mounted () {
+    this.tableHeight = this.getHeight
   },
   methods: {
     // 初始化
@@ -176,4 +185,16 @@ export default {
   }
 }
 </script>
+<style scoped>
+.app-container {
+  width: 100%;
+  padding: 20px;
+  height: 100%;
+  position: absolute;
+}
+
+.table-content {
+  height: calc(100% - 70px);
+}
+</style>
 

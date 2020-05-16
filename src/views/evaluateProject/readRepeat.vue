@@ -133,7 +133,7 @@
     </el-dialog>
     <!-- 评审 -->
     <el-dialog
-      title="选择分数"
+      title="选择扣分数"
       :visible.sync="evaluateProp"
       width="20%"
       :modal="false"
@@ -184,7 +184,11 @@ export default {
     }
   },
   props: ['query', 'params'],
-  mounted () {
+  watch: {
+    evaluateProp () {
+      this.score = 0
+      this.$emit('doRest')
+    }
   },
   methods: {
     // 催交

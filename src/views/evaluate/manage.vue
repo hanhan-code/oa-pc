@@ -1,5 +1,5 @@
 <template>
-  <div class="container" id="app-container">
+  <div class="container">
     <div class="container-left">
       <el-tree
         :data="treeData"
@@ -34,7 +34,7 @@
         </span>
       </el-tree>
     </div>
-    <div class="container-right">
+    <div class="container-right" ref="tableContent">
       <!-- 工具栏 -->
       <div class="head-tools">
         <!-- 搜索框 评价名称 -->
@@ -62,7 +62,7 @@
       <div class="table-content">
         <!-- 表格数据 -->
         <div class="content" style="margin-top: 10px;">
-          <el-table size="small" :data="tableData" :max-height="600" border>
+          <el-table size="small" :data="tableData" :max-height="tableHeight" border>
             <el-table-column type="index" label="序号" align="center"></el-table-column>
             <el-table-column prop="formClassName" label="评价项目" min-width="150" align="center"></el-table-column>
             <el-table-column prop="content" label="评价内容" min-width="150" align="center"></el-table-column>
@@ -422,20 +422,14 @@ export default {
     this.doCreat()
   },
   mounted () {
-    this.getHeight
-    this.tableHeight = this.setHeight
+    this.tableHeight = this.getHeight
   },
   computed: {
+    // 获取高度
     getHeight () {
-      let container = document.getElementById('app-container')
-      let main = document.getElementsByClassName('app-main')[0].clientHeight
-      container.style.height = main + 'px'
-      return ''
-    },
-    // 设置表格最大高度
-    setHeight () {
-      let tag = document.getElementById('app-container')
-      return tag.clientHeight - 220
+      let _this = this
+      let clientHeight = _this.$refs.tableContent.clientHeight
+      return clientHeight - 100 + 'px'
     }
   },
   props: {
@@ -775,6 +769,7 @@ export default {
 <style scoped>
 .container {
   display: flex;
+  position: relative;
 }
 
 .container-right {

@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container dialog" id="app-container">
+  <div class="app-container dialog" ref="appContainer">
     <!-- 工具栏 -->
     <div class="head-tools">
       <!-- 搜索框 评价名称 -->
@@ -28,7 +28,7 @@
         <el-tab-pane label="评价中" name="0">
           <!-- 表格数据 -->
           <div class="content" style="margin-top: 10px;">
-            <el-table size="small" :data="tableData" :max-height="600" border>
+            <el-table size="small" :data="tableData" :max-height="tableHeight" border>
               <el-table-column type="index" label="序号" align="center"></el-table-column>
               <el-table-column prop="name" label="项目全称" align="center"></el-table-column>
               <el-table-column label="评价进度" align="center">
@@ -70,7 +70,7 @@
         <el-tab-pane label="评价结束" name="1">
           <!-- 表格数据 -->
           <div class="content" style="margin-top: 10px;">
-            <el-table size="small" :data="tableData" :max-height="600" border>
+            <el-table size="small" :data="tableData" :max-height="tableHeight" border>
               <el-table-column type="index" label="序号" align="center"></el-table-column>
               <el-table-column prop="name" label="项目全称" align="center"></el-table-column>
               <el-table-column label="得分率" align="center">
@@ -180,6 +180,17 @@ export default {
     this.doSearch(1)
     this.doCreat()
   },
+  computed: {
+    // 获取高度
+    getHeight () {
+      let _this = this
+      let clientHeight = _this.$refs.appContainer.clientHeight
+      return clientHeight - 250 + 'px'
+    }
+  },
+  mounted () {
+    this.tableHeight = this.getHeight
+  },
   methods: {
     // 初始化
     doCreat () {
@@ -264,7 +275,10 @@ export default {
 
 <style scoped>
 .app-container {
-  overflow: hidden;
+  width: 100%;
+  padding: 20px;
+  height: 100%;
+  position: absolute;
 }
 .el-select {
   width: 100%;
