@@ -185,9 +185,10 @@ export default {
   },
   props: ['query', 'params'],
   watch: {
-    evaluateProp () {
-      this.score = 0
-      this.$emit('doRest')
+    evaluateProp (value) {
+      if (!value) {
+        this.score = 0
+      }
     }
   },
   methods: {
