@@ -194,7 +194,7 @@ export default {
   methods: {
     // 初始化
     doCreat () {
-
+      sessionStorage.removeItem('query')
     },
     // 查询表格数据
     doSearch (num, size = 10) {

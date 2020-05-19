@@ -14,7 +14,7 @@
       <!-- 搜索按钮 -->
       <el-button size="small" type="success" icon="el-icon-search" @click="doSearch(0)">搜索</el-button>
       <el-button size="small" type="primary">
-        <router-link to="/evaluate/evaluateProject">返回上一级</router-link>
+        <router-link to="/project/evaluateProject">返回上一级</router-link>
       </el-button>
     </div>
     <br />
@@ -186,7 +186,10 @@ export default {
   methods: {
     // 初始化
     doCreat () {
-      let query = this.$route.query
+      let query = JSON.parse(sessionStorage.getItem('query')) || this.$route.query
+      if (!sessionStorage.getItem('query')) {
+        sessionStorage.setItem('query', JSON.stringify(query))
+      }
       this.query = query
       this.pageParams.projectCommentId = query.projectCommentId
     },
