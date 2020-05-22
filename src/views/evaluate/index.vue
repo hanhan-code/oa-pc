@@ -239,6 +239,7 @@
         max-height="200"
         ref="multipleTable"
         @select="doSelectChange"
+        @selection-change="doTableChange"
         @select-all="doSelectChanges"
       >
         <el-table-column type="selection" label="序号" align="center"></el-table-column>
@@ -539,14 +540,6 @@ export default {
     doAdd () {
       this.createProp = false
       this.addProp = true
-      this.evaluateData.forEach((p, i, arr) => {
-        let flag = this.evaluateList.some(n => p.id === n.id)
-        if (this.evaluateList.length > 0 && flag) {
-          this.$refs.multipleTable.toggleRowSelection(p, true);
-        } else {
-          this.$refs.multipleTable.toggleRowSelection(p, false);
-        }
-      })
     },
     // 确定添加评价表
     doAddConfirm () {
@@ -555,11 +548,10 @@ export default {
     },
     // 删除评价表
     doDelete (id) {
-      this.screenLoading = true
+      this.toggle = false
       this.evaluateList.forEach((p, i, arr) => {
-        this.screenLoading = false
         if (p.id === id) {
-          arr.splice(i, 1)
+          this.$refs.multipleTable.toggleRowSelection(p, false);
         }
       })
     },
@@ -608,28 +600,11 @@ export default {
     },
     // 评价表 多选框操作
     doSelectChange (select, row) {
-      let evaluateList = this.evaluateList
-      if (evaluateList.length === 0) {
-        evaluateList.push(row)
-        evaluateList.splice(0, 0)
-      } else {
-        this.doFilter(row)
-      }
+      this.evaluateList = select
     },
-    // 多选框数据过滤
-    doFilter (row) {
-      let evaluateList = this.evaluateList
-      let flag = evaluateList.some(p => p.id === row.id)
-      if (flag) {
-        evaluateList.forEach((p, i, arr) => {
-          if (row.id === p.id) {
-            arr.splice(i, 1)
-          }
-        })
-      } else {
-        evaluateList.push(row)
-      }
-
+    doTableChange (select) {
+      this.evaluateList = select
+      console.log(select, 222)
     },
     // 主页面表格 点击分页
     doSizeChange (size) {
