@@ -233,7 +233,9 @@
       <el-table
         size="small"
         border
+        row-key="id"
         :data="evaluateData"
+        reserve-selection
         max-height="200"
         ref="multipleTable"
         @select="doSelectChange"
@@ -350,7 +352,7 @@ export default {
   methods: {
     // 初始化
     doCreat () {
-
+      this.getEvaluateData()
     },
     // 设置样式
     doRowClass ({ row, rowIndex }) {
@@ -537,8 +539,7 @@ export default {
     doAdd () {
       this.createProp = false
       this.addProp = true
-      this.evaluateList = []
-      this.getEvaluateData()
+
     },
     // 确定添加评价表
     doAddConfirm () {
@@ -591,29 +592,18 @@ export default {
       evaluateData(params).then(res => {
         if (res.code === 0) {
           this.evaluateData = res.data.records
-          if (this.evaluateList.length > 0) {
-            this.doToggleSelect(this.evaluateList)
-          }
+          this.evaluateData.forEach((p, i, arr) => {
+            let flag = this.evaluateList.some(n => p.id === n.id)
+            if (this.evaluateList.length > 0) {
+              this.$refs.multipleTable.toggleRowSelection(p);
+            }
+          })
         }
       })
     },
     // 评价表 全选框操作
     doSelectChanges (select) {
-      let evaluateList = this.evaluateList
-      if (evaluateList.length === 0) {
-        evaluateList.push(...select)
-        evaluateList.splice(0, 0)
-      } else {
-        if (select.length === 0) {
-          this.evaluateData.forEach((p, i, arr) => {
-            this.doFilter(p)
-          })
-        } else {
-          select.forEach((p, i, arr) => {
-            this.doFilter(p)
-          })
-        }
-      }
+      this.evaluateList = select
     },
     // 评价表 多选框操作
     doSelectChange (select, row) {
@@ -639,16 +629,6 @@ export default {
         evaluateList.push(row)
       }
 
-    },
-    // 表格多选框是否选中
-    doToggleSelect (rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row);
-        });
-      } else {
-        this.$refs.multipleTable.clearSelection();
-      }
     },
     // 主页面表格 点击分页
     doSizeChange (size) {
