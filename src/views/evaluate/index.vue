@@ -539,7 +539,14 @@ export default {
     doAdd () {
       this.createProp = false
       this.addProp = true
-
+      this.evaluateData.forEach((p, i, arr) => {
+        let flag = this.evaluateList.some(n => p.id === n.id)
+        if (this.evaluateList.length > 0 && flag) {
+          this.$refs.multipleTable.toggleRowSelection(p, true);
+        } else {
+          this.$refs.multipleTable.toggleRowSelection(p, false);
+        }
+      })
     },
     // 确定添加评价表
     doAddConfirm () {
@@ -592,12 +599,6 @@ export default {
       evaluateData(params).then(res => {
         if (res.code === 0) {
           this.evaluateData = res.data.records
-          this.evaluateData.forEach((p, i, arr) => {
-            let flag = this.evaluateList.some(n => p.id === n.id)
-            if (this.evaluateList.length > 0) {
-              this.$refs.multipleTable.toggleRowSelection(p);
-            }
-          })
         }
       })
     },
