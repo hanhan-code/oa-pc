@@ -222,7 +222,12 @@ export default {
     doRemindConfirm () {
       let idList = {
         itemDetailId: this.row.deductDetailId,
-        type: 1
+        type: 1,
+        projectCommentId: this.query.projectCommentId,
+        formId: this.query.formId,
+        path: '/evaluateReady',
+        formName: this.query.formName,
+        status: this.query.status,
       }
       // 获取催交消息内容与用户id
       this.screenLoading = true
