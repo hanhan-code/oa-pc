@@ -54,14 +54,14 @@
               <el-button
                 type="primary"
                 v-show="query.status !== 1 && query.status !== 3 && query.status !== 4"
-                @click="doEndButton(scope.row,1)"
+                @click="doWait(scope.row)"
                 plain
                 size="mini"
               >待评价</el-button>
               <el-button
                 type="primary"
                 v-show="query.status === 3 || query.status === 4"
-                @click="doEndButton(scope.row,1)"
+                @click="doWait(scope.row)"
                 plain
                 size="mini"
               >详情</el-button>
