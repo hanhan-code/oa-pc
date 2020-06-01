@@ -563,7 +563,7 @@ export default {
     // 重新加载树结构
     resetLazy () {
       // 创建新的文件夹后重新执行懒加载树结构
-      this.nodes.childNodes = []
+      this.$set(this.nodes, 'childNodes', [])
       this.loadNode(this.nodes, this.resolves)
     },
     // 懒加载树结构数据
@@ -595,7 +595,8 @@ export default {
     // 展开事件
     doExpand (option, node, data) {
       this.row = option
-      this.treeParams.parentId = option.id
+      this.$set(this.treeParams, 'parentId', option.id)
+
     },
     // 文件移动弹窗
     moveProp (file) {
