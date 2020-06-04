@@ -1,14 +1,11 @@
-import { login, getInfo,codeIN } from '@/api/login'
+import {  getInfo,codeIN,toSwitch,toWeb } from '@/api/login'
 import { getToken, setToken, removeToken, setLoginInfo, clearLoginInfo } from '@/utils/auth'
-import { decrypt } from '@/utils/rsaEncrypt'
-import el from 'element-ui/src/locale/lang/el'
-import { clearUserInfo } from '../../utils/auth'
 
 const user = {
   state: {
     token: getToken(),
     user: {},
-    roles: [],
+    res: [],
     // 第一次加载菜单时用到
     loadMenus: false
   },
@@ -16,45 +13,44 @@ const user = {
   mutations: {
     SET_TOKEN: (state, token) => {
       state.token = token
+      console.log(token,1112)
     },
     SET_USER: (state, user) => {
       state.user = user
+      console.log(user,2223)
     },
     SET_ROLES: (state, roles) => {
       state.roles = roles
+      console.log(roles,3334)
     },
     SET_LOAD_MENUS: (state, loadMenus) => {
       state.loadMenus = loadMenus
+      console.log(loadMenus,4445)
     }
   },
 
   actions: {
     // 登录
-    Login({ commit }, userInfo) {
-      const username = userInfo.username
-      const password = decrypt(userInfo.password)
-      const code = userInfo.code
-      const uuid = userInfo.uuid
-      const rememberMe = userInfo.rememberMe
+    toSwitch({ commit }, userInfo) {
+      const id =  userInfo
       return new Promise((resolve, reject) => {
-        login(username, password, code, uuid).then(res => {
-
+        let data = id
+        toSwitch(data).then(res => {
+          commit('SET_USER', res.data)
+          console.log(res,1111)
           // 登陆状态
           if (res.code == 0) {
-
-            console.log('==========ddd=========')
-            console.log(res)
-            setToken(res.data.token, rememberMe)
+            setToken(res.data.token)
             commit('SET_TOKEN', res.data.token)
-
             // 设置 用户主键、所属公司主键
             setLoginInfo(res)
-
-            setUserInfo(res.data.user, commit)
-
             // 第一次加载菜单时用到， 具体见 src 目录下的 permission.js
             commit('SET_LOAD_MENUS', true)
             resolve()
+            toWeb().then(res=>{
+              console.log(res,6666)
+              setUserInfo(res.data, commit)
+            })
           } else {
             this.$message({ message: res.msg, type: 'warning' })
           }
@@ -64,6 +60,7 @@ const user = {
         })
       })
     },
+
     CodeIN({ commit }, phoneInfo) {
       const phone = phoneInfo.phone
       const code = phoneInfo.code
@@ -73,15 +70,13 @@ const user = {
           // 登陆状态
           if (res.code == 0) {
 
-            console.log('==========ddd=====ssss====')
-            console.log(res)
             setToken(res.data.token, undefined)
             commit('SET_TOKEN', res.data.token)
 
             // 设置 用户主键、所属公司主键
             setLoginInfo(res)
 
-            setUserInfo(res.data.user, commit)
+            setUserInfo(res.data, commit)
 
             // 第一次加载菜单时用到， 具体见 src 目录下的 permission.js
             commit('SET_LOAD_MENUS', true)
@@ -95,6 +90,7 @@ const user = {
         })
       })
     },
+    
 
     // 获取用户信息
     GetInfo({ commit }) {
@@ -133,12 +129,11 @@ const user = {
 
 export const setUserInfo = (res, commit) => {
   // 如果没有任何权限，则赋予一个默认的权限，避免请求死循环
-  if (res.roles.length === 0) {
-    commit('SET_ROLES', ['ROLE_SYSTEM_DEFAULT'])
+  if (res.length === 0) {
+    commit('SET_ROLES', res)
   } else {
-    commit('SET_ROLES', res.roles)
+    commit('SET_ROLES', res)
   }
-  commit('SET_USER', res)
 }
 
 export default user

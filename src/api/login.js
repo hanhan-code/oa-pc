@@ -1,13 +1,10 @@
 import request from '@/utils/request'
 //登录
-export function login(username,password) {
+export function login(data) {
   return request({
-    url: 'auth/auth/login',
+    url: 'user/auth/login',
     method: 'post',
-    data:{
-      username,
-      password
-    }
+    data
   })
 }
 
@@ -39,13 +36,44 @@ export function sendVerificationCode(data) {
 }
 
 //手机号码登录
-export function codeIN(phone,code) {
+export function codeIN(phone, code) {
   return request({
     url: 'auth/auth/phone/code',
     method: 'post',
-    data:{
+    data: {
       phone,
       code
     }
+  })
+}
+//我的公司列表
+export function myCompany(min) {
+  const params = {
+    pageNum: min.pageNum,
+    pageSize: min.pageSize,
+    userId: min.userId,
+    keyword: min.keyword
+  }
+  return request({
+    url: 'user/company/mine',
+    method: 'get',
+    params
+  })
+}
+
+
+// 切换公司-认证信息
+export function toSwitch(id) {
+  return request({
+    url: 'user/auth/company/switch?companyId='+id,
+    method: 'get',
+  })
+}
+
+//获取公司应用
+export function toWeb(id) {
+  return request({
+    url: 'user/app/web',
+    method: 'get',
   })
 }

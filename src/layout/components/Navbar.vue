@@ -49,9 +49,9 @@ import Screenfull from '@/components/Screenfull'
 
 export default {
   components: {
-    Breadcrumb,
-    Hamburger,
-    Screenfull
+    Breadcrumb,//面包屑导航
+    Hamburger,//菜单折叠
+    Screenfull//全屏
   },
   data() {
     return {

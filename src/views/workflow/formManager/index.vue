@@ -1,10 +1,10 @@
 <template >
   <div class="formManager">
-    <el-row :gutter="20">
+    <!-- <el-row :gutter="20">
       <el-col :span="6" v-for="name in showList">
         <div>{{name.name}}</div>
       </el-col>
-    </el-row>
+    </el-row> -->
   </div>
 </template>
 <script>

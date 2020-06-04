@@ -6,7 +6,6 @@
 import echarts from 'echarts'
 require('echarts/theme/macarons') // echarts theme
 import { debounce } from '@/utils'
-import { getChartData } from '@/api/visits'
 
 export default {
   props: {
@@ -39,12 +38,12 @@ export default {
     }
   },
   mounted() {
-    getChartData().then(res => {
-      this.chartData.visitsData = res.visitsData
-      this.chartData.ipData = res.ipData
-      this.weekDays = res.weekDays
-      this.initChart()
-    })
+    // getChartData().then(res => {
+    //   this.chartData.visitsData = res.visitsData
+    //   this.chartData.ipData = res.ipData
+    //   this.weekDays = res.weekDays
+    //   this.initChart()
+    // })
     if (this.autoResize) {
       this.__resizeHandler = debounce(() => {
         if (this.chart) {

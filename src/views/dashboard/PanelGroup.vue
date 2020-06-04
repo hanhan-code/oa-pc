@@ -49,7 +49,6 @@
 
 <script>
 import CountTo from 'vue-count-to'
-import { get } from '@/api/visits'
 export default {
   components: {
     CountTo
@@ -60,12 +59,6 @@ export default {
     }
   },
   mounted() {
-    get().then(res => {
-      this.count.newIp = res.newIp
-      this.count.newVisits = res.newVisits
-      this.count.recentIp = res.recentIp
-      this.count.recentVisits = res.recentVisits
-    })
   }
 }
 </script>
