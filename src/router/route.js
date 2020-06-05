@@ -1,4 +1,4 @@
-export default  [
+export default [
   {
     path: '/system',
     name: 'system',
@@ -14,8 +14,8 @@ export default  [
         meta: { title: '用户管理', icon: 'peoples' },
         icon: 'peoples',
         sort: '2',
-        
-        
+
+
       },
       {
         id: '3',
@@ -66,12 +66,12 @@ export default  [
         sort: '8',
       }
     ],
-    
+
   },
   {
-    path: '/project',
-    name: 'project',
-    
+    path: '/projectComment',
+    name: 'projectComment',
+
     component: () => import('@/layout/Layout'),
     alwaysShow: true,
     meta: { title: '项目评价', icon: 'running' },
@@ -114,12 +114,12 @@ export default  [
         sort: '999',
       }
     ],
-    
+
   },
   {
     path: '/monitor',
     name: 'monitor',
-    
+
     component: () => import('@/layout/Layout'),
     alwaysShow: true,
     meta: { title: '系统监控', icon: 'monitor' },
@@ -155,12 +155,12 @@ export default  [
         sort: '12',
       }
     ],
-    
+
   },
   {
     path: '/components',
     name: 'components',
-    
+
     component: () => import('@/layout/Layout'),
     alwaysShow: true,
     meta: { title: '组件管理', icon: 'zujian' },
@@ -175,7 +175,7 @@ export default  [
         sort: '51',
       }
     ],
-    
+
   },
   {
     path: '/submitProject',
@@ -245,12 +245,12 @@ export default  [
         sort: '23',
       }
     ],
-    
+
   },
   {
     path: '/attendance',
     name: 'attendance',
-    
+
     component: () => import('@/layout/Layout'),
     alwaysShow: true,
     meta: { title: '考勤管理', icon: 'peoples' },
@@ -317,7 +317,7 @@ export default  [
   {
     path: '/dist',
     name: 'dist',
-    
+
     component: () => import('@/layout/Layout'),
     alwaysShow: true,
     meta: { title: '云盘中心', icon: 'dictionary' },
@@ -367,15 +367,14 @@ export default  [
             sort: '1',
           }
         ],
-        
+
       }
     ],
-    
+
   },
   {
     path: '/archives',
     name: 'archives',
-    
     component: () => import('@/layout/Layout'),
     alwaysShow: true,
     meta: { title: '档案中心', icon: 'swagger' },
@@ -390,17 +389,5 @@ export default  [
         sort: '1',
       }
     ],
-    
   },
-  {
-    path: '/evaluate',
-    name: 'evaluate',
-    
-    component: () => import('@/layout/Layout'),
-    alwaysShow: true,
-    meta: { title: '评审项目', icon: 'permission' },
-    icon: 'permission',
-    sort: '7',
-    
-  }
 ]
