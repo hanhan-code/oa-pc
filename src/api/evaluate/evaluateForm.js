@@ -44,6 +44,17 @@ export function creatSubmit(data) {
   });
 }
 
+/**
+ * @description 调用修改评价表提交接口
+ */
+export function editSubmit(data) {
+  return request({
+    url: "/assessment/form",
+    method: "put",
+    data: data
+  });
+}
+
 export function creatSubmits(data) {
   return request({
     url: "/assessment/project/form",

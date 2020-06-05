@@ -15,7 +15,7 @@
       <el-button size="small" type="success" icon="el-icon-search" @click="doSearch(0)">搜索</el-button>
       <el-button size="small" type="primary" @click="remindProp = true">提交</el-button>
       <el-button size="small" type="primary">
-        <router-link to="/project/evaluateProject">返回上一级</router-link>
+        <router-link to="/projectComment/evaluateProject">返回上一级</router-link>
       </el-button>
     </div>
     <br />

@@ -130,6 +130,15 @@
         :rules="ruleForm"
         ref="creatForm"
       >
+        <el-form-item label="评审名称" prop="name">
+          <el-input
+            v-model="createForm.name"
+            filterable
+            :collapse-tags="setEmployeeTags"
+            clearable
+            placeholder="请输入评审名称"
+          ></el-input>
+        </el-form-item>
         <el-form-item label="选择项目" prop="projectId">
           <el-select
             v-model="createForm.projectId"
@@ -142,6 +151,23 @@
               :label="item.name"
               :value="item.id"
               v-for="(item, index) in projectList"
+              :key="index"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="评价性质类型" prop="commentType">
+          <el-select
+            v-model="createForm.commentType"
+            filterable
+            clearable
+            placeholder="请选择项目"
+            autocomplete="off"
+            @change="doCommentType"
+          >
+            <el-option
+              :label="item.name"
+              :value="item.id"
+              v-for="(item, index) in belongList"
               :key="index"
             ></el-option>
           </el-select>
@@ -285,12 +311,21 @@ export default {
       projectList: [],                // 项目列表
       evaluateList: [],               // 多选框选中评价表格数据
       companyList: [],                // 公司组织架构-所有人员列表
+      belongList: [                   // 评价性质类型
+        { name: '项目监理机构自我评价', id: '1' },
+        { name: '监理单位对项目监理机构工作的考核评价', id: '2' },
+        { name: '建设单位对项目监理机构工作的考核评价', id: '3' },
+        { name: '其他', id: '4' },
+      ],
       pageData: {                     // 分页查询返回数据
         data: [],                     // 列表数据
         total: 10                     // 查询总数
       },
       createForm: {                   // 查询总数
+        name: '',                    // 评价项目名称
         companyId: null,              // 项目所属公司
+        commentType: '',              // 评价类型id
+        commentTypeName: '',          // 评价类型名称
         employeeId: null,             // 执行创建操作评价项目的职员id
         projectId: null,              // 所评价的项目id
         formIdList: [],               // 对应评价表单id列表
@@ -363,6 +398,14 @@ export default {
         return 'success-row';
       }
       return '';
+    },
+    // 评价类型名称
+    doCommentType (id) {
+      this.belongList.forEach(p => {
+        if (p.id === id) {
+          this.createForm.commentTypeName = p.name
+        }
+      })
     },
     // 查询表格数据
     doSearch (num, size = 10) {
@@ -446,7 +489,10 @@ export default {
         projectId: this.createForm.projectId,
         formIdList: formIdList,
         submitEmployeeIdList: this.createForm.submitIdlist,
-        commentEmployeeIdList: this.createForm.employeeIdList
+        commentEmployeeIdList: this.createForm.employeeIdList,
+        name: this.createForm.name,
+        commentType: this.createForm.commentType,
+        commentTypeName: this.createForm.commentTypeName
       }
       this.$refs[ruleForm].validate((valid) => {
         if (valid) {
@@ -558,9 +604,18 @@ export default {
     // 根据公司id获取所有项目
     getCompanyData () {
       // this.companyId // 公司id暂时先默认为1001
-      companyData(getCompanyId()).then(res => {
+      let params = {
+        companyId: getCompanyId(),
+        contain: 1
+      }
+      companyData(params).then(res => {
         if (res.code === 0) {
-          let data = res.data
+          let data = res.data[0]
+          if (data.employees && data.employees.length > 0) {
+            data.employees.forEach(p => {
+              this.companyList.push({ id: p.employeeId, label: p.label })
+            })
+          }
           this.getComPanyFor(data)
         }
       })
@@ -572,12 +627,13 @@ export default {
           this.getComPanyFor(p)
         })
       } else {
-        if (!data.dept) {
-          let flag = this.companyList.some(p => p.id === data.id)
+        data.employees.forEach(p => {
+          let flag = this.companyList.some(n => n.id === data.employeeId)
           if (!flag) {
-            this.companyList.push({ id: data.id, label: data.label })
+            this.companyList.push({ id: p.employeeId, label: p.label })
           }
-        }
+        })
+        return false
       }
     },
     // 获取添加评价表数据
