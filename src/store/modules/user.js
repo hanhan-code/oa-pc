@@ -1,11 +1,13 @@
 import {  getInfo,codeIN,toSwitch,toWeb } from '@/api/login'
 import { getToken, setToken, removeToken, setLoginInfo, clearLoginInfo } from '@/utils/auth'
+import routes from '@/router/route'
+import store from '@/store'
 
 const user = {
   state: {
     token: getToken(),
     user: {},
-    res: [],
+    roles: [],
     // 第一次加载菜单时用到
     loadMenus: false
   },
@@ -13,15 +15,12 @@ const user = {
   mutations: {
     SET_TOKEN: (state, token) => {
       state.token = token
-      console.log(token,1112)
     },
     SET_USER: (state, user) => {
       state.user = user
-      console.log(user,2223)
     },
     SET_ROLES: (state, roles) => {
-      state.roles = roles
-      console.log(roles,3334)
+      state.roles = []
     },
     SET_LOAD_MENUS: (state, loadMenus) => {
       state.loadMenus = loadMenus
@@ -37,7 +36,6 @@ const user = {
         let data = id
         toSwitch(data).then(res => {
           commit('SET_USER', res.data)
-          console.log(res,1111)
           // 登陆状态
           if (res.code == 0) {
             setToken(res.data.token)
@@ -45,10 +43,9 @@ const user = {
             // 设置 用户主键、所属公司主键
             setLoginInfo(res)
             // 第一次加载菜单时用到， 具体见 src 目录下的 permission.js
-            commit('SET_LOAD_MENUS', true)
+            // commit('SET_LOAD_MENUS', true)
             resolve()
             toWeb().then(res=>{
-              console.log(res,6666)
               setUserInfo(res.data, commit)
             })
           } else {
@@ -76,7 +73,7 @@ const user = {
             // 设置 用户主键、所属公司主键
             setLoginInfo(res)
 
-            setUserInfo(res.data, commit)
+            // setUserInfo(res.data, commit)
 
             // 第一次加载菜单时用到， 具体见 src 目录下的 permission.js
             commit('SET_LOAD_MENUS', true)
@@ -97,7 +94,7 @@ const user = {
       return new Promise((resolve, reject) => {
         getInfo().then(res => {
           if (res.code == 0) {
-            setUserInfo(res.data, commit)
+            // setUserInfo(res.data, commit)
             resolve(res.data)
           } else {
             this.$message({ message: res.msg, type: 'warning' })
@@ -119,21 +116,18 @@ const user = {
       })
     },
 
-    updateLoadMenus({ commit }) {
-      return new Promise((resolve, reject) => {
-        commit('SET_LOAD_MENUS', false)
-      })
-    }
   }
 }
 
 export const setUserInfo = (res, commit) => {
-  // 如果没有任何权限，则赋予一个默认的权限，避免请求死循环
-  if (res.length === 0) {
-    commit('SET_ROLES', res)
-  } else {
-    commit('SET_ROLES', res)
-  }
+  let arr = []
+  routes.forEach(p => {
+    let flag = res.some(n => n.path === p.name)
+    if (flag) {
+      arr.push(p)
+    }
+  })
+  store.dispatch('GenerateRoutes',arr)
 }
 
 export default user

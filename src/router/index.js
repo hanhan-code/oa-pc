@@ -1,18 +1,17 @@
 import router from './routers'
+import routes from '@/router/route'
 import store from '@/store'
 import Config from '@/config'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css'// progress bar style
 import { getToken } from '@/utils/auth' // getToken from cookie
 // import { buildMenus } from '@/api/menu'
-import {toWeb} from '@/api/login'
-import { filterAsyncRouter } from '@/store/modules/permission'
 
 NProgress.configure({ showSpinner: false })// NProgress Configuration
 
 const whiteList = ['/login']// no redirect whitelist
 
-
+router.addRoutes(routes)
 router.beforeEach((to, from, next) => {
 
   if (to.meta.title) {
@@ -25,11 +24,10 @@ router.beforeEach((to, from, next) => {
       next({ path: '/' })
       NProgress.done() // if current page is dashboard will not trigger	afterEach hook, so manually handle it
     } else {
-      console.log(store,22222222)
       if (store.getters.user.length === 0) { // 判断当前用户是否已拉取完user_info信息
         store.dispatch('toWeb').then(res => { // 拉取user_info
           // 动态路由，拉取菜单
-          loadMenus(next, to)
+          next()
         }).catch((err) => {
           console.log(err)
           store.dispatch('LogOut').then(() => {
@@ -38,10 +36,7 @@ router.beforeEach((to, from, next) => {
         })
         // 登录时未拉取 菜单，在此处拉取
       } else if (store.getters.loadMenus) {
-        // 修改成false，防止死循环
-        store.dispatch('updateLoadMenus').then(res => {
-        })
-        loadMenus(next, to)
+        next()
       } else {
         next()
       }
@@ -57,28 +52,6 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-
-export const loadMenus = (next, to) => {
-  // buildMenus().then(res => { //路由
-  toWeb().then(res => {
-    if(res.code == 0){
-
-    }else{
-      this.$notify({
-        title: '路由构建失败',
-        type: res.msg,
-        duration: 1500
-      })
-    }
-    console.log(res.data,111111111112)
-    const asyncRouter = filterAsyncRouter(res.data)
-    // asyncRouter.push({ path: '*', redirect: '/404', hidden: true })
-    store.dispatch('GenerateRoutes', asyncRouter).then(() => { // 存储路由
-      router.addRoutes(asyncRouter) // 动态添加可访问路由表
-      next({ ...to, replace: true })// hack方法 确保addRoutes已完成
-    })
-  })
-}
 
 router.afterEach(() => {
   NProgress.done() // finish progress bar

@@ -278,7 +278,7 @@ export default {
 			showScan: false,
 			showScsnbody: true,
 			scanLoading: false,
-			redirect: undefined,
+			// redirect: undefined,
 			paths: undefined,
 			rules: {
 				phone: [
@@ -314,7 +314,7 @@ export default {
 	watch: {
 		$route: {
 			handler: function(route) {
-				this.redirect = route.query && route.query.redirect
+				// this.redirect = route.query && route.query.redirect
 			},
 			immediate: true
 		}
@@ -359,9 +359,7 @@ export default {
 			let id = item.id
 			this.$refs.loginForm.validate(valid => {
 				this.$store.dispatch('toSwitch', id).then(res => {
-						this.$router.push({
-							path: this.redirect || '/'
-						})
+						this.$router.push('/')
 				})
 			})
 		},

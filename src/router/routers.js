@@ -65,7 +65,6 @@ export const constantRouterMap = [
     path: "/user",
     component: Layout,
     hidden: true,
-    redirect: "noredirect",
     children: [
       {
         path: "center",
