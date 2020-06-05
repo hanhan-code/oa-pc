@@ -7,7 +7,7 @@
             <span>个人信息</span>
           </div>
 
-          <el-form-item label="公司切换">
+          <!-- <el-form-item label="公司切换">
             <el-select v-model="companyId" :style="style" placeholder="请选择公司">
               <el-option
                 v-for="(item, index) in companyList"
@@ -15,7 +15,7 @@
                 :label="item.name"
                 :value="item.id"/>
             </el-select>
-          </el-form-item>
+          </el-form-item> -->
 
           <div>
             <div style="text-align: center">
@@ -31,7 +31,7 @@
               </el-upload>
             </div>
             <ul class="user-info">
-              <li><svg-icon icon-class="user1" /> 用户名称 <div class="user-right">{{ user.username }}</div></li>
+              <li><svg-icon icon-class="user1" /> 用户名称 <div class="user-right">{{ user.name }}</div></li>
               <li><svg-icon icon-class="phone" /> 手机号码 <div class="user-right">{{ user.phone }}</div></li>
               <li><svg-icon icon-class="email" /> 用户邮箱 <div class="user-right">{{ user.email }}</div></li>
               <li><svg-icon icon-class="dept" /> 所属部门 <div class="user-right"> {{ user.dept }} / {{ user.job }}</div></li>
@@ -93,7 +93,7 @@ import { regEmail } from '@/utils/index'
 import updatePass from './center/updatePass'
 import updateEmail from './center/updateEmail'
 import { getToken } from '@/utils/auth'
-import { getCompanyList } from '@/api/company'
+// import { getCompanyList } from '@/api/company'
 import store from '@/store'
 import { parseTime } from '@/utils/index'
 import initData from '@/mixins/initData'
@@ -107,7 +107,7 @@ export default {
       headers: {
         'Authorization': 'Bearer ' + getToken()
       },
-      companyList: this.getCompanyList()
+      // companyList: this.getCompanyList()
     }
   },
   computed: {
@@ -120,7 +120,7 @@ export default {
     this.$nextTick(() => {
       this.init()
     })
-    store.dispatch('GetInfo').then(() => {})
+    // store.dispatch('GetInfo').then(() => {})
   },
   methods: {
     parseTime,
@@ -128,25 +128,25 @@ export default {
       return regEmail(mail)
     },
     beforeInit() {
-      this.url = 'auth/log/personLog'
-      const sort = 'id,desc'
-      this.params = { page: this.page, size: this.size, sort: sort }
-      return true
+      // this.url = 'auth/log/personLog'
+      // const sort = 'id,desc'
+      // this.params = { page: this.page, size: this.size, sort: sort }
+      // return true
     },
-    getCompanyList() {
-      getCompanyList().then(res => {
-        return res.data.list
-      }).catch(err => {
-        console.log(err.response.data.message)
-      })
-    },
+    // getCompanyList() {
+    //   getCompanyList().then(res => {
+    //     return res.data.list
+    //   }).catch(err => {
+    //     console.log(err.response.data.message)
+    //   })
+    // },
     handleSuccess(response, file, fileList) {
       this.$notify({
         title: '头像修改成功',
         type: 'success',
         duration: 2500
       })
-      store.dispatch('GetInfo').then(() => {})
+      // store.dispatch('GetInfo').then(() => {})
     },
     // 监听上传失败
     handleError(e, file, fileList) {

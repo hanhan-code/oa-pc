@@ -72,7 +72,7 @@ export const loadMenus = (next, to) => {
     }
     console.log(res.data,111111111112)
     const asyncRouter = filterAsyncRouter(res.data)
-    asyncRouter.push({ path: '*', redirect: '/404', hidden: true })
+    // asyncRouter.push({ path: '*', redirect: '/404', hidden: true })
     store.dispatch('GenerateRoutes', asyncRouter).then(() => { // 存储路由
       router.addRoutes(asyncRouter) // 动态添加可访问路由表
       next({ ...to, replace: true })// hack方法 确保addRoutes已完成
