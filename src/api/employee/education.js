@@ -6,11 +6,11 @@ import Qs from 'qs'
  * 分页查询
  * @param params
  */
-export function page(data) {
+export function page(params) {
   return request({
-    url: '/emp/education/search',
-    method: 'post',
-    data: data
+    url: '/emp/education',
+    method: 'get',
+    params
   })
 }
 
@@ -66,7 +66,7 @@ export function del(id) {
  */
 export function batchDel(ids) {
   return request({
-    url: '/emp/education/batch',
+    url: '/emp/educations',
     method: 'delete',
     data: ids
   })
@@ -78,9 +78,9 @@ export function batchDel(ids) {
  */
 export function exportExcel(params) {
   return request({
-    url: '/emp/education/batch',
+    url: '/emp/educations',
     method: 'get',
-    data: Qs.stringify(params),
+    params,
     responseType: 'blob'
   })
 }

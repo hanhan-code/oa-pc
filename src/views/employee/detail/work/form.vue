@@ -39,11 +39,13 @@
         </el-form-item>
 
         <el-form-item label="开始时间" size="small" prop="startTime">
-          <el-date-picker v-model="form.startTime" type="date" placeholder="选择日期" :disabled="mask"></el-date-picker>
+          <el-date-picker v-model="form.startTime" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"
+                          :disabled="mask"></el-date-picker>
         </el-form-item>
 
         <el-form-item label="结束时间" size="small" prop="endTime">
-          <el-date-picker v-model="form.endTime" type="date" placeholder="选择日期" :disabled="mask"></el-date-picker>
+          <el-date-picker v-model="form.endTime" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"
+                          :disabled="mask"></el-date-picker>
         </el-form-item>
 
         <el-form-item label="工作单位" prop="workUnit" size="small">
@@ -81,8 +83,8 @@
 
 <script>
 
-  import { add, edit } from '@/api/workExperience'
-  import { search, infoByNumber } from '@/api/employee'
+  import { add, edit } from '@/api/employee/workExperience'
+  import { search, infoByNumber } from '@/api/employee/employee'
 
   export default {
     name: 'FormEdit',
@@ -99,8 +101,7 @@
         form: {
 
           id: null,
-          deptId: null,
-          jobId: null,
+          companyId: null,
           employeeId: null,
           employeeNumber: null,
           employeeName: null,
@@ -116,24 +117,12 @@
         },
         dialog: false,
         rules: {
-          // employeeNumber: [
-          //   { required: true, message: '请输入' },
-          // ],
           employeeName: [
             { required: true, message: '请输入' }
           ],
           workUnit: [
             { required: true, message: '请输入' }
           ],
-          // position: [
-          //   { required: true, message: '请输入' },
-          // ],
-          // jobContent: [
-          //   { required: true, message: '请输入' },
-          // ],
-          // witness: [
-          //   { required: true, message: '请输入' },
-          // ],
           witnessPhone: [
             // { required: true, message: '请输入' },
             { pattern: /^(?:(?:\+|00)86)?1[3-9]\d{9}$/, message: '请输入' }
@@ -144,14 +133,13 @@
           endTime: [
             { required: true, message: '请输入' }
           ]
-          // remark: [
-          //   { required: true, message: '请输入' },
-          // ]
+
         }
       }
     },
     methods: {
       doSubmit() {
+        this.form.companyId = this.companyId
         // 表单校验
         this.$refs['form'].validate((valid) => {
           if (valid) {
@@ -222,8 +210,7 @@
           this.form = {
 
             id: null,
-            deptId: null,
-            jobId: null,
+            companyId: null,
             employeeId: null,
             employeeNumber: null,
             employeeName: null,
@@ -269,8 +256,7 @@
       handleSelect(item) {
         this.form.employeeId = item.employeeId
         this.form.employeeNumber = item.employeeNumber
-        this.form.deptId = item.deptId
-        this.form.jobId = item.jobId
+
       }
     }
   }

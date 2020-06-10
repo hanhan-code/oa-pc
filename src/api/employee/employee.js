@@ -1,11 +1,11 @@
 import request from '@/utils/request'
 import Qs from 'qs'
 
-export function page(data) {
+export function page(params) {
   return request({
     url: 'emp/base/search',
-    method: 'post',
-    data
+    method: 'get',
+    params
   })
 }
 
@@ -23,11 +23,11 @@ export function search(companyId, employeeName) {
 
 /**
  * 根据员工编号查询员工信息
- * @param employeeName
+ * @param number
  */
-export function infoByNumber(employeeName) {
+export function infoByNumber(number) {
   return request({
-    url: 'emp/base/info/' + employeeName,
+    url: 'emp/base/number?number=' + number,
     method: 'get'
   })
 }
@@ -84,7 +84,7 @@ export function del(id) {
  */
 export function batchDel(ids) {
   return request({
-    url: '/emp/base/batch',
+    url: '/emp/bases',
     method: 'delete',
     data: ids
   })
@@ -96,7 +96,7 @@ export function batchDel(ids) {
  */
 export function exportExcel(params) {
   return request({
-    url: '/emp/base/export',
+    url: '/emp/bases',
     method: 'get',
     data: Qs.stringify(params),
     responseType: 'blob'

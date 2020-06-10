@@ -74,6 +74,8 @@ Vue.prototype.$utils = {
     }
   },
   getSuffix: function (filename) {
+
+    console.log(filename)
     var index = filename.lastIndexOf('.')
     if (index >= 0) {
       return filename.substring(index + 1, filename.length).toLowerCase()

@@ -39,11 +39,13 @@
         </el-form-item>
 
         <el-form-item label="开始时间" size="small" prop="startTime">
-          <el-date-picker v-model="form.startTime" type="date" placeholder="选择日期" :disabled="mask"></el-date-picker>
+          <el-date-picker v-model="form.startTime" type="date" value-format="yyyy-MM-dd" placeholder="选择日期"
+                          :disabled="mask"></el-date-picker>
         </el-form-item>
 
         <el-form-item label="结束时间" size="small" prop="endTime">
-          <el-date-picker v-model="form.endTime" type="date" placeholder="选择日期" :disabled="mask"></el-date-picker>
+          <el-date-picker v-model="form.endTime" type="date" value-format="yyyy-MM-dd" placeholder="选择日期"
+                          :disabled="mask"></el-date-picker>
         </el-form-item>
 
         <el-form-item label="项目名称" prop="projectName" size="small">
@@ -85,8 +87,8 @@
 
 <script>
 
-  import { add, edit } from '@/api/projectExperience'
-  import { search, infoByNumber } from '@/api/employee'
+  import { add, edit } from '@/api/employee/projectExperience'
+  import { search, infoByNumber } from '@/api/employee/employee'
 
   export default {
     name: 'FormEdit',
@@ -103,8 +105,7 @@
         form: {
 
           id: null,
-          deptId: null,
-          jobId: null,
+          companyId: null,
           employeeId: null,
           employeeNumber: null,
           employeeName: null,
@@ -161,6 +162,7 @@
     },
     methods: {
       doSubmit() {
+        this.form.companyId = this.companyId
         // 表单校验
         this.$refs['form'].validate((valid) => {
           if (valid) {
@@ -231,8 +233,7 @@
           this.form = {
 
             id: null,
-            deptId: null,
-            jobId: null,
+            companyId: null,
             employeeId: null,
             employeeNumber: null,
             employeeName: null,
@@ -279,8 +280,6 @@
       handleSelect(item) {
         this.form.employeeId = item.employeeId
         this.form.employeeNumber = item.employeeNumber
-        this.form.deptId = item.deptId
-        this.form.jobId = item.jobId
       }
     }
   }

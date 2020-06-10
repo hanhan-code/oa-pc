@@ -62,13 +62,15 @@
         </el-form-item>
 
         <el-form-item label="获奖日期" size="small" prop="winDate">
-          <el-date-picker v-model="form.winDate" type="date" placeholder="选择日期" :disabled="mask"></el-date-picker>
+          <el-date-picker v-model="form.winDate"  type="date" value-format="yyyy-MM-dd" placeholder="选择日期"
+                          :disabled="mask"></el-date-picker>
         </el-form-item>
 
         <el-form-item label="发证日期" size="small" prop="issuanceTime">
           <el-date-picker
             v-model="form.issuanceTime"
             type="date"
+            value-format="yyyy-MM-dd"
             placeholder="选择日期"
             :disabled="mask"
           ></el-date-picker>
@@ -156,173 +158,28 @@
 
 <script>
 
-import { add, edit,info } from '@/api/employee/winPrize'
-import { search,infoByNumber } from '@/api/employee'
+  import { add, edit, info } from '@/api/employee/winPrize'
+  import { search, infoByNumber } from '@/api/employee/employee'
 
-export default {
-  name: 'FormEdit',
-  props: {
-    isAdd: {
-      type: Boolean,
-      required: true
-    },
-    dictMap: {
-      em_win_level: Object,                   // 获奖等级
-    },
-    companyId: String
-  },
-  data() {
-    return {
-      mask: false,
-      form: {
-
-        id: null,
-        deptId: null,
-        jobId: null,
-        employeeId: null,
-        employeeNumber: null,
-        employeeName: null,
-
-        certificateNo: null,
-        prizeName: null,
-        winDate: null,
-        grantUnit: null,
-        winLevel: null,
-        issuanceTime: null,
-        original: null,
-        scan: null,
-
-        remark: null,
-        enclosures: []
+  export default {
+    name: 'FormEdit',
+    props: {
+      isAdd: {
+        type: Boolean,
+        required: true
       },
-      dialog: false,
-      rules: {
-        employeeNumber: [
-          { required: true, message: '请输入' },
-        ],
-        // employeeName: [
-        //   { required: true, message: '请输入' },
-        // ],
-
-        // certificateNo: [
-        //   { required: true, message: '请输入' },
-        // ],
-        prizeName: [
-          { required: true, message: '请输入' },
-        ],
-        winDate: [
-          { required: true, message: '请输入' },
-        ],
-        winLevel: [
-          { required: true, message: '请输入' },
-        ]
+      dictMap: {
+        em_win_level: Object                   // 获奖等级
       },
-      preview: {
-        files: [],
-        visible: false,
-        url: ''
-      }
-    }
-  },
-  methods: {
-    editInfo(id) {
-      info(id).then(res => {
-        if (res.code === 0) {
-          // 表单数据
-          this.form = res.data
-
-          // 特殊处理
-          this.form.winLevel = this.form.winLevel + ''
-          this.form.scan = this.form.scan + ''
-          this.form.original = this.form.original + ''
-
-          // 附件处理
-          let ids = []
-          this.form.enclosures.forEach(item => {
-            this.setFileInfo(item)
-            ids.push(item.id)
-          })
-
-          // 附件文件预览列表
-          this.preview.files = this.form.enclosures
-          // 表单附件主键列表
-          this.form.enclosures = ids
-        } else {
-          this.$message({ message: res.msg, type: 'warning' })
-        }
-      })
+      companyId: String
     },
-    doSubmit() {
-      // 表单校验
-      this.$refs['form'].validate((valid) => {
-        if (valid) {
-          // 校验员工姓名与员工编号对应姓名是否一致
-          infoByNumber(this.form.employeeNumber).then(res => {
-            if (res.code === 0) {
-              if (res.data.employeeName === this.form.employeeName) {
-                if (this.isAdd) {
-                  this.doAdd()
-                } else {
-                  this.doEdit()
-                }
-              } else {
-                this.$message({ message: '员工姓名与员工编号对应关系不一致', type: 'warning' })
-              }
-            } else {
-              this.$message({ message: res.msg, type: 'warning' })
-            }
-          })
-        } else {
-          return false
-        }
-      })
-    },
-    cancel() {
-      this.mask = false
-      this.dialog = false
-      this.resetForm()
-    },
-    doAdd() {
-      add(this.form).then(res => {
-        if (res.code === 0) {
-          this.dialog = false
-          this.resetForm()
-          this.$notify({
-            message: '添加成功',
-            type: 'success',
-            duration: 2500
-          })
-          // 调用父组件方法 刷新页面
-          this.$emit('refreshPage')
-        } else {
-          this.$message({ message: res.msg, type: 'warning' })
-        }
-      })
-    },
-    doEdit() {
-      edit(this.form).then(res => {
-        if (res.code === 0) {
-          this.dialog = false
-          this.resetForm()
-          this.$notify({
-            message: '修改成功',
-            type: 'success',
-            duration: 2500
-          })
-          // 调用父组件方法 刷新页面
-          this.$emit('refreshPage')
-        } else {
-          this.$message({ message: res.msg, type: 'warning' })
-        }
-      })
-    },
-    resetForm() {
-      setTimeout(() => {
-        this.form = {
+    data() {
+      return {
+        mask: false,
+        form: {
 
           id: null,
-          deptId: null,
-          jobId: null,
+          companyId: null,
           employeeId: null,
           employeeNumber: null,
           employeeName: null,
@@ -338,117 +195,254 @@ export default {
 
           remark: null,
           enclosures: []
+        },
+        dialog: false,
+        rules: {
+          employeeNumber: [
+            { required: true, message: '请输入' }
+          ],
+          // employeeName: [
+          //   { required: true, message: '请输入' },
+          // ],
+
+          // certificateNo: [
+          //   { required: true, message: '请输入' },
+          // ],
+          prizeName: [
+            { required: true, message: '请输入' }
+          ],
+          winDate: [
+            { required: true, message: '请输入' }
+          ],
+          winLevel: [
+            { required: true, message: '请输入' }
+          ]
+        },
+        preview: {
+          files: [],
+          visible: false,
+          url: ''
+        }
+      }
+    },
+    methods: {
+      editInfo(id) {
+        info(id).then(res => {
+          if (res.code === 0) {
+            // 表单数据
+            this.form = res.data
+
+            // 特殊处理
+            this.form.winLevel = this.form.winLevel + ''
+            this.form.scan = this.form.scan + ''
+            this.form.original = this.form.original + ''
+
+            // 附件处理
+            this.form.enclosures.forEach(item => {
+              this.setFileInfo(item)
+              this.preview.files.push(item)
+            })
+
+          } else {
+            this.$message({ message: res.msg, type: 'warning' })
+          }
+        })
+      },
+      doSubmit() {
+        this.form.companyId = this.companyId
+        // 表单校验
+        this.$refs['form'].validate((valid) => {
+          if (valid) {
+            // 校验员工姓名与员工编号对应姓名是否一致
+            infoByNumber(this.form.employeeNumber).then(res => {
+              if (res.code === 0) {
+                if (res.data.employeeName === this.form.employeeName) {
+                  if (this.isAdd) {
+                    this.doAdd()
+                  } else {
+                    this.doEdit()
+                  }
+                } else {
+                  this.$message({ message: '员工姓名与员工编号对应关系不一致', type: 'warning' })
+                }
+              } else {
+                this.$message({ message: res.msg, type: 'warning' })
+              }
+            })
+          } else {
+            return false
+          }
+        })
+      },
+      cancel() {
+        this.mask = false
+        this.dialog = false
+        this.resetForm()
+      },
+      doAdd() {
+        add(this.form).then(res => {
+          if (res.code === 0) {
+            this.dialog = false
+            this.resetForm()
+            this.$notify({
+              message: '添加成功',
+              type: 'success',
+              duration: 2500
+            })
+            // 调用父组件方法 刷新页面
+            this.$emit('refreshPage')
+          } else {
+            this.$message({ message: res.msg, type: 'warning' })
+          }
+        })
+      },
+      doEdit() {
+        edit(this.form).then(res => {
+          if (res.code === 0) {
+            this.dialog = false
+            this.resetForm()
+            this.$notify({
+              message: '修改成功',
+              type: 'success',
+              duration: 2500
+            })
+            // 调用父组件方法 刷新页面
+            this.$emit('refreshPage')
+          } else {
+            this.$message({ message: res.msg, type: 'warning' })
+          }
+        })
+      },
+      resetForm() {
+        setTimeout(() => {
+          this.form = {
+
+            id: null,
+            companyId: null,
+            employeeId: null,
+            employeeNumber: null,
+            employeeName: null,
+
+            certificateNo: null,
+            prizeName: null,
+            winDate: null,
+            grantUnit: null,
+            winLevel: null,
+            issuanceTime: null,
+            original: null,
+            scan: null,
+
+            remark: null,
+            enclosures: []
+          }
+          this.preview.files = []
+          this.clearAttachments()
+          this.$refs.form.resetFields()
+        }, 200)
+      },
+      /** 员工模糊搜索 **/
+      querySearchAsync(queryString, cb) {
+
+        if (queryString === '' || queryString == null) {
+          return
+        }
+
+        // 模糊查询
+        search(this.companyId, this.form.employeeName).then(res => {
+          if (res.code === 0) {
+            let results = queryString ? res.data.filter(this.createStateFilter(queryString)) : res.data
+            clearTimeout(this.timeout)
+            this.timeout = setTimeout(() => {
+              cb(results)
+            }, 1000 * Math.random())
+          } else {
+            this.$message({ message: res.msg, type: 'warning' })
+          }
+        })
+
+      },
+      createStateFilter(queryString) {
+        return (state) => {
+          return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+        }
+      },
+      handleSelect(item) {
+        this.form.employeeId = item.employeeId
+        this.form.employeeNumber = item.employeeNumber
+      },
+
+      /** 图片附件 上传 **/
+      // 图片上传成功
+      handleSuccess(response) {
+
+        // 上传成功返回文件信息
+        let file = response.data
+        // 设置文件信息
+        this.setFileInfo(file)
+
+        // 添加至 表单附件参数列表、文件预览列表
+        this.form.enclosures.push(file)
+        this.preview.files.push(file)
+
+      },
+      handleError(err, file, fileList) {
+        if (err.status === 504) {
+          this.$message({ message: '上传超时', type: 'warning' })
+        } else {
+          this.$message({ message: '网络异常', type: 'warning' })
+        }
+      },
+
+      // 附件列表操作
+      setFileInfo(file) {
+        // 根据文件字节大小 计算文件具体大小值
+        if (!file.sizeText) {
+          file.sizeText = this.$utils.getSize(file.size)
+        }
+        // 设置文档类型 Icon 类名, 如果是图片则处理 缩略图 地址
+        if (file.dataType !== 1) {
+          file.className = this.$utils.getIcon(file.fileName)
+        } else {
+          file.thumbnail = this.$utils.getThumbnail(file.link)
+        }
+      },
+      filePreview(file) {
+        if (file.dataType === 1) {
+          this.preview.url = this.$filePrefix + file.link
+          this.preview.visible = true
+        } else {
+
+        }
+      },
+      fileDownload(file) {
+        window.open(this.$filePrefix + file.link)
+      },
+      fileRemove(file, index) {
+
+        // 删除预览文件列表对应文件
+        let fileList = this.preview.files
+        fileList.splice(index, 1)
+
+        // 重新设置表单附件列表主键
+        this.form.enclosures = []
+        this.preview.files.forEach(item => {
+          this.form.enclosures.push(item)
+        })
+      },
+      // 清空附件列表
+      clearAttachments() {
+        let fileList = this.$refs.upload.uploadFiles
+        let i = fileList.length
+        while (i--) {
+          if (fileList[i].percentage == 100) {
+            fileList.splice(i, 1)
+          }
         }
         this.preview.files = []
-        this.clearAttachments()
-        this.$refs.form.resetFields()
-      }, 200)
-    },
-    /** 员工模糊搜索 **/
-    querySearchAsync(queryString, cb) {
-
-      if (queryString === '' || queryString == null) {
-        return
+        this.form.enclosures = []
       }
-
-      // 模糊查询
-      search(this.companyId, this.form.employeeName).then(res => {
-        if (res.code === 0) {
-          let results = queryString ? res.data.filter(this.createStateFilter(queryString)) : res.data
-          clearTimeout(this.timeout)
-          this.timeout = setTimeout(() => {
-            cb(results)
-          }, 1000 * Math.random())
-        } else {
-          this.$message({ message: res.msg, type: 'warning' })
-        }
-      })
-
-    },
-    createStateFilter(queryString) {
-      return (state) => {
-        return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
-      }
-    },
-    handleSelect(item) {
-      this.form.employeeId = item.employeeId
-      this.form.employeeNumber = item.employeeNumber
-      this.form.deptId = item.deptId
-      this.form.jobId = item.jobId
-    },
-
-    /** 图片附件 上传 **/
-    // 图片上传成功
-    handleSuccess(response) {
-
-      // 上传成功返回文件信息
-      let file = response.data
-      // 设置文件信息
-      this.setFileInfo(file)
-
-      // 添加至 表单附件参数列表、文件预览列表
-      this.form.enclosures.push(file.id)
-      this.preview.files.push(file)
-
-    },
-    handleError(err, file, fileList) {
-      if (err.status === 504) {
-        this.$message({ message: '上传超时', type: 'warning' })
-      } else {
-        this.$message({ message: '网络异常', type: 'warning' })
-      }
-    },
-
-    // 附件列表操作
-    setFileInfo(file) {
-      // 根据文件字节大小 计算文件具体大小值
-      if (!file.sizeText) {
-        file.sizeText = this.$utils.getSize(file.size)
-      }
-      // 设置文档类型 Icon 类名, 如果是图片则处理 缩略图 地址
-      if (file.dataType !== 1) {
-        file.className = this.$utils.getIcon(file.fileName)
-      } else {
-        file.thumbnail = this.$utils.getThumbnail(file.link)
-      }
-    },
-    filePreview(file) {
-      if (file.dataType === 1) {
-        this.preview.url = this.$filePrefix + file.link
-        this.preview.visible = true
-      } else {
-
-      }
-    },
-    fileDownload(file) {
-      window.open(this.$filePrefix + file.link)
-    },
-    fileRemove(file, index) {
-
-      // 删除预览文件列表对应文件
-      let fileList = this.preview.files
-      fileList.splice(index, 1)
-
-      // 重新设置表单附件列表主键
-      this.form.enclosures = []
-      this.preview.files.forEach(item => {
-        this.form.enclosures.push(item.id)
-      })
-    },
-    // 清空附件列表
-    clearAttachments() {
-      let fileList = this.$refs.upload.uploadFiles
-      let i = fileList.length
-      while (i--) {
-        if (fileList[i].percentage == 100) {
-          fileList.splice(i, 1)
-        }
-      }
-      this.preview.files = []
-      this.form.enclosures = []
     }
   }
-}
 </script>
 
 <style scoped>

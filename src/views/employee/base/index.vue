@@ -62,20 +62,20 @@
           <el-button size="small" type="primary" :disabled="editButton" @click="edit" plain>编辑</el-button>
           <el-button size="small" type="primary" :disabled="editButton" @click="look" plain>查看</el-button>
           <el-button size="small" type="danger" @click="del" plain>删除</el-button>
-          <el-upload
-            style="display: inline-block;"
-            :show-file-list="false"
-            ref="upload"
-            :headers="headers"
-            :action="$network + '/emp/base/import'"
-            :limit="1"
-            :file-list="fileList"
-            :on-success="handleSuccess"
-          >
-            <el-button type="primary" size="mini" plain>批量导入</el-button>
-          </el-upload>
-          <el-button type="primary" size="mini" @click="exportExcel" plain>批量导出</el-button>
-          <el-button type="primary" size="mini" @click="downTemplate" plain>模版下载</el-button>
+<!--          <el-upload-->
+<!--            style="display: inline-block;"-->
+<!--            :show-file-list="false"-->
+<!--            ref="upload"-->
+<!--            :headers="headers"-->
+<!--            :action="$network + '/emp/bases'"-->
+<!--            :limit="1"-->
+<!--            :file-list="fileList"-->
+<!--            :on-success="handleSuccess"-->
+<!--          >-->
+<!--            <el-button type="primary" size="mini" plain>批量导入</el-button>-->
+<!--          </el-upload>-->
+<!--          <el-button type="primary" size="mini" @click="exportExcel" plain>批量导出</el-button>-->
+<!--          <el-button type="primary" size="mini" @click="downTemplate" plain>模版下载</el-button>-->
         </div>
 
         <!-- 表格数据 -->
@@ -171,13 +171,11 @@
 
 <script>
 
-  import { getOrgExcludeEmployee } from '@/api/synch'
-  import { getInfo } from '@/api/login'
-  import { page,  batchDel, downTemplate, exportExcel } from '@/api/employee'
+  import { page, batchDel, downTemplate, exportExcel } from '@/api/employee/employee'
   import FormEdit from './form'
   import initDict from '@/mixins/initDict'
-  import { getToken } from '@/utils/auth'
-  import { getJobsByDeptId } from '@/api/synch'
+  import { getToken, getCompanyId } from '@/utils/auth'
+  import { org } from '@/api/employee/dept'
 
   export default {
     name: 'index',
@@ -187,12 +185,6 @@
       return {
         name: '员工信息',
         fileList: [],
-        // 当前登陆用户信息
-        login: {
-          loginUserId: null,
-          loginUserCompanyId: null
-        },
-
         // 部门数据
         dept: {
           lefts: [],                // 左侧组织架构
@@ -208,7 +200,7 @@
           deptId: null,
           pageSize: 10,
           pageNum: 0,
-          companyId: null
+          companyId: 1001
         },
 
         // 页面请求数据
@@ -230,6 +222,11 @@
       this.getDictMap('em_education,em_job_title,em_nation,em_politic_countenance,em_marriage,em_work_status,em_sex')
     },
     methods: {
+
+      init() {
+        this.setOrgInfo()
+        this.refreshPage()
+      },
 
       protectStr(str, inNum, outNum) {
         if (!str) {
@@ -263,34 +260,19 @@
         }
       },
 
-      init() {
-        this.setLoginInfo()
-        this.refreshPage()
-      },
-      // 设置默认查询用户、公司ID
-      setLoginInfo() {
-        getInfo().then(res => {
-          if (res.code === 0) {
-
-            // 初始化用户Id 、公司主键
-            this.login.loginUserId = res.data.id
-            this.login.loginUserCompanyId = res.data.companyId
-            this.pageParams.companyId = res.data.companyId
-
-            this.setOrgInfo()
-          } else {
-            this.$message({ message: res.msg, type: 'warning' })
-          }
-        })
-      },
       // 设置组织架构、部门列表信息
       setOrgInfo() {
-        getOrgExcludeEmployee(this.login.loginUserCompanyId).then(res => {
+        // 请求参数
+        let params = {
+          companyId: getCompanyId(),
+          contain: 0  // 是否包含员工 1：是 0：否
+        }
+        org(params).then(res => {
           if (res.code === 0) {
             this.dept.lefts = []
-            this.dept.lefts.push(res.data)
-            this.dept.componentDetps = res.data.children
-            this.dept.rootId = res.data.id
+            this.dept.lefts.push(res.data[0])
+            this.dept.componentDetps = res.data[0].children
+            this.dept.rootId = res.data[0].id
             console.log(this.dept)
           } else {
             this.$message({ message: res.msg, type: 'warning' })
@@ -306,8 +288,8 @@
 
         page(this.pageParams).then(res => {
           if (res.code === 0) {
-            this.pageData.data = res.data.list
-            this.pageData.total = res.data.total
+            this.pageData.data = res.data.records
+            this.pageData.total = Number.parseInt(res.data.total)
           } else {
             this.$message({ message: res.msg, type: 'warning' })
           }
@@ -316,6 +298,7 @@
       // 部门选中 过滤
       handleNodeClick(data) {
         this.pageParams.deptId = data.id
+        this.pageParams.pageNum = 0
         this.refreshPage()
       },
       // 表格选择事件
@@ -343,7 +326,7 @@
           this.$refs.formEdit.setDept(this.pageParams.deptId)
         }
         // 获取并设置 最新员工编号
-        this.$refs.formEdit.setEmployeeNumber(this.login.loginUserCompanyId)
+        this.$refs.formEdit.setEmployeeNumber(getCompanyId())
 
       },
       edit() {
@@ -354,14 +337,6 @@
         this.$refs.formEdit.dialog = true
         // 传递所选数据
         this.$refs.formEdit.form = JSON.parse(JSON.stringify(this.tableSelects[0]))
-
-        getJobsByDeptId(this.$refs.formEdit.form.deptId).then(res => {
-          if (res.code === 0) {
-            this.$refs.formEdit.jobs = res.data
-          } else {
-            this.$message({ message: res.msg, type: 'warning' })
-          }
-        })
       },
       look() {
         this.edit()

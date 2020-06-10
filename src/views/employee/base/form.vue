@@ -141,18 +141,6 @@
           <el-switch v-model="form.unionMember" :disabled="mask"></el-switch>
         </el-form-item>
 
-        <!--<el-form-item label="所属部门" size="small" prop="deptId">-->
-        <!--  <el-select-->
-        <!--    v-model="form.deptId"-->
-        <!--    placeholder="部门"-->
-        <!--    @change="deptSelectChange"-->
-        <!--    :disabled="mask"-->
-        <!--  >-->
-        <!--    <el-option v-for="item in depts" :key="item.id" :label="item.label" :value="item.id"></el-option>-->
-        <!--  </el-select>-->
-        <!--</el-form-item>-->
-
-
         <el-form-item label="所属部门" size="small" prop="deptId">
           <treeselect
             v-model="form.deptId"
@@ -313,11 +301,9 @@
 </template>
 
 <script>
-  import { add, edit, generatorNumber } from '@/api/employee'
-  import { getJobsByDeptId } from '@/api/synch'
+  import { add, edit, generatorNumber } from '@/api/employee/employee'
   import Treeselect from '@riophae/vue-treeselect'
   import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-  import { getDepts } from '@/api/dept'
 
   export default {
     name: 'FormEdit',
@@ -334,7 +320,8 @@
         em_nation: Object,                      // 民族
         em_politic_countenance: Object,         // 政治面貌
         em_work_status: Object                  // 工作状态
-      }
+      },
+      depts: Array
     },
     data() {
       return {
@@ -435,12 +422,11 @@
             { pattern: /^[0-9]+$/, message: '格式不正确' }
           ]
         },
-        depts: [],
         jobs: []      // 岗位信息，动态级联显示
       }
     },
     mounted() {
-      this.getDeptDatas()
+
     },
     methods: {
       doSubmit() {
@@ -622,26 +608,10 @@
 
       }
       ,
-      // 获取部门数据
-      getDeptDatas() {
-        const sort = 'id,desc'
-        const params = { sort: sort }
-        getDepts(params).then(res => {
-          this.depts = res.data.list
-        })
-      },
       // 部门动态改变 岗位列表
       deptSelectChange(node, instanceId) {
         // 必须手动设置 部门ID
         this.form.deptId = node.id
-        getJobsByDeptId(this.form.deptId).then(res => {
-          if (res.code === 0) {
-            this.jobs = res.data
-            this.form.jobId = null
-          } else {
-            this.$message({ message: res.msg, type: 'warning' })
-          }
-        })
       }
       ,
       // 身份证验证
