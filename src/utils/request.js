@@ -46,7 +46,11 @@ service.interceptors.response.use(
     let code = 0
     console.log('======error=======')
     console.log(error)
-
+    this.$router.push('/login')
+    router.push({ path: '/login' })
+    this.$store.dispatch('LogOut').then(() => {
+      location.reload() // 为了重新实例化vue-router对象 避免bug
+    })
     try {
       code = error.response.data.status
     } catch (e) {
@@ -73,6 +77,7 @@ service.interceptors.response.use(
           confirmButtonText: '重新登录',
           cancelButtonText: '取消',
           type: 'warning'
+
         }
       ).then(() => {
         store.dispatch('LogOut').then(() => {
@@ -82,13 +87,17 @@ service.interceptors.response.use(
     } else if (code === 403) {
       router.push({ path: '/401' })
     } else {
-
       console.log(error)
       let msg = undefined
+      // this.$router.push('/login')
+      // router.push({ path: '/login' })
+      // this.$store.dispatch('LogOut').then(() => {
+      //   location.reload() // 为了重新实例化vue-router对象 避免bug
+      // })
 
-      if(error.response.data.message){
+      if (error.response.data.message) {
         msg = error.response.data.message.toString().replace(new RegExp('[a-zA-Z.:]', 'gm'), '')
-      }else{
+      } else {
         msg = error.response.data.msg.toString().replace(new RegExp('[a-zA-Z.:]', 'gm'), '')
       }
 
