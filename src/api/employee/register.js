@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import Qs from 'qs'
 
 /**
  * 分页查询
@@ -57,7 +56,7 @@ export function edit(data) {
  */
 export function batchDel(ids) {
   return request({
-    url: '/emp/register/batch',
+    url: '/emp/registers',
     method: 'delete',
     data: ids
   })
@@ -70,7 +69,7 @@ export function batchDel(ids) {
  */
 export function exportExcel(params) {
   return request({
-    url: '/emp/register/batch',
+    url: '/emp/registers',
     method: 'get',
     params,
     responseType: 'blob'

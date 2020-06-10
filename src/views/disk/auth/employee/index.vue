@@ -155,7 +155,7 @@
   import { getCompanyId } from '@/utils/auth'
   import initDict from '@/mixins/initDict'
   import { fileTree } from '@/api/file/file'
-  import { search } from '@/api/employee'
+  import { search } from '@/api/employee/employee'
 
   export default {
     name: 'index',

@@ -64,6 +64,7 @@
         <el-form-item label="评定日期" size="small" prop="assessTime" :disabled="mask">
           <el-date-picker
             v-model="form.assessTime"
+            value-format="yyyy-MM-dd"
             type="date"
             placeholder="选择日期"
             :picker-options="assessTimeTo"
@@ -153,7 +154,7 @@
 <script>
 
 import { add, edit, info } from '@/api/employee/jobTitle'
-import { search,infoByNumber } from '@/api/employee'
+import { search,infoByNumber } from '@/api/employee/employee'
 
 export default {
   name: 'FormEdit',
@@ -178,8 +179,7 @@ export default {
       form: {
 
         id: null,
-        deptId: null,
-        jobId: null,
+        companyId: null,
         employeeId: null,
         employeeNumber: null,
         employeeName: null,
@@ -233,16 +233,10 @@ export default {
           this.form.original = this.form.original + ''
 
           // 附件处理
-          let ids = []
           this.form.enclosures.forEach(item => {
             this.setFileInfo(item)
-            ids.push(item.id)
+            this.preview.files.push(item)
           })
-
-          // 附件文件预览列表
-          this.preview.files = this.form.enclosures
-          // 表单附件主键列表
-          this.form.enclosures = ids
 
         } else {
           this.$message({ message: res.msg, type: 'warning' })
@@ -250,6 +244,7 @@ export default {
       })
     },
     doSubmit() {
+      this.form.companyId = this.companyId
       // 表单校验
       this.$refs['form'].validate((valid) => {
         if (valid) {
@@ -320,8 +315,7 @@ export default {
         this.form = {
 
           id: null,
-          deptId: null,
-          jobId: null,
+          companyId: null,
           employeeId: null,
           employeeNumber: null,
           employeeName: null,
@@ -370,8 +364,7 @@ export default {
     handleSelect(item) {
       this.form.employeeId = item.employeeId
       this.form.employeeNumber = item.employeeNumber
-      this.form.deptId = item.deptId
-      this.form.jobId = item.jobId
+
     },
     /** 图片附件 上传 **/
     // 图片上传成功
@@ -383,7 +376,7 @@ export default {
       this.setFileInfo(file)
 
       // 添加至 表单附件参数列表、文件预览列表
-      this.form.enclosures.push(file.id)
+      this.form.enclosures.push(file)
       this.preview.files.push(file)
 
     },
@@ -427,7 +420,7 @@ export default {
       // 重新设置表单附件列表主键
       this.form.enclosures = []
       this.preview.files.forEach(item => {
-        this.form.enclosures.push(item.id)
+        this.form.enclosures.push(item)
       })
     },
     // 清空附件列表

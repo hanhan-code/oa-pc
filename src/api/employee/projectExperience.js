@@ -1,15 +1,15 @@
 import request from '@/utils/request'
-import Qs from 'qs'
+
 
 /**
  * 分页查询
  * @param params
  */
-export function page(data) {
+export function page(params) {
   return request({
-    url: '/emp/relation/search',
-    method: 'post',
-    data: data
+    url: '/emp/project',
+    method: 'get',
+    params
   })
 }
 
@@ -20,9 +20,9 @@ export function page(data) {
  */
 export function add(data) {
   return request({
-    url: '/emp/relation',
+    url: '/emp/project',
     method: 'post',
-    data
+    data: data
   })
 }
 
@@ -32,9 +32,9 @@ export function add(data) {
  */
 export function edit(data) {
   return request({
-    url: '/emp/relation',
+    url: '/emp/project',
     method: 'put',
-    data
+    data: data
   })
 }
 
@@ -44,7 +44,7 @@ export function edit(data) {
  */
 export function del(id) {
   return request({
-    url: '/emp/relation/' + id,
+    url: '/emp/project/' + id,
     method: 'delete'
   })
 }
@@ -55,7 +55,7 @@ export function del(id) {
  */
 export function batchDel(ids) {
   return request({
-    url: '/emp/relation/batch',
+    url: '/emp/projects',
     method: 'delete',
     data: ids
   })
@@ -67,9 +67,9 @@ export function batchDel(ids) {
  */
 export function exportExcel(params) {
   return request({
-    url: '/emp/relation/batch',
+    url: '/emp/projects',
     method: 'get',
-    data: Qs.stringify(params),
+    params,
     responseType: 'blob'
   })
 }

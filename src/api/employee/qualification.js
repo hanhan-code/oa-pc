@@ -1,15 +1,14 @@
 import request from '@/utils/request'
-import Qs from 'qs'
 
 /**
  * 分页查询
  * @param params
  */
-export function page(data) {
+export function page(params) {
   return request({
-    url: '/emp/qualification/search',
-    method: 'post',
-    data: data
+    url: '/emp/qualification',
+    method: 'get',
+    params
   })
 }
 
@@ -67,7 +66,7 @@ export function del(id) {
  */
 export function batchDel(ids) {
   return request({
-    url: '/emp/qualification/batch',
+    url: '/emp/qualifications',
     method: 'delete',
     data: ids
   })
@@ -79,9 +78,9 @@ export function batchDel(ids) {
  */
 export function exportExcel(params) {
   return request({
-    url: '/emp/qualification/batch',
+    url: '/emp/qualifications',
     method: 'get',
-    data: Qs.stringify(params),
+    params,
     responseType: 'blob'
   })
 }

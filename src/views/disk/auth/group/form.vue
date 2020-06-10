@@ -106,7 +106,7 @@
 
   import { fileTree } from '@/api/file/file'
   import { info, add, edit } from '@/api/file/group'
-  import { search, infoByNumber } from '@/api/employee'
+  import { search, infoByNumber } from '@/api/employee/employee'
   import { getCompanyId } from '@/utils/auth'
 
   export default {

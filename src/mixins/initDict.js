@@ -1,4 +1,4 @@
-import { get, getDictMap } from "@/api/dictDetail";
+import { get, getDictMap } from "@/api/dict/detail";
 
 export default {
   data() {
@@ -9,7 +9,7 @@ export default {
   },
   computed: {
     // app=contaniner 继承父级高度
-   
+
   },
   mounted() {
   },

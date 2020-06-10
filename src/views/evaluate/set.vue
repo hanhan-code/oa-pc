@@ -248,9 +248,18 @@ export default {
     // 根据公司id获取所有项目
     getCompanyData () {
       // this.companyId // 公司id暂时先默认为1001
-      companyData(getCompanyId()).then(res => {
+      let params = {
+        companyId: getCompanyId(),
+        contain: 1
+      }
+      companyData(params).then(res => {
         if (res.code === 0) {
-          let data = res.data
+          let data = res.data[0]
+          if (data.employees && data.employees.length > 0) {
+            data.employees.forEach(p => {
+              this.companyList.push({ id: p.employeeId, label: p.label })
+            })
+          }
           this.getComPanyFor(data)
         }
       })
@@ -262,12 +271,13 @@ export default {
           this.getComPanyFor(p)
         })
       } else {
-        if (!data.dept) {
-          let flag = this.companyList.some(p => p.id === data.id)
+        data.employees.forEach(p => {
+          let flag = this.companyList.some(n => n.id === data.employeeId)
           if (!flag) {
-            this.companyList.push({ id: data.id, label: data.label })
+            this.companyList.push({ id: p.employeeId, label: p.label })
           }
-        }
+        })
+        return false
       }
     },
     // 优单表得分率

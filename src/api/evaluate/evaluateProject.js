@@ -86,10 +86,11 @@ export function projectData(data) {
 //     method: "get",
 //   });
 // }
-export function companyData(id) {
+export function companyData(data) {
   return request({
-    url: "/synch/userEmployee/orgEmployee/" + id,
-    method: "get"
+    url: "/emp/dept/org",
+    method: "get",
+    params: data
   });
 }
 
@@ -118,7 +119,7 @@ export function setSubmit(data) {
 /**
  * @description 获取评价设置接口数据
  */
-export function setData (data) {
+export function setData(data) {
   return request({
     url: "/assessment/project/setting",
     method: "get",

@@ -11,7 +11,7 @@
         :show-file-list="false"
         ref="upload"
         :headers="headers"
-        :action="$network + '/emp/relation/batch'"
+        :action="$network + '/emp/relations'"
         :limit="1"
         :file-list="fileList"
         :on-success="handleSuccess"
@@ -63,8 +63,8 @@
 
 <script>
 
-import { batchDel, page, exportExcel } from '@/api/socialRelation'
-import { downTemplate } from '@/api/employee'
+import { batchDel, page, exportExcel } from '@/api/employee/socialRelation'
+import { downTemplate } from '@/api/employee/employee'
 import Form from './form'
 import { getToken } from '@/utils/auth'
 
@@ -133,8 +133,8 @@ export default {
 
       page(this.pageParams).then(res => {
         if (res.code === 0) {
-          this.pageData.data = res.data.list
-          this.pageData.total = res.data.total
+          this.pageData.data = res.data.records
+          this.pageData.total = Number.parseInt(res.data.total)
         } else {
           this.$message({ message: res.msg, type: 'warning' })
         }
@@ -161,8 +161,8 @@ export default {
 
       page(this.pageParams).then(res => {
         if (res.code === 0) {
-          this.pageData.data = res.data.list
-          this.pageData.total = res.data.total
+          this.pageData.data = res.data.records
+          this.pageData.total = Number.parseInt(res.data.total)
         } else {
           this.$message({ message: res.msg, type: 'warning' })
         }
@@ -188,8 +188,8 @@ export default {
 
       page(this.pageParams).then(res => {
         if (res.code === 0) {
-          this.pageData.data = res.data.list
-          this.pageData.total = res.data.total
+          this.pageData.data = res.data.records
+          this.pageData.total = Number.parseInt(res.data.total)
         } else {
           this.$message({ message: res.msg, type: 'warning' })
         }
@@ -259,6 +259,7 @@ export default {
     // 批量导出
     exportExcel() {
       // 发起请求
+      this.pageParams.companyId = this.companyId;
       exportExcel(this.pageParams).then(res => {
         let blob = new Blob([res], { type: 'application/vnd.ms-excel,charset=utf-8' })
         let url = URL.createObjectURL(blob)

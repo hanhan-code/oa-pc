@@ -67,7 +67,7 @@
           <Education
             ref="education"
             :root-id="dept.rootId"
-            :company-id="login.loginUserCompanyId"
+            :company-id="companyId"
             v-if="tabActive === '0'"
           ></Education>
         </el-tab-pane>
@@ -76,7 +76,7 @@
           <work-experience
             ref="work"
             :root-id="dept.rootId"
-            :company-id="login.loginUserCompanyId"
+            :company-id="companyId"
             v-if="tabActive === '1'"
           ></work-experience>
         </el-tab-pane>
@@ -85,7 +85,7 @@
           <project-experience
             ref="project"
             :root-id="dept.rootId"
-            :company-id="login.loginUserCompanyId"
+            :company-id="companyId"
             v-if="tabActive === '2'"
           ></project-experience>
         </el-tab-pane>
@@ -94,7 +94,7 @@
           <social-relation
             ref="relation"
             :root-id="dept.rootId"
-            :company-id="login.loginUserCompanyId"
+            :company-id="companyId"
             v-if="tabActive === '3'"
           ></social-relation>
         </el-tab-pane>
@@ -103,7 +103,7 @@
           <win-prize
             ref="win"
             :root-id="dept.rootId"
-            :company-id="login.loginUserCompanyId"
+            :company-id="companyId"
             v-if="tabActive === '4'"
           ></win-prize>
         </el-tab-pane>
@@ -112,7 +112,7 @@
           <job-title
             ref="job"
             :root-id="dept.rootId"
-            :company-id="login.loginUserCompanyId"
+            :company-id="companyId"
             v-if="tabActive === '5'"
           ></job-title>
         </el-tab-pane>
@@ -121,7 +121,7 @@
           <qualification
             ref="qualification"
             :root-id="dept.rootId"
-            :company-id="login.loginUserCompanyId"
+            :company-id="companyId"
             v-if="tabActive === '6'"
           ></qualification>
         </el-tab-pane>
@@ -130,7 +130,7 @@
           <register
             ref="register"
             :root-id="dept.rootId"
-            :company-id="login.loginUserCompanyId"
+            :company-id="companyId"
             v-if="tabActive === '7'"
           ></register>
         </el-tab-pane>
@@ -139,7 +139,7 @@
           <continue-education
             ref="continue"
             :root-id="dept.rootId"
-            :company-id="login.loginUserCompanyId"
+            :company-id="companyId"
             v-if="tabActive === '8'"
           ></continue-education>
         </el-tab-pane>
@@ -150,8 +150,8 @@
 
 <script>
 
-  import { getOrgExcludeEmployee } from '@/api/synch'
-  import { getUserId, getCompanyId } from '@/utils/auth'
+  import { org } from '@/api/employee/dept'
+  import { getCompanyId } from '@/utils/auth'
   import Education from './eudcation/index'
   import WorkExperience from './work/index'
   import ProjectExperience from './project/index'
@@ -178,10 +178,7 @@
     data() {
       return {
         // 当前登陆用户信息
-        login: {
-          loginUserId: null,
-          loginUserCompanyId: null
-        },
+        companyId: null,
         dept: {
           lefts: [],                                      // 左侧 组织架构 部门列表
           id: null,                                        // 所选部门ID
@@ -204,26 +201,19 @@
 
       // 页面初始化
       init() {
-        this.setLoginInfo()
-      },
+        // 初始化公司逐渐
+        this.companyId = getCompanyId();
 
-      // 设置默认查询用户、公司ID
-      setLoginInfo() {
-
-        // 初始化用户Id 、公司主键
-        this.login.loginUserId = getUserId()
-        this.login.loginUserCompanyId = getCompanyId()
-
-        this.setOrgInfo()
-      },
-
-      // 设置组织架构、部门列表信息
-      setOrgInfo() {
-        getOrgExcludeEmployee(this.login.loginUserCompanyId).then(res => {
+        // 请求参数
+        let params = {
+          companyId: this.companyId,
+          contain: 0  // 是否包含员工 1：是 0：否
+        }
+        org(params).then(res => {
           if (res.code === 0) {
             this.dept.lefts = []
-            this.dept.lefts.push(res.data)
-            this.dept.rootId = res.data.id
+            this.dept.lefts.push(res.data[0])
+            this.dept.rootId = res.data[0].id
           } else {
             this.$message({ message: res.msg, type: 'warning' })
           }

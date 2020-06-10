@@ -73,8 +73,8 @@
 
 <script>
 
-  import { add, edit } from '@/api/socialRelation'
-  import { search, infoByNumber } from '@/api/employee'
+  import { add, edit } from '@/api/employee/socialRelation'
+  import { search, infoByNumber } from '@/api/employee/employee'
 
   export default {
     name: 'FormEdit',
@@ -91,8 +91,7 @@
         form: {
 
           id: null,
-          deptId: null,
-          jobId: null,
+          companyId: null,
           employeeId: null,
           employeeNumber: null,
           employeeName: null,
@@ -137,6 +136,7 @@
     },
     methods: {
       doSubmit() {
+        this.form.companyId = this.companyId
         // 表单校验
         this.$refs['form'].validate((valid) => {
           if (valid) {
@@ -205,8 +205,7 @@
           this.form = {
 
             id: null,
-            deptId: null,
-            jobId: null,
+            companyId:null,
             employeeId: null,
             employeeNumber: null,
             employeeName: null,
@@ -250,8 +249,6 @@
       handleSelect(item) {
         this.form.employeeId = item.employeeId
         this.form.employeeNumber = item.employeeNumber
-        this.form.deptId = item.deptId
-        this.form.jobId = item.jobId
       }
     }
   }

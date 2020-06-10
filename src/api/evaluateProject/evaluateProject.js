@@ -1,7 +1,7 @@
 import request from "@/utils/request";
 
 /**
- * @description 获取评价項目列表接口数据 /assessment http://192.168.0.158:10009
+ * @description 获取评价項目列表接口数据 /assessment /assessment
  */
 export function listData(data) {
   return request({

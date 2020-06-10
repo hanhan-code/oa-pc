@@ -11,7 +11,7 @@
         :show-file-list="false"
         ref="upload"
         :headers="header_token"
-        :action="$network + '/emp/education/batch'"
+        :action="$network + '/emp/educations'"
         :limit="1"
         :file-list="fileList"
         :on-success="handleSuccess"
@@ -96,7 +96,7 @@
 
   import { batchDel, page, exportExcel } from '@/api/employee/education'
   import initDict from '@/mixins/initDict'
-  import { downTemplate } from '@/api/employee'
+  import { downTemplate } from '@/api/employee/employee'
   import Form from './form'
 
   export default {
@@ -167,8 +167,8 @@
 
         page(this.pageParams).then(res => {
           if (res.code === 0) {
-            this.pageData.data = res.data.list
-            this.pageData.total = res.data.total
+            this.pageData.data = res.data.records
+            this.pageData.total = Number.parseInt(res.data.total)
           } else {
             this.$message({ message: res.msg, type: 'warning' })
           }
@@ -195,8 +195,8 @@
 
         page(this.pageParams).then(res => {
           if (res.code === 0) {
-            this.pageData.data = res.data.list
-            this.pageData.total = res.data.total
+            this.pageData.data = res.data.records
+            this.pageData.total = Number.parseInt(res.data.total)
           } else {
             this.$message({ message: res.msg, type: 'warning' })
           }
@@ -222,8 +222,8 @@
 
         page(this.pageParams).then(res => {
           if (res.code === 0) {
-            this.pageData.data = res.data.list
-            this.pageData.total = res.data.total
+            this.pageData.data = res.data.records
+            this.pageData.total = Number.parseInt(res.data.total)
           } else {
             this.$message({ message: res.msg, type: 'warning' })
           }
@@ -294,6 +294,7 @@
       // 批量导出
       exportExcel() {
         // 发起请求
+        this.pageParams.companyId = this.companyId;
         exportExcel(this.pageParams).then(res => {
           let blob = new Blob([res], { type: 'application/vnd.ms-excel,charset=utf-8' })
           let url = URL.createObjectURL(blob)

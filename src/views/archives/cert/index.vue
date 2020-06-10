@@ -365,7 +365,7 @@
   import initDict from '@/mixins/initDict'
   import { getCompanyId } from '@/utils/auth'
   import { page, borrowCert, returnCert } from '@/api/cert/cert'
-  import { search } from '@/api/employee'
+  import { search } from '@/api/employee/employee'
   import Form from './form'
 
   export default {

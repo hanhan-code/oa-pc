@@ -69,11 +69,13 @@
         </el-form-item>
 
         <el-form-item label="开始时间" size="small" prop="startTime">
-          <el-date-picker v-model="form.startTime" type="date" placeholder="选择日期" :disabled="mask"></el-date-picker>
+          <el-date-picker v-model="form.startTime" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"
+                          :disabled="mask"></el-date-picker>
         </el-form-item>
 
         <el-form-item label="结束时间" size="small" prop="endTime">
-          <el-date-picker @change="endDateCheck" v-model="form.endTime" type="date" placeholder="选择日期"
+          <el-date-picker @change="endDateCheck" value-format="yyyy-MM-dd" v-model="form.endTime" type="date"
+                          placeholder="选择日期"
                           :disabled="mask"></el-date-picker>
         </el-form-item>
 
@@ -172,7 +174,7 @@
 <script>
 
   import { add, edit, info } from '@/api/employee/education'
-  import { search, infoByNumber } from '@/api/employee'
+  import { search, infoByNumber } from '@/api/employee/employee'
 
   export default {
     name: 'FormEdit',
@@ -193,8 +195,7 @@
         form: {
 
           id: null, // 当前表单唯一ID
-          deptId: null, // 部门ID
-          jobId: null, // 职位ID
+          companyId: null, // 公司主键
           employeeId: null, // 员工编号ID
           employeeNumber: null,
           employeeName: null,
@@ -260,16 +261,10 @@
             this.form.original = this.form.original + ''
 
             // 附件处理
-            let ids = []
             this.form.enclosures.forEach(item => {
               this.setFileInfo(item)
-              ids.push(item.id)
+              this.preview.files.push(item)
             })
-
-            // 附件文件预览列表
-            this.preview.files = this.form.enclosures
-            // 表单附件主键列表
-            this.form.enclosures = ids
 
           } else {
             this.$message({ message: res.msg, type: 'warning' })
@@ -277,6 +272,7 @@
         })
       },
       doSubmit() {
+        this.form.companyId = this.companyId
         // 表单校验
         this.$refs['form'].validate((valid) => {
           if (valid) {
@@ -345,8 +341,7 @@
           this.form = {
 
             id: null, // 当前表单唯一ID
-            deptId: null, // 部门ID
-            jobId: null, // 职位ID
+            companyId: null, // 公司主键
             employeeId: null, // 员工编号ID
             employeeNumber: null,
             employeeName: null,
@@ -405,8 +400,6 @@
       handleSelect(item) {
         this.form.employeeId = item.employeeId
         this.form.employeeNumber = item.employeeNumber
-        this.form.deptId = item.deptId
-        this.form.jobId = item.jobId
       },
 
       /** 图片附件 上传 **/
@@ -415,11 +408,12 @@
 
         // 上传成功返回文件信息
         let file = response.data
+
         // 设置文件信息
         this.setFileInfo(file)
 
         // 添加至 表单附件参数列表、文件预览列表
-        this.form.enclosures.push(file.id)
+        this.form.enclosures.push(file)
         this.preview.files.push(file)
 
       },
@@ -463,8 +457,9 @@
 
         // 重新设置表单附件列表主键
         this.form.enclosures = []
+
         this.preview.files.forEach(item => {
-          this.form.enclosures.push(item.id)
+          this.form.enclosures.push(item)
         })
       },
       // 清空附件列表

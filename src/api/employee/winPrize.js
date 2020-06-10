@@ -1,16 +1,15 @@
 import request from '@/utils/request'
 import Qs from 'qs'
-import id from 'element-ui/src/locale/lang/id'
 
 /**
  * 分页查询
  * @param params
  */
-export function page(data) {
+export function page(params) {
   return request({
-    url: '/emp/win/search',
-    method: 'post',
-    data: data
+    url: '/emp/win',
+    method: 'get',
+    params
   })
 }
 
@@ -68,7 +67,7 @@ export function del(id) {
  */
 export function batchDel(ids) {
   return request({
-    url: '/emp/win/batch',
+    url: '/emp/wins',
     method: 'delete',
     data: ids
   })
@@ -80,9 +79,9 @@ export function batchDel(ids) {
  */
 export function exportExcel(params) {
   return request({
-    url: '/emp/win/batch',
+    url: '/emp/wins',
     method: 'get',
-    data: Qs.stringify(params),
+    params,
     responseType: 'blob'
   })
 }

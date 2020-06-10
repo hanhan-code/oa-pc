@@ -39,6 +39,7 @@
             <el-table-column prop="fullScore" label="得分" align="center"></el-table-column>
             <el-table-column width="300" label="操作" align="center">
               <template slot-scope="scope">
+                <el-button type="primary" @click="doRunButton(scope.row, -1)" plain size="mini">修改</el-button>
                 <el-button type="primary" @click="doRunButton(scope.row, 0)" plain size="mini">设置</el-button>
                 <el-button
                   type="primary"
@@ -100,6 +101,38 @@
         <el-button type="primary" @click="doCreatSubmit('createForm')">提交</el-button>
       </span>
     </el-dialog>
+
+    <!-- 创建评价项目 -->
+    <el-dialog
+      title="修改评价表"
+      :visible.sync="editProp"
+      width="20%"
+      center
+      :modal="false"
+      :modal-append-to-body="false"
+    >
+      <el-form
+        :model="editForm"
+        label-position="right"
+        label-width="70px"
+        :rules="ruleForm"
+        ref="editForm"
+      >
+        <el-form-item label="表名称" prop="name">
+          <el-input
+            v-model="editForm.name"
+            filterable
+            clearable
+            placeholder="请输入表名称"
+            autocomplete="off"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="doEditConfirm('editForm')">提交</el-button>
+      </span>
+    </el-dialog>
+
     <!-- 添加已有评价项目 -->
     <el-dialog
       title="添加现有评价表"
@@ -182,7 +215,8 @@ import {
   endButton,
   evaluateData,
   creatSubmits,
-  delForm
+  delForm,
+  editSubmit
 } from '@/api/evaluate/evaluateForm'
 
 export default {
@@ -192,6 +226,7 @@ export default {
   data () {
     return {
       createProp: false,              // 创建评价弹窗
+      editProp: false,                // 修改弹窗
       evaluateProp: false,            // 添加现有表弹窗
       delProp: false,                 // 删除弹窗
       addProp: false,                 // 添加现有表
@@ -200,6 +235,7 @@ export default {
       screenLoading: false,           // 全局加载
       formName: '',                   // 评价表搜索字段
       formId: '',                     // 表单管理页面字段
+      submitType: 'create',           // 提交类型
       row: null,                      // 当前行数据
       tableHeight: null,              // 表格最大高度
       tableData: [],                  // 表格数据
@@ -216,6 +252,10 @@ export default {
       createForms: {
         projectCommentId: null,       // 执行创建操作评价项目的职员id
         formIds: []
+      },
+      editForm: {                    // 修改表格
+        name: '',
+        id: 0,
       },
       pageParams: {                   // 分页查询参数
         companyId: getCompanyId(),
@@ -326,6 +366,32 @@ export default {
         }
       })
     },
+    // 修改评价表
+    doEditConfirm (ruleForm) {
+      let form = {
+        companyId: getCompanyId(),
+        employeeId: getEmployeeId(),
+        id: this.editForm.id,
+        name: this.editForm.name
+      }
+      this.$refs[ruleForm].validate((valid) => {
+        if (valid) {
+          this.screenLoading = true
+          editSubmit(form).then(res => {
+            this.createForm.name = ''
+            this.screenLoading = false
+            if (res.code === 0) {
+              this.editProp = false
+              this.$refs[ruleForm].resetFields()
+              this.$message({ message: '修改成功', type: 'success' })
+              this.doSearch(0)
+            } else {
+              this.$message({ message: res.msg, type: 'error' })
+            }
+          })
+        }
+      })
+    },
     // 添加已有评价表提交
     doCreatSubmits (ruleForm) {
       let form = {
@@ -373,12 +439,15 @@ export default {
     },
     // 评价中数据列表操作按钮
     doRunButton (row, status) {
-
       this.row = row
       if (status === 0) {
         sessionStorage.removeItem('formId')
         this.formId = row.id
         this.formProp = true
+      } else if (status === -1) {
+        this.editProp = true
+        this.editForm.name = row.name
+        this.editForm.id = row.id
       } else if (status === 1) {
         this.copyProp = true
       } else {

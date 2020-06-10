@@ -39,11 +39,11 @@
         </el-form-item>
 
         <el-form-item label="开始时间" size="small" prop="startTime">
-          <el-date-picker v-model="form.startTime" type="date" placeholder="选择日期" :disabled="mask"></el-date-picker>
+          <el-date-picker v-model="form.startTime" value-format="yyyy-MM-dd" type="date" placeholder="选择日期" :disabled="mask"></el-date-picker>
         </el-form-item>
 
         <el-form-item label="结束时间" size="small" prop="endTime">
-          <el-date-picker v-model="form.endTime" type="date" placeholder="选择日期" :disabled="mask"></el-date-picker>
+          <el-date-picker v-model="form.endTime" value-format="yyyy-MM-dd" type="date" placeholder="选择日期" :disabled="mask"></el-date-picker>
         </el-form-item>
 
         <el-form-item label="必修学时" prop="compulsoryHour" size="small">
@@ -83,6 +83,7 @@
         <el-form-item label="开始时间" size="small" prop="majorOneStart">
           <el-date-picker
             v-model="form.majorOneStart"
+            value-format="yyyy-MM-dd"
             type="date"
             placeholder="选择日期"
             :disabled="mask"
@@ -94,6 +95,7 @@
             v-model="form.majorOneEnd"
             type="date"
             placeholder="选择日期"
+            value-format="yyyy-MM-dd"
             :disabled="mask"
           ></el-date-picker>
         </el-form-item>
@@ -136,6 +138,7 @@
           <el-date-picker
             v-model="form.majorTwoStart"
             type="date"
+            value-format="yyyy-MM-dd"
             placeholder="选择日期"
             :disabled="mask"
           ></el-date-picker>
@@ -147,6 +150,7 @@
             type="date"
             placeholder="选择日期"
             :disabled="mask"
+            value-format="yyyy-MM-dd"
           ></el-date-picker>
         </el-form-item>
 
@@ -240,7 +244,7 @@
 <script>
 
   import { add, edit, info } from '@/api/employee/continueEducation'
-  import { search, infoByNumber } from '@/api/employee'
+  import { search, infoByNumber } from '@/api/employee/employee'
 
   export default {
     name: 'FormEdit',
@@ -260,8 +264,7 @@
         mask: false,
         form: {
           id: null,
-          deptId: null,
-          jobId: null,
+          companyId: null,
           employeeId: null,
           employeeNumber: null,
           employeeName: null,
@@ -331,27 +334,18 @@
             this.form.majorTwoLearnForm = this.form.majorTwoLearnForm ? this.form.majorTwoLearnForm + '' : null
             this.form = JSON.parse(JSON.stringify(res.data))
 
-
             // 附件处理
-            let ids = []
-            if (this.form.enclosures && this.form.enclosures.length !== 0){
-
-              this.form.enclosures.forEach(item => {
-                this.setFileInfo(item)
-                ids.push(item.id)
-              })
-
-              // 附件文件预览列表
-              this.preview.files = this.form.enclosures
-              // 表单附件主键列表
-              this.form.enclosures = ids
-            }
+            this.form.enclosures.forEach(item => {
+              this.setFileInfo(item)
+              this.preview.files.push(item)
+            })
           } else {
             this.$message({ message: res.msg, type: 'warning' })
           }
         })
       },
       doSubmit() {
+        this.form.companyId = this.companyId
         // 表单校验
         this.$refs['form'].validate((valid) => {
           if (valid) {
@@ -422,8 +416,7 @@
           this.form = {
 
             id: null,
-            deptId: null,
-            jobId: null,
+            companyId: null,
             employeeId: null,
             employeeNumber: null,
             employeeName: null,
@@ -484,8 +477,6 @@
       handleSelect(item) {
         this.form.employeeId = item.employeeId
         this.form.employeeNumber = item.employeeNumber
-        this.form.deptId = item.deptId
-        this.form.jobId = item.jobId
       },
 
       /** 图片附件 上传 **/
@@ -498,7 +489,7 @@
         this.setFileInfo(file)
 
         // 添加至 表单附件参数列表、文件预览列表
-        this.form.enclosures.push(file.id)
+        this.form.enclosures.push(file)
         this.preview.files.push(file)
 
       },
@@ -543,7 +534,7 @@
         // 重新设置表单附件列表主键
         this.form.enclosures = []
         this.preview.files.forEach(item => {
-          this.form.enclosures.push(item.id)
+          this.form.enclosures.push(item)
         })
       },
       // 清空附件列表
