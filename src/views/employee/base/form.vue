@@ -42,6 +42,7 @@
           <el-date-picker
             v-model="form.identityValidity"
             type="date"
+            value-format="yyyy-MM-dd"
             placeholder="选择日期"
             :disabled="mask"
           ></el-date-picker>
@@ -182,19 +183,21 @@
           <el-date-picker
             v-model="form.joinWorkDate"
             type="date"
+            value-format="yyyy-MM-dd"
             placeholder="选择日期"
             :disabled="mask"
           ></el-date-picker>
         </el-form-item>
 
         <el-form-item label="入职日期" size="small" prop="entryDate" label-width="auto">
-          <el-date-picker v-model="form.entryDate" type="date" placeholder="选择日期" :disabled="mask"></el-date-picker>
+          <el-date-picker v-model="form.entryDate" type="date" value-format="yyyy-MM-dd" placeholder="选择日期" :disabled="mask"></el-date-picker>
         </el-form-item>
 
         <el-form-item label="入党(团)日期" size="small" prop="joinOrganizationDate" label-width="auto">
           <el-date-picker
             v-model="form.joinOrganizationDate"
             type="date"
+            value-format="yyyy-MM-dd"
             placeholder="选择日期"
             :disabled="mask"
           ></el-date-picker>
@@ -205,6 +208,7 @@
             v-model="form.trialEndDate"
             type="date"
             placeholder="选择日期"
+            value-format="yyyy-MM-dd"
             :disabled="mask"
             @change="form.correctionDate = form.trialEndDate"
           ></el-date-picker>
@@ -215,12 +219,13 @@
             v-model="form.correctionDate"
             type="date"
             placeholder="选择日期"
+            value-format="yyyy-MM-dd"
             :disabled="mask"
           ></el-date-picker>
         </el-form-item>
 
         <el-form-item label="离职日期" size="small" prop="leaveDate" label-width="auto">
-          <el-date-picker v-model="form.leaveDate" type="date" placeholder="选择日期"
+          <el-date-picker v-model="form.leaveDate" type="date" value-format="yyyy-MM-dd" placeholder="选择日期"
                           :disabled="mask || form.workStatus == 1"></el-date-picker>
         </el-form-item>
 
@@ -286,6 +291,7 @@
           <el-date-picker
             v-model="form.temporaryResidencePermitValidity"
             type="date"
+            value-format="yyyy-MM-dd"
             placeholder="选择日期"
             :disabled="mask"
           ></el-date-picker>
@@ -520,8 +526,6 @@
 
             id: null,
             companyId: null,
-            deptId: null,
-            jobId: null,
             employeeNumber: null,
             employeeName: null,
             identityCard: null,
