@@ -192,8 +192,8 @@
 <script>
 
   import { page, exportExcel } from '@/api/attendanceSummary'
-  import { companyInfo } from '@/api/attendanceCard'
-  import { getInfo } from '@/api/login'
+  import { getCompanyId } from '@/utils/auth'
+  import { org } from '@/api/employee/dept'
 
   export default {
     name: 'index',
@@ -222,7 +222,7 @@
           ids: [],
           pageNum: 1,
           pageSize: 10,
-          companyId: null
+          companyId: getCompanyId()
         },
         pageData: {
           data: [],
@@ -257,7 +257,8 @@
       // 初始化
       init() {
         this.setDefaultDates()
-        this.setDefaultUser()
+        this.getOrganizationalStructure()
+        this.refreshPageData()
       },
 
       // 设置默认选择日期
@@ -272,31 +273,22 @@
         this.pageParams.endDate = this.dateSelect.dates[1]
       },
 
-      // 设置默认公司ID
-      setDefaultUser() {
-        getInfo().then(res => {
-          if (res.code === 0) {
-
-            // 设置公司Id
-            this.pageParams.companyId = res.data.companyId
-
-            this.getOrganizationalStructure()
-            this.refreshPageData()
-          } else {
-            this.$message({ message: res.msg, type: 'warning' })
-          }
-        })
-      },
-
       // 组织架构-员工列表
       getOrganizationalStructure() {
-        companyInfo(this.pageParams.companyId).then(res => {
-          if (res.code == 0) {
-            this.transfer.data = res.data.children
+        // 请求参数
+        let params = {
+          companyId: getCompanyId(),
+          contain: 1  // 是否包含员工 1：是 0：否
+        }
+        org(params).then(res => {
+          if (res.code === 0) {
+            this.transfer.data = res.data
+
           } else {
             this.$message({ message: res.msg, type: 'warning' })
           }
         })
+
       },
 
       // 分页数据刷新
