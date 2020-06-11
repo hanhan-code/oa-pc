@@ -47,6 +47,7 @@ const user = {
             resolve()
             toWeb().then(res=>{
               setUserInfo(res.data, commit)
+              this.$router.push('/')
             })
           } else {
             this.$message({ message: res.msg, type: 'warning' })
