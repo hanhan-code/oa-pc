@@ -80,7 +80,7 @@
           >
             <!--<el-table-column type="selection" width="42"></el-table-column>-->
             <el-table-column prop="employeeName" label="姓名"/>
-            <el-table-column prop="deptName" :show-overflow-tooltip="true" label="部门"></el-table-column>
+<!--            <el-table-column prop="deptName" :show-overflow-tooltip="true" label="部门"></el-table-column>-->
             <el-table-column prop="employeeNumber" label="员工编号"/>
             <el-table-column prop="certName" label="证书名称"/>
             <el-table-column prop="certType" label="证书类型">
