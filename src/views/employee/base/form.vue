@@ -150,6 +150,7 @@
             <el-select
               v-model="form.nameList"
               value-key="id"
+              popper-class="select-dept"
               clearable
               multiple
               :style="style"
@@ -651,7 +652,6 @@ export default {
     ,
     // 部门动态改变 岗位列表
     nodeClick (data, check) {
-      console.log(data, check)
       this.form.deptIds = check.checkedKeys
       this.form.nameList = check.checkedNodes.map(p => p.label)
       this.nameList = check.checkedNodes.map(p => p.label)
@@ -694,5 +694,11 @@ export default {
 .el-tree {
   max-height: 400px;
   overflow: auto;
+}
+</style>
+<style>
+/* 部门下拉框不展示 */
+.select-dept {
+  display: none;
 }
 </style>

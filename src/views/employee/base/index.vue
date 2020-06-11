@@ -386,6 +386,7 @@ export default {
             }
           }
           // 传递所选数据
+          this.$refs.formEdit.nameList = data.depts.map(n => n.name)
           this.$refs.formEdit.form = JSON.parse(JSON.stringify(res.data))
         } else {
           this.$message({ message: res.msg, type: 'warning' })
