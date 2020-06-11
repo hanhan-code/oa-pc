@@ -42,7 +42,6 @@
     <div class="content-container" style="margin-top: 10px">
       <el-table size="small" :data="pageData.data" style="width: 100%;" :fit="true">
         <el-table-column prop="employeeName" label="姓名"/>
-        <!--<el-table-column prop="deptName" label="部门"/>-->
         <el-table-column prop="attendanceDate" label="考勤日期"/>
         <el-table-column prop="shiftTime" label="考勤时间"/>
         <el-table-column prop="cardDate" label="打卡时间"/>
@@ -74,13 +73,11 @@
         </el-table-column>
         <el-table-column prop="equipmentNo" label="打卡设备"/>
 
-
         <el-table-column prop="adminUpdateRemark" label="管理员修改备注">
           <template slot-scope="scope">
             <span>{{scope.row.adminUpdateRemark != null ? scope.row.adminUpdateRemark : '--' }}</span>
           </template>
         </el-table-column>
-
         <el-table-column label="操作" align="center" min-width="100">
           <template slot-scope="scope">
             <el-button type="text" @click="showEditStatus(scope.row)">修改状态</el-button>
@@ -232,9 +229,10 @@
 
 <script>
 
-  import { page, companyInfo, exportExcel, updateStatus } from '@/api/attendanceCard'
-  import { getInfo } from '@/api/login'
+  import { page, exportExcel, updateStatus } from '@/api/attendanceCard'
   import initDict from '@/mixins/initDict'
+  import { getCompanyId } from '@/utils/auth'
+  import { org } from '@/api/employee/dept'
 
   export default {
     name: 'index',
@@ -264,7 +262,7 @@
           ids: [],
           pageNum: 1,
           pageSize: 10,
-          companyId: null
+          companyId: getCompanyId()
         },
         pageData: {
           data: [],
@@ -310,7 +308,8 @@
       // 初始化
       init() {
         this.setDefaultDates()
-        this.setDefaultUser()
+        this.getOrganizationalStructure()
+        this.refreshPageData()
       },
 
       // 设置默认选择日期
@@ -325,32 +324,22 @@
         this.pageParams.endDate = this.dateSelect.dates[1]
       },
 
-      // 公司ID
-      setDefaultUser() {
-        getInfo().then(res => {
-          if (res.code == 0) {
-
-            // 设置公司ID
-            this.pageParams.companyId = res.data.companyId
-
-            this.getOrganizationalStructure()
-            this.refreshPageData()
-
-          } else {
-            this.$message({ message: res.msg, type: 'warning' })
-          }
-        })
-      },
-
       // 组织架构-员工列表
       getOrganizationalStructure() {
-        companyInfo(this.pageParams.companyId).then(res => {
-          if (res.code == 0) {
-            this.transfer.data = res.data.children
+        // 请求参数
+        let params = {
+          companyId: getCompanyId(),
+          contain: 1  // 是否包含员工 1：是 0：否
+        }
+        org(params).then(res => {
+          if (res.code === 0) {
+            this.transfer.data = res.data
+
           } else {
             this.$message({ message: res.msg, type: 'warning' })
           }
         })
+
       },
 
       // 分页数据刷新

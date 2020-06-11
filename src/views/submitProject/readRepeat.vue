@@ -280,7 +280,7 @@ export default {
           // 计算进度
           let value = Math.floor(
             Number((progressEvent.loaded / size) * 100)
-          );
+          )
           if (value >= 100) {
             value = 100
           }
@@ -292,7 +292,7 @@ export default {
           this.progress.files.splice(0, 1, obj)
         }
       });
-      http.post(this.$network + "file/attachments", form).then(response => {
+      http.post(this.$upload + "file/attachments", form).then(response => {
         let res = response.data
         // 解决文件无法重复提交
         this.fileValue = ''
