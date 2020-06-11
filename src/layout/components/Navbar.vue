@@ -30,6 +30,11 @@
               个人中心
             </el-dropdown-item>
           </router-link>
+          <span style="display:block;" @click="toSwitch">
+            <el-dropdown-item>
+              切换公司
+            </el-dropdown-item>
+          </span>
           <span style="display:block;" @click="open">
             <el-dropdown-item divided>
               退出登录
@@ -77,6 +82,15 @@ export default {
     }
   },
   methods: {
+    //切换企业
+    toSwitch(){
+      this.$confirm('确定注销当前公司账号？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+      })
+    },
     open() {
       this.$confirm('确定注销并退出系统吗？', '提示', {
         confirmButtonText: '确定',
