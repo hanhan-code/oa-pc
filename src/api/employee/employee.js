@@ -1,12 +1,12 @@
-import request from '@/utils/request'
-import Qs from 'qs'
+import request from "@/utils/request";
+import Qs from "qs";
 
 export function page(params) {
   return request({
-    url: 'emp/base/search',
-    method: 'get',
+    url: "emp/base/search",
+    method: "get",
     params
-  })
+  });
 }
 
 /**
@@ -16,9 +16,9 @@ export function page(params) {
  */
 export function search(companyId, employeeName) {
   return request({
-    url: 'emp/base/search/' + companyId + '/' + employeeName,
-    method: 'get'
-  })
+    url: "emp/base/search/" + companyId + "/" + employeeName,
+    method: "get"
+  });
 }
 
 /**
@@ -27,9 +27,20 @@ export function search(companyId, employeeName) {
  */
 export function infoByNumber(number) {
   return request({
-    url: 'emp/base/number?number=' + number,
-    method: 'get'
-  })
+    url: "emp/base/number?number=" + number,
+    method: "get"
+  });
+}
+
+/**
+ * 根据员工id员工信息
+ * @param number
+ */
+export function infoById(number) {
+  return request({
+    url: "emp/base/detail?id=" + number,
+    method: "get"
+  });
 }
 
 /**
@@ -38,10 +49,10 @@ export function infoByNumber(number) {
  */
 export function add(data) {
   return request({
-    url: '/emp/base',
-    method: 'post',
+    url: "/emp/base",
+    method: "post",
     data: data
-  })
+  });
 }
 
 /**
@@ -50,9 +61,9 @@ export function add(data) {
  */
 export function generatorNumber(companyId) {
   return request({
-    url: '/emp/base/number/' + companyId,
-    method: 'get'
-  })
+    url: "/emp/base/number/" + companyId,
+    method: "get"
+  });
 }
 
 /**
@@ -61,10 +72,10 @@ export function generatorNumber(companyId) {
  */
 export function edit(data) {
   return request({
-    url: '/emp/base',
-    method: 'put',
+    url: "/emp/base",
+    method: "put",
     data
-  })
+  });
 }
 
 /**
@@ -73,9 +84,9 @@ export function edit(data) {
  */
 export function del(id) {
   return request({
-    url: '/emp/base/' + id,
-    method: 'delete'
-  })
+    url: "/emp/base/" + id,
+    method: "delete"
+  });
 }
 
 /**
@@ -84,10 +95,10 @@ export function del(id) {
  */
 export function batchDel(ids) {
   return request({
-    url: '/emp/bases',
-    method: 'delete',
+    url: "/emp/bases",
+    method: "delete",
     data: ids
-  })
+  });
 }
 
 /**
@@ -96,11 +107,11 @@ export function batchDel(ids) {
  */
 export function exportExcel(params) {
   return request({
-    url: '/emp/bases',
-    method: 'get',
+    url: "/emp/bases",
+    method: "get",
     data: Qs.stringify(params),
-    responseType: 'blob'
-  })
+    responseType: "blob"
+  });
 }
 
 /**
@@ -109,8 +120,8 @@ export function exportExcel(params) {
  */
 export function downTemplate(filename) {
   return request({
-    url: '/emp/common/down/' + filename,
-    method: 'get',
-    responseType: 'blob'
-  })
+    url: "/emp/common/down/" + filename,
+    method: "get",
+    responseType: "blob"
+  });
 }
