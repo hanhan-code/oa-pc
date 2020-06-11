@@ -151,7 +151,7 @@
 
                     if ('pdf' === file.ext) {
 
-                      let pdfUrl = this.$network + '/file/files/preview/down?id=' + file.id
+                      let pdfUrl = this.$network + 'file/files/preview/down?id=' + file.id
                       console.log(pdfUrl)
                       window.open('/static/pdf/viewer.html?pdfUrl=' + encodeURIComponent(pdfUrl))
                     } else if ('doc' === file.ext || 'docx' === file.ext || 'pptx' === file.ext || 'ppt' === file.ext || 'xls' === file.ext || 'xlsx' === file.ext) {
@@ -185,7 +185,7 @@
               let ext = this.$utils.getSuffix(file.fileName)
 
               if ('pdf' === ext) {
-                let pdfUrl = this.$network + '/file/files/preview/down?id=' + file.id
+                let pdfUrl = this.$network + 'file/files/preview/down?id=' + file.id
                 console.log(pdfUrl)
                 window.open('/static/pdf/viewer.html?pdfUrl=' + encodeURIComponent(pdfUrl))
 

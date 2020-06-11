@@ -361,11 +361,11 @@
 
 <script>
 
-  import { getOrgExcludeEmployee } from '@/api/synch'
   import initDict from '@/mixins/initDict'
   import { getCompanyId } from '@/utils/auth'
   import { page, borrowCert, returnCert } from '@/api/cert/cert'
   import { search } from '@/api/employee/employee'
+  import { org } from '@/api/employee/dept'
   import Form from './form'
 
   export default {
@@ -438,11 +438,16 @@
 
       // 设置组织架构、部门列表信息
       setOrgInfo() {
-        getOrgExcludeEmployee(this.pageParams.companyId).then(res => {
+        // 请求参数
+        let params = {
+          companyId: getCompanyId(),
+          contain: 0  // 是否包含员工 1：是 0：否
+        }
+        org(params).then(res => {
           if (res.code === 0) {
             this.dept.lefts = []
-            this.dept.lefts.push(res.data)
-            this.dept.rootId = res.data.id
+            this.dept.lefts.push(res.data[0])
+            this.dept.rootId = res.data[0].id
           } else {
             this.$message({ message: res.msg, type: 'warning' })
           }
