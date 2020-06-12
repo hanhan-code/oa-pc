@@ -2,7 +2,6 @@
   <div class="navbar">
     <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container"/>
     <breadcrumb class="breadcrumb-container"/>
-
     <div class="right-menu">
       <template v-if="device!=='mobile'">
         <el-tooltip content="全屏" effect="dark" placement="bottom">
@@ -30,6 +29,11 @@
               个人中心
             </el-dropdown-item>
           </router-link>
+          <span style="display:block;" @click="toSwitch">
+            <el-dropdown-item>
+              切换公司
+            </el-dropdown-item>
+          </span>
           <span style="display:block;" @click="open">
             <el-dropdown-item divided>
               退出登录
@@ -38,7 +42,13 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
-  </div>
+    <div  v-show="showSwitch">
+      <div class="icon" @click="doSwitch">
+			<i class="el-icon-close"></i>
+		</div>
+    <Switchcompany></Switchcompany> 
+    </div>
+	</div>
 </template>
 
 <script>
@@ -46,16 +56,19 @@ import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import Screenfull from '@/components/Screenfull'
+import Switchcompany from '@/components/Switchcompany'
 
 export default {
   components: {
     Breadcrumb,
     Hamburger,
-    Screenfull
+    Screenfull,
+    Switchcompany
   },
   data() {
     return {
-      dialogVisible: false
+      dialogVisible: false,
+      showSwitch:false,//选择公司
     }
   },
   computed: {
@@ -77,6 +90,13 @@ export default {
     }
   },
   methods: {
+    //切换企业
+    toSwitch(){
+      this.showSwitch = true
+    },
+    doSwitch(){
+      this.showSwitch = false
+    },
     open() {
       this.$confirm('确定注销并退出系统吗？', '提示', {
         confirmButtonText: '确定',
@@ -156,6 +176,22 @@ export default {
             font-size: 12px;
           }
         }
+      }
+    }
+    .icon {
+      width: 48px;
+      height: 48px;
+      background: #1890ff;
+      border-radius: 6px 0 0 6px !important;
+      text-align: center;
+      position: absolute;
+      right: 240px;
+      top: 250px;
+      z-index: 10001;
+      i {
+        font-size: 24px;
+        line-height: 48px;
+        color: #fff;
       }
     }
   }
