@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import da from 'element-ui/src/locale/lang/da'
 
 export function page(data) {
   return request({
@@ -27,7 +26,6 @@ export function updateStatus(data) {
     data: data
   })
 }
-
 
 
 export function exportExcel(data) {
