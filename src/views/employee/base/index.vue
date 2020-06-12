@@ -376,11 +376,9 @@ export default {
         if (res.code === 0) {
           let data = res.data
           data.deptIds = data.depts.map(n => n.id)
-          console.log(data)
           data.nameList = data.depts.map(n => n.name)
           data.jobs = data.jobs.map(n => n.id)
           for (let v in data) {
-
             if (v !== 'sex' && v !== 'unionMember' && typeof data[v] === "number") {
               data[v] = data[v] + ''
             }
@@ -388,6 +386,7 @@ export default {
           // 传递所选数据
           this.$refs.formEdit.nameList = data.depts.map(n => n.name)
           this.$refs.formEdit.form = JSON.parse(JSON.stringify(res.data))
+          this.$refs.formEdit.formatSexAndUnionMember()
         } else {
           this.$message({ message: res.msg, type: 'warning' })
         }
