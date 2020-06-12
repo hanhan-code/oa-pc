@@ -371,7 +371,7 @@ export default {
         employeeName: null,
         identityCard: null,
 
-        sex: null,
+        sex: 1,
         photo: null,
         identityValidity: null,
         age: null,
@@ -568,7 +568,7 @@ export default {
           deptIds: [],
           nameList: [],
           jobs: [],
-          sex: null,
+          sex: 1,
           photo: null,
           identityValidity: null,
           age: null,
@@ -616,7 +616,7 @@ export default {
     // 实现自动生成生日，性别，年龄
     go (val) {
       let iden = this.form.identityCard   // 身份证号码
-      let sex = null
+      let sex = 1
       let birth = null
       let myDate = new Date()
       let month = myDate.getMonth() + 1
@@ -671,19 +671,18 @@ export default {
 
     // 格式化性别、是否工会会员
     formatSexAndUnionMember () {
-
-      if (this.form.sex !== null) {
-        if (this.form.sex === '男') {
-          this.form.sex = 1
+      if (typeof this.form.unionMember === "number") {
+        if (this.form.unionMember === 0) {
+          this.form.unionMember = false
         } else {
-          this.form.sex = 2
+          this.form.unionMember = true
         }
-      }
-
-      if (this.form.unionMember === false) {
-        this.form.unionMember = 0
       } else {
-        this.form.unionMember = 1
+        if (this.form.unionMember === false) {
+          this.form.unionMember = 0
+        } else {
+          this.form.unionMember = 1
+        }
       }
     }
   }
