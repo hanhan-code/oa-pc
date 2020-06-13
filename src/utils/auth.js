@@ -20,7 +20,9 @@ export function removeToken() {
 }
 
 export function setLoginInfo(res) {
+  console.log(res,11111111111111111111)
   localStorage.setItem('userId', JSON.stringify(res.data.userId))
+  localStorage.setItem('phone', JSON.stringify(res.data.phone))
   localStorage.setItem('companyId', JSON.stringify(res.data.companyId))
   localStorage.setItem('employeeId', JSON.stringify(res.data.employeeId))
 }
@@ -43,4 +45,12 @@ export function getCompanyId() {
 
 export function getEmployeeId() {
   return JSON.parse(localStorage.getItem('employeeId'))
+}
+
+export function getPhone() {
+  return JSON.parse(localStorage.getItem('phone'))
+}
+
+export function getPassword() {
+  return JSON.parse(localStorage.getItem('password'))
 }
