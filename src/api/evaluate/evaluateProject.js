@@ -106,6 +106,26 @@ export function creatSubmit(data) {
 }
 
 /**
+ * @description 更新评价項目接口数据 /assessment /assessment
+ */
+export function detailProject(id) {
+  return request({
+    url: "/assessment/project/" + id,
+    method: "get"
+  });
+}
+
+/**
+ * @description 更新评价項目接口数据 /assessment /assessment
+ */
+export function editProject(data) {
+  return request({
+    url: "/assessment/project/comment/info",
+    method: "put",
+    data: data
+  });
+}
+/**
  * @description 调用评价设置接口
  */
 export function setSubmit(data) {

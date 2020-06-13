@@ -7,9 +7,10 @@ export function listData(data) {
   return request({
     url: "/assessment/project/mobile/comment/list",
     method: "get",
-    params: data,
+    params: data
   });
 }
+
 
 /**
  * @description 获取评价項目下所有表单接口数据
@@ -18,7 +19,7 @@ export function formData(data) {
   return request({
     url: "/assessment/form/mobile",
     method: "get",
-    params: data,
+    params: data
   });
 }
 
@@ -29,7 +30,7 @@ export function formDatas(data) {
   return request({
     url: "/assessment/form/mobile",
     method: "get",
-    params: data,
+    params: data
   });
 }
 
@@ -40,7 +41,7 @@ export function personData(data) {
   return request({
     url: "/assessment/project/mobile/remind",
     method: "get",
-    params: data,
+    params: data
   });
 }
 
@@ -51,7 +52,7 @@ export function personDatas(data) {
   return request({
     url: "/assessment/project/mobile/remind/item",
     method: "get",
-    params: data,
+    params: data
   });
 }
 
@@ -62,7 +63,7 @@ export function messageData(data) {
   return request({
     url: "/assessment/message/weChat/sendApplicationMsgByUserIds",
     method: "post",
-    data: data,
+    data: data
   });
 }
 
@@ -73,7 +74,7 @@ export function endData(data) {
   return request({
     url: "/assessment/project/mobile/comment/info",
     method: "get",
-    params: data,
+    params: data
   });
 }
 
@@ -84,7 +85,7 @@ export function endSubmit(data) {
   return request({
     url: "/assessment/project/mobile/final/form",
     method: "post",
-    data: data,
+    data: data
   });
 }
 
@@ -95,7 +96,7 @@ export function readyData(data) {
   return request({
     url: "/assessment/form/mobile/class/item",
     method: "get",
-    params: data,
+    params: data
   });
 }
 
@@ -106,7 +107,7 @@ export function evaluateData(data) {
   return request({
     url: "/assessment/form/mobile/item",
     method: "put",
-    data: data,
+    data: data
   });
 }
 
@@ -117,7 +118,7 @@ export function resetData(data) {
   return request({
     url: "/assessment/form/mobile/reevaluation",
     method: "put",
-    data: data,
+    data: data
   });
 }
 
@@ -128,7 +129,7 @@ export function fileData(data) {
   return request({
     url: "/assessment/file/file",
     method: "get",
-    params: data,
+    params: data
   });
 }
 
@@ -139,7 +140,7 @@ export function submitFile(data) {
   return request({
     url: "/assessment/project/mobile/file",
     method: "post",
-    data: data,
+    data: data
   });
 }
 
@@ -148,8 +149,12 @@ export function submitFile(data) {
  */
 export function fileDel(data) {
   return request({
-    url: `/assessment/project/mobile/file?fileId=${data.fileId}&projectCommentId=${data.projectCommentId}&formClassItemId=${data.formClassItemId}`,
-    method: "delete",
+    url: `/assessment/project/mobile/file?fileId=${
+      data.fileId
+    }&projectCommentId=${data.projectCommentId}&formClassItemId=${
+      data.formClassItemId
+    }`,
+    method: "delete"
   });
 }
 
@@ -160,7 +165,7 @@ export function fileDels(data) {
   return request({
     url: "/file/attachment/remote",
     method: "delete",
-    data: data,
+    data: data
   });
 }
 
@@ -170,6 +175,6 @@ export function fileDels(data) {
 export function employeeData(data) {
   return request({
     url: "/emp/base/search/" + data.companyId + "/" + data.employeeName,
-    method: "get",
+    method: "get"
   });
 }

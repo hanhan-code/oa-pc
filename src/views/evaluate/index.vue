@@ -577,7 +577,7 @@ export default {
       detailProject(id).then(res => {
         if (res.code === 0) {
           let data = res.data
-          data.commentType = data.commentType.toString()
+          data.commentType = data.commentType + ''
           this.editForm = data
           this.evaluateList = data.formList
         } else {
