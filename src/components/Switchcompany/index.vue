@@ -18,7 +18,7 @@ import {
 	toSwitch,
 	toWeb
 } from '@/api/login'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import {
 	getToken,
 	setToken,
@@ -48,9 +48,11 @@ export default {
 		})
 	},
 	methods: {
+		...mapActions(['delAllViews']),
 		toCompany(item) {
 			let id = item.id
 			this.$emit('change')
+			this.delAllViews()
 			this.$store.dispatch('toSwitch', id).then(res => {
 				this.$router.push('/')
 			})
