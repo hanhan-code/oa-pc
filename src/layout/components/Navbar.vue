@@ -36,7 +36,7 @@
 			<!-- <div class="icon" @click="doSwitch">
 				<i class="el-icon-close"></i>
 			</div> -->
-			<Switchcompany></Switchcompany>
+			<Switchcompany @change="doSwitchChange"></Switchcompany>
 		</div>
 	</div>
 </template>
@@ -94,6 +94,11 @@ export default {
 		},
 		toggleSideBar() {
 			this.$store.dispatch('ToggleSideBar')
+		},
+
+		// 切换成功
+		doSwitchChange () {
+			this.showSwitch = false
 		},
 		logout() {
 			this.dialogVisible = false

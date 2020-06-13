@@ -9,8 +9,8 @@ export default [
     sort: '1',
     children: [
       {
-        path: 'cert',
-        name: 'cert',
+        path: 'index',
+        name: 'index',
         component: () => import('@/views/home'),
         meta: { title: '首页', icon: 'validCode' },
         icon: 'validCode',
@@ -28,8 +28,8 @@ export default [
     sort: '2',
     children: [
       {
-        path: 'employee',
-        name: 'employee',
+        path: 'message',
+        name: 'message',
         component: () => import('@/views/employee/base/index'),
         meta: { title: '基本信息', icon: 'index' },
         icon: 'index',
@@ -133,8 +133,8 @@ export default [
         sort: '44',
         children: [
           {
-            path: 'employee',
-            name: 'employee',
+            path: 'person',
+            name: 'person',
             component: () => import('@/views/disk/auth/employee/index'),
             meta: { title: '职工权限', icon: 'peoples' },
             icon: 'peoples',
@@ -164,8 +164,8 @@ export default [
     sort: '5',
     children: [
       {
-        path: 'cert',
-        name: 'cert',
+        path: 'book',
+        name: 'book',
         component: () => import('@/views/archives/cert/index'),
         meta: { title: '证书管理', icon: 'log' },
         icon: 'log',
@@ -183,8 +183,8 @@ export default [
     sort: '6',
     children: [
       {
-        path: 'cert',
-        name: 'cert',
+        path: 'form',
+        name: 'form',
         component: () => import('@/views/approval/formManager/index'),
         meta: { title: '表单管理', icon: 'swagger' },
         icon: 'swagger',

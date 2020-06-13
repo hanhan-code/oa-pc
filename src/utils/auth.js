@@ -20,7 +20,6 @@ export function removeToken() {
 }
 
 export function setLoginInfo(res) {
-  console.log(res,11111111111111111111)
   localStorage.setItem('userId', JSON.stringify(res.data.userId))
   localStorage.setItem('phone', JSON.stringify(res.data.phone))
   localStorage.setItem('companyId', JSON.stringify(res.data.companyId))

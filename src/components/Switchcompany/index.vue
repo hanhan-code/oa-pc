@@ -1,5 +1,5 @@
 <template>
-	<div class="index" v-show="showData">
+	<div class="index">
 		<ul>
 			<h1>选择公司</h1>
 			<li v-for="(item,id) in showList" :key="id" @click="toCompany(item)">{{item.name}}</li>
@@ -31,7 +31,6 @@ export default {
 	data() {
 		return {
 			showList: '',
-			showData:true
 		}
 	},
 	computed: {
@@ -51,10 +50,10 @@ export default {
 	methods: {
 		toCompany(item) {
 			let id = item.id
+			this.$emit('change')
 			this.$store.dispatch('toSwitch', id).then(res => {
 				this.$router.push('/')
 			})
-			this.showData = false
 		}
 	}
 }

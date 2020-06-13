@@ -1,6 +1,7 @@
 import { getInfo, codeIN, toSwitch, toWeb } from '@/api/login'
 import { getToken, setToken, removeToken, setLoginInfo, clearLoginInfo } from '@/utils/auth'
 import routes from '@/router/route'
+import routers from '@/router/routers'
 import store from '@/store'
 
 const user = {
@@ -24,7 +25,6 @@ const user = {
     },
     SET_LOAD_MENUS: (state, loadMenus) => {
       state.loadMenus = loadMenus
-      console.log(loadMenus, 4445)
     }
   },
 
@@ -47,7 +47,7 @@ const user = {
             resolve()
             toWeb().then(res => {
               setUserInfo(res.data, commit)
-              router.replace('/')
+              routers.replace('/')
             })
           } else {
             this.$message({ message: res.msg, type: 'warning' })
@@ -114,7 +114,7 @@ const user = {
         removeToken()
         clearLoginInfo()
         resolve()
-        router.push({ path: '/login' })
+        routers.replace({ path: '/login' })
         sessionStorage.clear()
       })
     },
