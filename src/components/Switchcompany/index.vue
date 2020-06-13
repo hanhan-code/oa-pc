@@ -1,19 +1,41 @@
 <template>
-	<div class="index">
+	<div class="index" v-show="showData">
 		<ul>
 			<h1>选择公司</h1>
-			<li v-for="(item,id) in showList" :key="id" @click="toswich">{{item.name}}</li>
+			<li v-for="(item,id) in showList" :key="id" @click="toCompany(item)">{{item.name}}</li>
 		</ul>
 	</div>
 </template>
 <script>
-import { getEmployeeId, getCompanyId, getToken, getUserId } from '@/utils/auth'
-import { myCompany } from '@/api/login'
+import { encrypt } from '@/utils/rsaEncrypt'
+import Config from '@/config'
+import Cookies from 'js-cookie'
+import {
+	sendVerificationCode,
+	codeIN,
+	login,
+	myCompany,
+	toSwitch,
+	toWeb
+} from '@/api/login'
+import { mapGetters } from 'vuex'
+import {
+	getToken,
+	setToken,
+	setLoginInfo,
+	getUserId,
+	getPhone,
+	getPassword
+} from '@/utils/auth'
 export default {
 	data() {
 		return {
-			showList: ''
+			showList: '',
+			showData:true
 		}
+	},
+	computed: {
+		...mapGetters(['user'])
 	},
 	mounted() {
 		let min = {
@@ -21,15 +43,20 @@ export default {
 			pageSize: 10,
 			userId: getUserId(),
 			keyword: '' //查询关键词
-    }
+		}
 		myCompany(min).then(res => {
-      this.showList = res.data.records
-      console.log(this.showList)
-    })
-  },
-  methods:{
-    toswich(){}
-  }
+			this.showList = res.data.records
+		})
+	},
+	methods: {
+		toCompany(item) {
+			let id = item.id
+			this.$store.dispatch('toSwitch', id).then(res => {
+				this.$router.push('/')
+			})
+			this.showData = false
+		}
+	}
 }
 </script>
 <style  rel="stylesheet/scss" lang="scss" scoped>

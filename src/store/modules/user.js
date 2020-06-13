@@ -1,4 +1,4 @@
-import {  getInfo,codeIN,toSwitch,toWeb } from '@/api/login'
+import { getInfo, codeIN, toSwitch, toWeb } from '@/api/login'
 import { getToken, setToken, removeToken, setLoginInfo, clearLoginInfo } from '@/utils/auth'
 import routes from '@/router/route'
 import store from '@/store'
@@ -24,14 +24,14 @@ const user = {
     },
     SET_LOAD_MENUS: (state, loadMenus) => {
       state.loadMenus = loadMenus
-      console.log(loadMenus,4445)
+      console.log(loadMenus, 4445)
     }
   },
 
   actions: {
     // 登录
     toSwitch({ commit }, userInfo) {
-      const id =  userInfo
+      const id = userInfo
       return new Promise((resolve, reject) => {
         let data = id
         toSwitch(data).then(res => {
@@ -45,9 +45,9 @@ const user = {
             // 第一次加载菜单时用到， 具体见 src 目录下的 permission.js
             // commit('SET_LOAD_MENUS', true)
             resolve()
-            toWeb().then(res=>{
+            toWeb().then(res => {
               setUserInfo(res.data, commit)
-              this.$router.push('/')
+              router.replace('/')
             })
           } else {
             this.$message({ message: res.msg, type: 'warning' })
@@ -88,7 +88,7 @@ const user = {
         })
       })
     },
-    
+
 
     // 获取用户信息
     GetInfo({ commit }) {
@@ -114,6 +114,8 @@ const user = {
         removeToken()
         clearLoginInfo()
         resolve()
+        router.push({ path: '/login' })
+        sessionStorage.clear()
       })
     },
 
@@ -128,7 +130,7 @@ export const setUserInfo = (res, commit) => {
       arr.push(p)
     }
   })
-  store.dispatch('GenerateRoutes',arr)
+  store.dispatch('GenerateRoutes', arr)
 }
 
 export default user

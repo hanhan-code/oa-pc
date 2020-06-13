@@ -217,7 +217,6 @@ export default {
 				return callback(new Error('手机号不能为空'))
 			} else {
 				const reg = /^1[3|4|5|7|8][0-9]\d{8}$/
-				console.log(reg.test(value))
 				if (reg.test(value)) {
 					callback()
 				} else {
@@ -336,6 +335,8 @@ export default {
 					let token = data.token
 					let userId = data.userId
 					setToken(data.token, user.rememberMe)
+					// setPassword(password, user.password)
+					localStorage.setItem('password', user.password)
 					//我的公司列表传参
 					let min = {
 						pageNum: 1,
