@@ -10,6 +10,7 @@ export default [
     children: [
       {
         path: 'cert',
+        name: 'cert',
         component: () => import('@/views/home'),
         meta: { title: '首页', icon: 'validCode' },
         icon: 'validCode',
@@ -28,6 +29,7 @@ export default [
     children: [
       {
         path: 'employee',
+        name: 'employee',
         component: () => import('@/views/employee/base/index'),
         meta: { title: '基本信息', icon: 'index' },
         icon: 'index',
@@ -35,6 +37,7 @@ export default [
       },
       {
         path: 'detail',
+        name: 'detail',
         component: () => import('@/views/employee/detail/index'),
         meta: { title: '详细信息', icon: 'user1' },
         icon: 'user1',
@@ -53,6 +56,7 @@ export default [
     children: [
       {
         path: '/statistics',
+        name: 'statistics',
         component: () => import('@/views/attendance/statistics/index'),
         meta: { title: '考勤统计', icon: 'peoples' },
         icon: 'peoples',
@@ -60,6 +64,7 @@ export default [
         children: [
           {
             path: 'summary',
+            name: 'summary',
             component: () => import('@/views/attendance/statistics/summary'),
             meta: { title: '月度汇总', icon: 'peoples' },
             icon: 'peoples',
@@ -67,6 +72,7 @@ export default [
           },
           {
             path: 'date',
+            name: 'date',
             component: () => import('@/views/attendance/statistics/date/index'),
             meta: { title: '打卡时间', icon: 'peoples' },
             icon: 'peoples',
@@ -74,6 +80,7 @@ export default [
           },
           {
             path: 'card',
+            name: 'card',
             component: () => import('@/views/attendance/statistics/card/index'),
             meta: { title: '考勤记录', icon: 'peoples' },
             icon: 'peoples',
@@ -95,6 +102,7 @@ export default [
     children: [
       {
         path: 'company',
+        name: 'company',
         component: () => import('@/views/disk/company/index'),
         meta: { title: '公司文件', icon: 'dictionary' },
         icon: 'dictionary',
@@ -102,6 +110,7 @@ export default [
       },
       {
         path: 'search',
+        name: 'search',
         component: () => import('@/views/disk/search/index'),
         meta: { title: '高级搜索', icon: 'search' },
         icon: 'search',
@@ -109,6 +118,7 @@ export default [
       },
       {
         path: 'personal',
+        name: 'personal',
         component: () => import('@/views/disk/personal/index'),
         meta: { title: '个人文件', icon: 'dictionary' },
         icon: 'dictionary',
@@ -116,6 +126,7 @@ export default [
       },
       {
         path: 'auth',
+        name: 'auth',
         component: () => import('@/views/disk/auth/index'),
         meta: { title: '文件权限', icon: 'permission' },
         icon: 'permission',
@@ -123,6 +134,7 @@ export default [
         children: [
           {
             path: 'employee',
+            name: 'employee',
             component: () => import('@/views/disk/auth/employee/index'),
             meta: { title: '职工权限', icon: 'peoples' },
             icon: 'peoples',
@@ -130,6 +142,7 @@ export default [
           },
           {
             path: 'group',
+            name: 'group',
             component: () => import('@/views/disk/auth/group/index'),
             meta: { title: '文件组', icon: 'dept' },
             icon: 'dept',
@@ -152,6 +165,7 @@ export default [
     children: [
       {
         path: 'cert',
+        name: 'cert',
         component: () => import('@/views/archives/cert/index'),
         meta: { title: '证书管理', icon: 'log' },
         icon: 'log',
@@ -170,6 +184,7 @@ export default [
     children: [
       {
         path: 'cert',
+        name: 'cert',
         component: () => import('@/views/approval/formManager/index'),
         meta: { title: '表单管理', icon: 'swagger' },
         icon: 'swagger',
@@ -188,6 +203,7 @@ export default [
     children: [
       {
         path: 'eform',
+        name: 'eform',
         component: () => import('@/views/evaluate/form'),
         meta: { title: '评价表', icon: 'codeConsole' },
         icon: 'codeConsole',
@@ -195,6 +211,7 @@ export default [
       },
       {
         path: 'submitProject',
+        name: 'submitProject',
         component: () => import('@/views/submitProject/index'),
         meta: { title: '提交评价', icon: 'add' },
         icon: 'add',
@@ -202,6 +219,7 @@ export default [
       },
       {
         path: 'eproject',
+        name: 'eproject',
         component: () => import('@/views/evaluate/index'),
         meta: { title: '评价项目', icon: 'Steve-Jobs' },
         icon: 'Steve-Jobs',
@@ -209,6 +227,7 @@ export default [
       },
       {
         path: 'eset',
+        name: 'eset',
         component: () => import('@/views/evaluate/set'),
         meta: { title: '评价设置', icon: 'fwb' },
         icon: 'fwb',
@@ -216,6 +235,7 @@ export default [
       },
       {
         path: 'evaluateProject',
+        name: 'evaluateProject',
         component: () => import('@/views/evaluateProject/index'),
         meta: { title: '评审项目', icon: 'icon-excel' },
         icon: 'icon-excel',
