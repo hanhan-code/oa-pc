@@ -240,7 +240,7 @@
             // 附件处理
             this.form.enclosures.forEach(item => {
               this.setFileInfo(item)
-              this.preview.files.push(item)
+              this.preview.files = item
             })
 
           } else {

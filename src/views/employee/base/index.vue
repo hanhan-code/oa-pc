@@ -211,7 +211,7 @@ export default {
         deptId: null,
         pageSize: 10,
         pageNum: 0,
-        companyId: 1001
+        companyId: getCompanyId()
       },
 
       // 页面请求数据
@@ -375,6 +375,7 @@ export default {
       infoById(id).then(res => {
         if (res.code === 0) {
           let data = res.data
+          data.jobIds = data.jobs.map(n => n.id)
           data.deptIds = data.depts.map(n => n.id)
           data.nameList = data.depts.map(n => n.name)
           data.jobs = data.jobs.map(n => n.id)

@@ -282,24 +282,19 @@ export default {
     },
     // 优单表得分率
     doFine (e) {
-      let value = e.target.value
-      if (value.indexOf('.') > 0) {
-        this.setForm.fine = parseInt(value)
-      }
+      let value = Number(e.target.value)
+      this.setForm.fine = value.toFixed(2)
     },
     // 优单表得分率
     doFineSingle (e) {
-      let value = e.target.value
-      if (value.indexOf('.') > 0) {
-        this.setForm.fineSingle = parseInt(value)
-      }
+      let value = Number(e.target.value)
+      this.setForm.fineSingle = value.toFixed(2)
     },
     // 良得分率
     doWell (e) {
-      let value = e.target.value
-      if (value.indexOf('.') > 0) {
-        this.setForm.good = parseInt(value)
-      }
+      let value = Number(e.target.value)
+      this.setForm.good = value.toFixed(2)
+      
       if (value !== '' && value > Number(this.setForm.fine)) {
         this.setForm.good = this.setForm.fine
         this.$message({ message: '良得分率不能高于优得分率', type: 'error' })
@@ -307,10 +302,9 @@ export default {
     },
     // 单张表良得分率
     doWellSingle (e) {
-      let value = e.target.value
-      if (value.indexOf('.') > 0) {
-        this.setForm.goodSingle = parseInt(value)
-      }
+      let value = Number(e.target.value)
+      this.setForm.goodSingle = value.toFixed(2)
+
       if (value !== '' && value > Number(this.setForm.fineSingle)) {
         this.setForm.goodSingle = this.setForm.fineSingle
         this.$message({ message: '单张表 良得分率不能高于优得分率', type: 'error' })
@@ -318,8 +312,9 @@ export default {
     },
     // 良得分率
     doCommon (e) {
-      let value = e.target.value
-      this.setForm.common = parseInt(value)
+      let value = Number(e.target.value)
+      this.setForm.common = value.toFixed(2)
+
       if (value !== '' && value > Number(this.setForm.good)) {
         this.setForm.common = this.setForm.good
         this.$message({ message: '一般得分率不能高于良得分率', type: 'error' })

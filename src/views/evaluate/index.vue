@@ -37,6 +37,15 @@
             >
               <el-table-column type="index" label="序号" align="center"></el-table-column>
               <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
+              <el-table-column prop="name" label="评审内容" align="center"></el-table-column>
+              <el-table-column label="评审性质" align="center">
+                <template slot-scope="scope">
+                  <div v-if="scope.row.belongTo === 1">项目监理机构自我评价</div>
+                  <div v-if="scope.row.belongTo === 2">监理单位对项目监理机构工作的考核评价</div>
+                  <div v-if="scope.row.belongTo === 3">建设单位对项目监理机构工作的考核评价</div>
+                  <div v-if="scope.row.belongTo === 4">其他</div>
+                </template>
+              </el-table-column>
               <el-table-column label="提交人" align="center">
                 <template slot-scope="scope">{{scope.row.submitUserNameList.toString()}}</template>
               </el-table-column>
@@ -426,6 +435,7 @@ export default {
       activeName: '1',                // 被激活的 tabBar标签
       formName: '',                   // 评价表搜索字段
       tableHeight: null,              // 表格最大高度
+      editIndex: null,                // 修改索引是否存在
       tableData: [],                  // 表格数据
       evaluateData: [],               // 评价表数据
       projectList: [],                // 项目列表
@@ -693,6 +703,7 @@ export default {
     doRunButton (row, status) {
       if (status === 4) {
         this.editProp = true
+        this.editIndex = true
         this.getProjectDetail(row.projectCommentId)
         return
       } else if (status === 5) {
@@ -761,11 +772,17 @@ export default {
     // 添加评价表
     doAdd () {
       this.createProp = false
+      this.editProp = false
       this.addProp = true
     },
     // 确定添加评价表
     doAddConfirm () {
-      this.createProp = true
+      if (this.editIndex) {
+        this.editProp = true
+        this.editIndex = null
+      } else {
+        this.createProp = true
+      }
       this.addProp = false
     },
     // 删除评价表
@@ -773,7 +790,7 @@ export default {
       this.toggle = false
       this.evaluateList.forEach((p, i, arr) => {
         if (p.id === id) {
-          this.$refs.multipleTable.toggleRowSelection(p, false);
+          arr.splice(i, 1)
         }
       })
     },

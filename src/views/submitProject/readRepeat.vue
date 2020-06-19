@@ -292,7 +292,7 @@ export default {
           this.progress.files.splice(0, 1, obj)
         }
       });
-      http.post(this.$upload + "file/attachments", form).then(response => {
+      http.post(this.$upload + "/attachments", form).then(response => {
         let res = response.data
         // 解决文件无法重复提交
         this.fileValue = ''

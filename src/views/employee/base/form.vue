@@ -176,13 +176,18 @@
         </el-form-item>
 
         <el-form-item label="所属岗位" size="small">
-          <el-select v-model="form.jobs" placeholder="岗位" multiple collapse-tags :disabled="mask">
+          <el-select v-model="form.jobIds" placeholder="岗位" multiple collapse-tags :disabled="mask">
             <el-option v-for="item in jobs" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
 
         <el-form-item label="工作状态" size="small" prop="workStatus">
-          <el-select v-model="form.workStatus" placeholder="工作状态" :disabled="mask">
+          <el-select
+            v-model="form.workStatus"
+            @change="doWorkStatus"
+            placeholder="工作状态"
+            :disabled="mask"
+          >
             <el-option
               v-for="item in dictMap.em_work_status"
               :key="item.value"
@@ -366,7 +371,7 @@ export default {
         companyId: null,
         deptIds: [],
         nameList: [],
-        jobs: [],
+        jobIds: [],
         employeeNumber: null,
         employeeName: null,
         identityCard: null,
@@ -424,7 +429,7 @@ export default {
         nameList: [
           { required: false, message: '请选择所属部门' }
         ],
-        jobs: [
+        jobIds: [
           { required: true, message: '请选择所属部门' }
         ],
         workStatus: [
@@ -432,6 +437,9 @@ export default {
         ],
         entryDate: [
           { required: true, message: '请选择入职日期' }
+        ],
+        leaveDate: [
+          { required: true, message: '请选择离职日期' }
         ],
         trialEndDate: [
           { required: true, message: '请选择试用期结束时间' }
@@ -567,7 +575,7 @@ export default {
           identityCard: null,
           deptIds: [],
           nameList: [],
-          jobs: [],
+          jobIds: [],
           sex: 1,
           photo: null,
           identityValidity: null,
@@ -683,6 +691,20 @@ export default {
         } else {
           this.form.unionMember = 1
         }
+      }
+    },
+
+    // 改变工作状态
+    doWorkStatus (value) {
+      console.log(value)
+      if (value === 2) {
+        this.rules.leaveDate = [
+          { required: true, message: '请选择离职日期' }
+        ]
+      } else {
+        this.rules.leaveDate = [
+          { required: false, message: ' ' }
+        ]
       }
     }
   }
