@@ -87,7 +87,12 @@
         ref="createForm"
       >
         <el-form-item label="表名称" prop="name">
-          <el-input v-model="createForm.name" v-show="!evaluateProp" placeholder="请输入表名称"></el-input>
+          <el-input
+            v-model="createForm.name"
+            @change="doCreatSubmit('createForm')"
+            v-show="!evaluateProp"
+            placeholder="请输入表名称"
+          ></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -116,6 +121,7 @@
             v-model="editForm.name"
             filterable
             clearable
+            @change="doEditConfirm('editForm')"
             placeholder="请输入表名称"
             autocomplete="off"
           ></el-input>
@@ -292,10 +298,6 @@ export default {
       }
 
       this.doSearch(0)
-      // 监听键盘按下事件 退出默认操作
-      document.addEventListener('keydown', function (e) {
-        e.preventDefault()
-      })
 
     },
     // 查询表格数据
@@ -303,6 +305,10 @@ export default {
       this.pageParams.pageNum = page
       this.pageParams.pageSize = size
       this.getData()
+    },
+    // 按回车键提交
+    doFormChange (value) {
+
     },
     // 获取评价中表格数据
     getData () {

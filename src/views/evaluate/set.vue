@@ -25,7 +25,7 @@
             v-model="setForm.fine"
             type="number"
             style="width: 180px"
-            @blur="doFine"
+            @input="doFine"
             placeholder="90"
           ></el-input>&nbsp;%
         </el-col>
@@ -34,7 +34,7 @@
             <el-input
               v-model="setForm.fineSingle"
               type="number"
-              @blur="doFineSingle"
+              @input="doFineSingle"
               style="width: 180px"
               placeholder="85"
             ></el-input>&nbsp;%
@@ -46,7 +46,7 @@
           <el-input
             v-model="setForm.good"
             type="number"
-            @blur="doWell"
+            @input="doWell"
             style="width: 180px"
             placeholder="80"
           ></el-input>&nbsp;%
@@ -55,7 +55,7 @@
           <el-form-item label="并且单张表得分率>=" prop="goodSingle" label-width="160px">
             <el-input
               v-model="setForm.goodSingle"
-              @blur="doWellSingle"
+              @input="doWellSingle"
               type="number"
               style="width: 180px"
               placeholder="75"
@@ -67,7 +67,7 @@
         <el-col :span="8">
           <el-input
             v-model="setForm.common"
-            @blur="doCommon"
+            @input="doCommon"
             type="number"
             style="width: 180px"
             placeholder="60"
@@ -281,29 +281,29 @@ export default {
       }
     },
     // 优单表得分率
-    doFine (e) {
-      let value = Number(e.target.value)
-      this.setForm.fine = value.toFixed(2)
+    doFine (num) {
+      let value = Number(num)
+      this.setForm.fine = value.toFixed(1)
     },
     // 优单表得分率
-    doFineSingle (e) {
-      let value = Number(e.target.value)
-      this.setForm.fineSingle = value.toFixed(2)
+    doFineSingle (num) {
+      let value = Number(num)
+      this.setForm.fineSingle = value.toFixed(1)
     },
     // 良得分率
-    doWell (e) {
-      let value = Number(e.target.value)
-      this.setForm.good = value.toFixed(2)
-      
+    doWell (num) {
+      let value = Number(num)
+      this.setForm.good = value.toFixed(1)
+
       if (value !== '' && value > Number(this.setForm.fine)) {
         this.setForm.good = this.setForm.fine
         this.$message({ message: '良得分率不能高于优得分率', type: 'error' })
       }
     },
     // 单张表良得分率
-    doWellSingle (e) {
-      let value = Number(e.target.value)
-      this.setForm.goodSingle = value.toFixed(2)
+    doWellSingle (num) {
+      let value = Number(num)
+      this.setForm.goodSingle = value.toFixed(1)
 
       if (value !== '' && value > Number(this.setForm.fineSingle)) {
         this.setForm.goodSingle = this.setForm.fineSingle
@@ -311,10 +311,9 @@ export default {
       }
     },
     // 良得分率
-    doCommon (e) {
-      let value = Number(e.target.value)
-      this.setForm.common = value.toFixed(2)
-
+    doCommon (num) {
+      let value = Number(num)
+      this.setForm.common = value.toFixed(1)
       if (value !== '' && value > Number(this.setForm.good)) {
         this.setForm.common = this.setForm.good
         this.$message({ message: '一般得分率不能高于良得分率', type: 'error' })
