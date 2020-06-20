@@ -43,15 +43,18 @@
 				</div>
 				<div class="switch-company" v-show="switchCompany">
 					<h3 class="title">请选择要登陆的账号</h3>
-					<ul>
-						<li v-for="(item,id) in companyMine" :key="id">
-							<img src="@/assets/common/company.png" />
-							<p>
-								<span class="companyName">{{item.name}}</span>
-								<span class="toCompany" @click="toCompany(item)">点击进入 ></span>
-							</p>
-						</li>
-					</ul>
+					<div class="index-body">
+						<ul class="infinite-list" v-infinite-scroll="load" style="overflow:auto">
+							<li v-for="(item,id) in companyMine" :key="id">
+								<img src="@/assets/common/company.png" />
+								<p>
+									<span class="companyName">{{item.name}}</span>
+									<span class="toCompany" @click="toCompany(item)">点击进入 ></span>
+								</p>
+							</li>
+						</ul>
+					</div>
+					<!-- <button>关闭</button> -->
 				</div>
 				<div class="login-phone" v-show="loginPhone">
 					<el-form
@@ -360,7 +363,7 @@ export default {
 			let id = item.id
 			this.$refs.loginForm.validate(valid => {
 				this.$store.dispatch('toSwitch', id).then(res => {
-						this.$router.push('/')
+					this.$router.push('/')
 				})
 			})
 		},
@@ -595,34 +598,45 @@ export default {
 					border-bottom: 1px solid rgba(110, 118, 131, 0.5);
 				}
 
-				ul {
-					margin: 39px 57px;
-					overflow: hidden;
-					li {
-						width: 100%;
-						height: 65px;
-						margin: 15px auto;
-						img {
-							width: 65px;
-							height: 65px;
-							float: left;
-						}
-						p {
-							float: left;
-							margin-left: 20px;
-							margin-top: 6px;
-							span {
-								display: block;
+				.index-body {
+					height: 360px;
+					overflow-y: auto;
+
+					ul {
+						margin: 39px 57px;
+
+						li {
+							width: 100%;
+							margin: 18px auto;
+							overflow: hidden;
+							position: relative;
+
+							img {
+								width: 65px;
+								height: 65px;
+								position: absolute;
+								top: 50%;
+								left: 0;
+								transform: translateX(0) translateY(-50%);
 							}
-							.companyName {
-								font-size: 21px;
-								color: #0d1a30;
-								line-height: 30px;
-							}
-							.toCompany {
-								font-size: 16px;
-								color: #d3d5d9;
-								line-height: 24px;
+
+							p {
+								margin-left: 80px;
+								padding: 10px 0;
+
+								span {
+									display: block;
+								}
+								.companyName {
+									font-size: 21px;
+									color: #0d1a30;
+									line-height: 30px;
+								}
+								.toCompany {
+									font-size: 16px;
+									color: #d3d5d9;
+									line-height: 24px;
+								}
 							}
 						}
 					}
