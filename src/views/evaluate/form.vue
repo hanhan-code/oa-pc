@@ -89,7 +89,6 @@
         <el-form-item label="表名称" prop="name">
           <el-input
             v-model="createForm.name"
-            @change="doCreatSubmit('createForm')"
             v-show="!evaluateProp"
             placeholder="请输入表名称"
           ></el-input>
@@ -121,7 +120,6 @@
             v-model="editForm.name"
             filterable
             clearable
-            @change="doEditConfirm('editForm')"
             placeholder="请输入表名称"
             autocomplete="off"
           ></el-input>

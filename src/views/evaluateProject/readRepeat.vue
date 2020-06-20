@@ -205,7 +205,8 @@ export default {
         formName: this.query.formName,
         projectCommentId: this.query.projectCommentId,
         formId: this.query.formId,
-        path: "/submitReady"
+        path: "/submitReady",
+        status: this.query.status,
       }
       // 获取催交消息内容与用户id
       this.screenLoading = true

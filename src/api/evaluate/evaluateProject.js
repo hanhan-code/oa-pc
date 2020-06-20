@@ -67,13 +67,23 @@ export function evaluateData(data) {
 }
 
 /**
- * @description 获取评价项目接口数据
+ * @description 获取项目接口数据
  */
 export function projectData(data) {
   return request({
     url: "/assessment/project/comment",
     method: "get",
     params: data
+  });
+}
+
+/**
+ * @description 获取评价项目接口数据
+ */
+export function evaluateProject (id) {
+  return request({
+    url: "/assessment/project/comment/" + id,
+    method: "get",
   });
 }
 

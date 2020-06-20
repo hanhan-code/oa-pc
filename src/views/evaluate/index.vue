@@ -85,6 +85,15 @@
             <el-table size="small" :data="tableData" :max-height="tableHeight" border>
               <el-table-column type="index" label="序号" align="center"></el-table-column>
               <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
+              <el-table-column prop="name" label="评审内容" align="center"></el-table-column>
+              <el-table-column label="评审性质" align="center">
+                <template slot-scope="scope">
+                  <div v-if="scope.row.belongTo === 1">项目监理机构自我评价</div>
+                  <div v-if="scope.row.belongTo === 2">监理单位对项目监理机构工作的考核评价</div>
+                  <div v-if="scope.row.belongTo === 3">建设单位对项目监理机构工作的考核评价</div>
+                  <div v-if="scope.row.belongTo === 4">其他</div>
+                </template>
+              </el-table-column>
               <el-table-column label="提交人" align="center">
                 <template slot-scope="scope">{{scope.row.submitUserNameList.toString()}}</template>
               </el-table-column>
@@ -540,8 +549,13 @@ export default {
     // 评价类型名称
     doCommentType (id) {
       this.belongList.forEach(p => {
+        console.log(p.id, id)
         if (p.id === id) {
-          this.createForm.commentTypeName = p.name
+          if (this.editProp) {
+            this.editForm.commentTypeName = p.name
+          } else {
+            this.createForm.commentTypeName = p.name
+          }
         }
       })
     },
