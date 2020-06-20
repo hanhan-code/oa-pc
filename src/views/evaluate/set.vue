@@ -323,7 +323,7 @@ export default {
         })
       } else {
         data.employees.forEach(p => {
-          let flag = this.companyList.some(n => n.id === data.employeeId)
+          let flag = this.companyList.some(n => n.id === p.employeeId)
           if (!flag) {
             this.companyList.push({ id: p.employeeId, label: p.label })
           }

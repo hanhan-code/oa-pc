@@ -37,7 +37,7 @@
             >
               <el-table-column type="index" label="序号" align="center"></el-table-column>
               <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
-              <el-table-column prop="name" label="评审内容" align="center"></el-table-column>
+              <el-table-column prop="name" label="评价名称" align="center"></el-table-column>
               <el-table-column label="评审性质" align="center">
                 <template slot-scope="scope">{{scope.row.belongToName}}</template>
               </el-table-column>
@@ -80,7 +80,7 @@
             <el-table size="small" :data="tableData" :max-height="tableHeight" border>
               <el-table-column type="index" label="序号" align="center"></el-table-column>
               <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
-              <el-table-column prop="name" label="评审内容" align="center"></el-table-column>
+              <el-table-column prop="name" label="评价名称" align="center"></el-table-column>
               <el-table-column label="评审性质" align="center">
                 <template slot-scope="scope">{{scope.row.belongToName}}</template>
               </el-table-column>
@@ -139,7 +139,7 @@
         :rules="ruleForm"
         ref="creatForm"
       >
-        <el-form-item label="评审名称" prop="name">
+        <el-form-item label="评价名称" prop="name">
           <el-input
             v-model="createForm.name"
             filterable
