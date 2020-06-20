@@ -225,9 +225,9 @@ export default {
     doEvaluate (row) {
       this.evaluateProp = true
       this.row = row
-      this.scoreColumns = []
+      this.scoreColumns = [0]
       for (let i = 0; i < row.fullScore; i++) {
-        for (let j = 0; j <= 2; j++) {
+        for (let j = 1; j <= 2; j++) {
           this.scoreColumns.push(i + j / 2)
         }
       }
