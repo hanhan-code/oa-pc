@@ -226,8 +226,10 @@ export default {
       this.evaluateProp = true
       this.row = row
       this.scoreColumns = []
-      for (let i = 0; i <= row.fullScore; i++) {
-        this.$set(this.scoreColumns, i, i)
+      for (let i = 0; i < row.fullScore; i++) {
+        for (let j = 1; j <= 10; j++) {
+          this.scoreColumns.push(i + j / 10)
+        }
       }
     },
     // 确认评审

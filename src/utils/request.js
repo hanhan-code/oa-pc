@@ -47,7 +47,7 @@ service.interceptors.response.use(
     }
   },
   error => {
-    let code = 0
+    let code = 0;
     try {
       code = error.response.data.status || error.response.status;
     } catch (e) {
@@ -76,11 +76,16 @@ service.interceptors.response.use(
           type: "warning"
         }
       ).then(() => {
-        // router.push("/login");
         store.dispatch("LogOut").then(() => {
           location.reload(); // 为了重新实例化vue-router对象 避免bug
         });
       });
+    } else if (code === 500) {
+      Notification.error({
+        title: "网络请求错误",
+        duration: 2500
+      });
+      return Promise.reject(error);
     } else if (code === 403) {
       router.push({ path: "/401" });
     } else {

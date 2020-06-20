@@ -388,6 +388,7 @@ export default {
           this.$refs.formEdit.nameList = data.depts.map(n => n.name)
           this.$refs.formEdit.form = JSON.parse(JSON.stringify(res.data))
           this.$refs.formEdit.formatSexAndUnionMember()
+
         } else {
           this.$message({ message: res.msg, type: 'warning' })
         }

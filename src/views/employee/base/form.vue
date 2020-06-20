@@ -182,12 +182,7 @@
         </el-form-item>
 
         <el-form-item label="工作状态" size="small" prop="workStatus">
-          <el-select
-            v-model="form.workStatus"
-            @change="doWorkStatus"
-            placeholder="工作状态"
-            :disabled="mask"
-          >
+          <el-select v-model="form.workStatus" placeholder="工作状态" :disabled="mask">
             <el-option
               v-for="item in dictMap.em_work_status"
               :key="item.value"
@@ -256,7 +251,13 @@
           ></el-date-picker>
         </el-form-item>
 
-        <el-form-item label="离职日期" size="small" prop="leaveDate" label-width="auto">
+        <el-form-item
+          label="离职日期"
+          size="small"
+          prop="leaveDate"
+          :required="form.workStatus === '2'"
+          label-width="auto"
+        >
           <el-date-picker
             v-model="form.leaveDate"
             type="date"
@@ -693,20 +694,6 @@ export default {
         }
       }
     },
-
-    // 改变工作状态
-    doWorkStatus (value) {
-      console.log(value)
-      if (value === 2) {
-        this.rules.leaveDate = [
-          { required: true, message: '请选择离职日期' }
-        ]
-      } else {
-        this.rules.leaveDate = [
-          { required: false, message: ' ' }
-        ]
-      }
-    }
   }
 }
 </script>
