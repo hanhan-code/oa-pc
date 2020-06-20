@@ -19,7 +19,7 @@
         icon="el-icon-search"
         @click="doSearch(0)"
       >搜索</el-button>
-      <el-button size="small" @click="createProp = true" type="primary">创建评价项目</el-button>
+      <el-button size="small" @click="doFlag" type="primary">创建评价项目</el-button>
     </div>
     <br />
     <!-- 数据内容 -->
@@ -39,12 +39,7 @@
               <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
               <el-table-column prop="name" label="评审内容" align="center"></el-table-column>
               <el-table-column label="评审性质" align="center">
-                <template slot-scope="scope">
-                  <div v-if="scope.row.belongTo === 1">项目监理机构自我评价</div>
-                  <div v-if="scope.row.belongTo === 2">监理单位对项目监理机构工作的考核评价</div>
-                  <div v-if="scope.row.belongTo === 3">建设单位对项目监理机构工作的考核评价</div>
-                  <div v-if="scope.row.belongTo === 4">其他</div>
-                </template>
+                <template slot-scope="scope">{{scope.row.belongToName}}</template>
               </el-table-column>
               <el-table-column label="提交人" align="center">
                 <template slot-scope="scope">{{scope.row.submitUserNameList.toString()}}</template>
@@ -87,12 +82,7 @@
               <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
               <el-table-column prop="name" label="评审内容" align="center"></el-table-column>
               <el-table-column label="评审性质" align="center">
-                <template slot-scope="scope">
-                  <div v-if="scope.row.belongTo === 1">项目监理机构自我评价</div>
-                  <div v-if="scope.row.belongTo === 2">监理单位对项目监理机构工作的考核评价</div>
-                  <div v-if="scope.row.belongTo === 3">建设单位对项目监理机构工作的考核评价</div>
-                  <div v-if="scope.row.belongTo === 4">其他</div>
-                </template>
+                <template slot-scope="scope">{{scope.row.belongToName}}</template>
               </el-table-column>
               <el-table-column label="提交人" align="center">
                 <template slot-scope="scope">{{scope.row.submitUserNameList.toString()}}</template>
@@ -190,6 +180,15 @@
               :key="index"
             ></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="其他" prop="commentTypeName" v-if="createForm.commentType === '4'">
+          <el-input
+            v-model="createForm.commentTypeName"
+            filterable
+            clearable
+            placeholder="请填写"
+            autocomplete="off"
+          ></el-input>
         </el-form-item>
         <el-form-item label="提交资料人员" prop="submitEmployeeIdList">
           <el-select
@@ -305,6 +304,15 @@
               :key="index"
             ></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="其他" prop="commentTypeName" v-if="editForm.commentType === '4'">
+          <el-input
+            v-model="editForm.commentTypeName"
+            filterable
+            clearable
+            placeholder="请填写"
+            autocomplete="off"
+          ></el-input>
         </el-form-item>
         <el-form-item label="提交资料人员" prop="submitEmployeeIdList">
           <el-select
@@ -484,8 +492,17 @@ export default {
       },
       selects: [],                    // 表格选择事件  所选中的数据列表
       ruleForm: {
+        name: [
+          { required: true, message: '必填字段不能为空', trigger: 'blur' }
+        ],
         projectId: [
           { required: true, message: '必填字段不能为空', trigger: 'change' }
+        ],
+        commentType: [
+          { required: true, message: '必填字段不能为空', trigger: 'change' }
+        ],
+        commentTypeName: [
+          { required: true, message: '必填字段不能为空', trigger: 'blur' }
         ],
         commentEmployeeIdList: [
           { required: true, message: '必填字段不能为空', trigger: 'change' }
@@ -499,7 +516,6 @@ export default {
   watch: {
     createProp (value) {
       if (value) {
-        this.evaluateList = []
         this.editIndex = null
       }
     }
@@ -537,6 +553,11 @@ export default {
     // 初始化
     doCreat () {
     },
+    // 点击创建评价
+    doFlag () {
+      this.createProp = true
+      this.evaluateList = []
+    },
     // 设置样式
     doRowClass ({ row, rowIndex }) {
       if (row.status === 0 || row.status === 1) {
@@ -549,8 +570,7 @@ export default {
     // 评价类型名称
     doCommentType (id) {
       this.belongList.forEach(p => {
-        console.log(p.id, id)
-        if (p.id === id) {
+        if (p.id === id && id !== '4') {
           if (this.editProp) {
             this.editForm.commentTypeName = p.name
           } else {
