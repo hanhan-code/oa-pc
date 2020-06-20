@@ -487,6 +487,14 @@ export default {
       }
     }
   },
+  watch: {
+    createProp (value) {
+      if (value) {
+        this.evaluateList = []
+        this.editIndex = null
+      }
+    }
+  },
   created () {
     this.doSearch(0)
     this.getCompanyData()
@@ -519,7 +527,6 @@ export default {
   methods: {
     // 初始化
     doCreat () {
-      this.getEvaluateData()
     },
     // 设置样式
     doRowClass ({ row, rowIndex }) {
@@ -770,16 +777,16 @@ export default {
       }
     },
     // 添加评价表
-    doAdd () {
+    doAdd (type) {
       this.createProp = false
       this.editProp = false
       this.addProp = true
+      this.getEvaluateData()
     },
     // 确定添加评价表
     doAddConfirm () {
       if (this.editIndex) {
         this.editProp = true
-        this.editIndex = null
       } else {
         this.createProp = true
       }
@@ -840,6 +847,14 @@ export default {
       evaluateData(params).then(res => {
         if (res.code === 0) {
           this.evaluateData = res.data.records
+          this.$nextTick(() => {
+            this.evaluateData.forEach(p => {
+              let flag = this.evaluateList.some(n => n.id === p.id)
+              if (flag) {
+                this.$refs.multipleTable.toggleRowSelection(p);
+              }
+            })
+          })
         }
       })
     },
@@ -849,11 +864,11 @@ export default {
     },
     // 评价表 多选框操作
     doSelectChange (select, row) {
-      this.evaluateList = select
+      this.evaluateList = JSON.parse(JSON.stringify(select))
     },
     doTableChange (select) {
-      this.evaluateList = select
-      console.log(select, 222)
+      // this.evaluateList = JSON.parse(JSON.stringify(select))
+      // console.log(select, 222)
     },
     // 主页面表格 点击分页
     doSizeChange (size) {

@@ -62,7 +62,7 @@
           :fit="true"
         >
           <el-table-column type="selection" width="42"></el-table-column>
-          <el-table-column prop="fileName" min-width="300" label="文件名称">
+          <el-table-column prop="fileName" min-width="300" label="文件名称" show-overflow-tooltip>
             <template slot-scope="scope">
               <!-- 文件类型 ICON 图标处理 -->
               <svg-icon
@@ -328,12 +328,23 @@ export default {
       }
     }
   },
+  watch: {
+    pathFiles (value) {
+      sessionStorage.setItem('pathFiles', JSON.stringify(value))
+    }
+  },
   mounted () {
     this.init()
+  },
+  beforeDestroy () {
+    sessionStorage.removeItem('pathFiles')
   },
   methods: {
 
     init () {
+      if (sessionStorage.getItem('pathFiles')) {
+        this.pathFiles = JSON.parse(sessionStorage.getItem('pathFiles'))
+      }
       filePage(this.pageParams).then(res => {
         if (res.code === 0) {
           this.pageData.data = res.data.records

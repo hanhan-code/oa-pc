@@ -47,18 +47,9 @@ service.interceptors.response.use(
     }
   },
   error => {
-    let code = error.response.data.status === 401 || error.response.status === 401;
-    console.log(error.response);
-
-    if (code) {
-      router.push("/login");
-      store.dispatch("LogOut").then(() => {
-        location.reload(); // 为了重新实例化vue-router对象 避免bug
-      });
-    }
-
+    let code = 0
     try {
-      code = error.response.data.status;
+      code = error.response.data.status || error.response.status;
     } catch (e) {
       if (error.toString().indexOf("Error: timeout") !== -1) {
         Notification.error({
@@ -85,6 +76,7 @@ service.interceptors.response.use(
           type: "warning"
         }
       ).then(() => {
+        router.push("/login");
         store.dispatch("LogOut").then(() => {
           location.reload(); // 为了重新实例化vue-router对象 避免bug
         });

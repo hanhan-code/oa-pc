@@ -113,8 +113,17 @@ export default {
     // 公司主键
     companyId: String
   },
+  watch: {
+    dialog (value) {
+      if (value) {
+        this.resetLazy()
+      }
+    }
+  },
   data () {
     return {
+      nodes: [], // 保存树结构懒加载数据
+      resolves: [], // 保存树结构懒加载数据
       treeFileProps: {
         children: 'children',
         label: 'label',
@@ -141,40 +150,48 @@ export default {
       employeeName: ''
     }
   },
-  watch: {
-    dialog () {
-      this.form.files = []
-    }
-  },
   methods: {
-
+    // 重新加载树结构
+    resetLazy () {
+      // 创建新的文件夹后重新执行懒加载树结构
+      this.$set(this.nodes, 'childNodes', [])
+      this.loadNode(this.nodes, this.resolves)
+    },
     // 加载树形文件
     loadNode (node, resolve) {
-
       let params = {
         bizId: this.companyId,
         bizType: 1,
-        parentId: node.level === 0 ? 0 : node.data.id
+        parentId: 0
       }
-
-      fileTree(params).then(res => {
-        if (res.code === 0) {
-          if (node.level === 0) {
-
+      if (node.level === 0) {
+        params.parentId = 0
+        this.nodes = node
+        this.resolves = resolve
+      } else if (node.data) {
+        params.parentId = node.data.id
+      } else {
+        params.parentId = 0
+      }
+      if (this.dialog) {
+        fileTree(params).then(res => {
+          if (res.code === 0) {
             let data = [{
               id: '0',
-              label: '企业文件'
+              label: '企业文件',
+              children: [],
             }]
-
-            data[0].children = res.data
-            resolve(data)
+            if (node.level === 0) {
+              data[0].children = res.data
+              resolve(data)
+            } else {
+              resolve(res.data)
+            }
           } else {
-            resolve(res.data)
+            this.$message({ message: res.msg, type: 'warning' })
           }
-        } else {
-          this.$message({ message: res.msg, type: 'warning' })
-        }
-      })
+        })
+      }
 
     },
 
