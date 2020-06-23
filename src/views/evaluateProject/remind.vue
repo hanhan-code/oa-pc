@@ -169,14 +169,15 @@ export default {
       let idList = {
         projectCommentIds: this.evaluateList.map(p => p.projectCommentId).toString(),
         ids: this.evaluateList.map(p => p.projectCommentId).toString(),
-        type: 0
+        type: 0,
+        path: '/submitProject',
       }
       // 获取催交消息内容与用户id
       this.screenLoading = true
       personData(idList).then((res) => {
         this.screenLoading = false
         if (res.code === 0) {
-          this.$router.push('/evaluateProject')
+          this.$router.replace('/projectComment/evaluateProject')
           this.remindProp = false
           this.$message({ message: res.msg, type: 'success' })
         }
