@@ -121,7 +121,7 @@ const user = {
         removeToken();
         clearLoginInfo();
         resolve();
-        sessionStorage.clear();
+        localStorage.clear();
       });
     }
   }
