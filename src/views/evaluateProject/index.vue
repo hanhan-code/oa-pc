@@ -30,7 +30,11 @@
           <div class="content" style="margin-top: 10px;">
             <el-table size="small" :data="tableData" :max-height="tableHeight" border>
               <el-table-column type="index" label="序号" align="center"></el-table-column>
-              <el-table-column prop="name" label="项目全称" align="center"></el-table-column>
+              <el-table-column prop="abbName" label="项目简称" align="center"></el-table-column>
+              <el-table-column prop="name" label="评价名称" align="center"></el-table-column>
+              <el-table-column label="评审性质" align="center">
+                <template slot-scope="scope">{{scope.row.belongToName}}</template>
+              </el-table-column>
               <el-table-column label="评价进度" align="center">
                 <template slot-scope="scope">{{scope.row.commentedNum}}/{{scope.row.commentAllNum}}</template>
               </el-table-column>
@@ -72,7 +76,11 @@
           <div class="content" style="margin-top: 10px;">
             <el-table size="small" :data="tableData" :max-height="tableHeight" border>
               <el-table-column type="index" label="序号" align="center"></el-table-column>
-              <el-table-column prop="name" label="项目全称" align="center"></el-table-column>
+              <el-table-column prop="abbName" label="项目简称" align="center"></el-table-column>
+              <el-table-column prop="name" label="评价名称" align="center"></el-table-column>
+              <el-table-column label="评审性质" align="center">
+                <template slot-scope="scope">{{scope.row.belongToName}}</template>
+              </el-table-column>
               <el-table-column label="得分率" align="center">
                 <template slot-scope="scope">{{scope.row.scoreRate}}/{{scope.row.level}}</template>
               </el-table-column>

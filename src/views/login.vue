@@ -343,7 +343,7 @@ export default {
 					//我的公司列表传参
 					let min = {
 						pageNum: 1,
-						pageSize: 10,
+						pageSize: 100,
 						userId: userId,
 						keyword: '' //查询关键词
 					}
@@ -444,8 +444,8 @@ export default {
 			// }
 			// let phoneData = phoneUser
 			let phoneData = {
-				phone:phoneForm,//手机号码
-				templateType:5 //2:忘记密码 3: 用户注册 5: 用户登录 7: 公司注册
+				phone: phoneForm, //手机号码
+				templateType: 5 //2:忘记密码 3: 用户注册 5: 用户登录 7: 公司注册
 			}
 			sendVerificationCode(phoneData).then(res => {
 				// if (res.code == 0) {
@@ -464,17 +464,35 @@ export default {
 					code: this.phoneForm.code
 				}
 				if (res) {
-					;(this.loading = true),
-						this.$store
-							.dispatch('CodeIN', phoneLogin)
-							.then(() => {
+					this.loading = true
+						// this.$store.dispatch('CodeIN', phoneLogin).then(res => {
+							codeIN(phoneLogin).then(res => {
 								this.loading = false
-								// self.redirect = this.paths;
-								this.$router.push({
-									path: self.redirect || '/'
-								})
-								this.loading = false
-								// alert(res.msg)
+								// this.$router.push({
+								// 	path: self.redirect || '/'
+								// })
+								// this.loading = false
+								if (res.code === 0) {
+									let data = res.data
+									let token = data.token
+									let userId = data.userId
+									setToken(token)
+									//我的公司列表传参
+									let min = {
+										pageNum: 1,
+										pageSize: 100,
+										userId: userId,
+										keyword: '' //查询关键词
+									}
+
+									myCompany(min).then(res => {
+										if (res.code === 0) {
+											this.loginRight = false //登录
+											this.switchCompany = true //选择公司
+											this.companyMine = res.data.records
+										}
+									})
+								}
 							})
 							.catch(() => {
 								console.log('catch')

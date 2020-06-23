@@ -2,9 +2,9 @@
   <div class="page">
     <el-form :model="setForm" :rules="rules" ref="setForm" label-width="120px">
       <el-form-item label="评价标准:" prop="name"></el-form-item>
-      <el-form-item label="评价项目" prop="id">
+      <el-form-item label="项目" prop="projectId">
         <el-select
-          v-model="setForm.id"
+          v-model="setForm.projectId"
           filterable
           style="width: 180px"
           clearable
@@ -15,6 +15,24 @@
             :label="item.name"
             :value="item.id"
             v-for="(item, index) in projectList"
+            :key="index"
+          ></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="评价名称" prop="projectCommentId">
+        <el-select
+          v-model="setForm.projectCommentId"
+          filterable
+          style="width: 180px"
+          clearable
+          @change="doChooseProject"
+          @visible-change="doNext"
+          placeholder="请选择项目"
+        >
+          <el-option
+            :label="item.name"
+            :value="item.id"
+            v-for="(item, index) in projectData"
             :key="index"
           ></el-option>
         </el-select>
@@ -135,17 +153,22 @@ import {
   companyData,
   setSubmit,
   projectData,
-  setData
+  setData,
+  evaluateProject
 } from '@/api/evaluate/evaluateProject'
 
 export default {
   data () {
     return {
       screenLoading: false,                      // 全局加载
+      projectName: '',                           // 评价项目
       companyList: [],                           // 公司组织架构-所有人员列表
       projectList: [],                           // 公司项目列表
+      projectData: [],                           // 评价项目列表
       setForm: {
-        id: '',                                  // 项目id
+        projectId: '',                           // 项目id
+        id: null,                                // 评价设置id
+        projectCommentId: '',                    // 评价项id
         fine: '',                                // 优 得分率
         good: '',                                // 良 得分率
         common: '',                              // 一般得分率
@@ -157,6 +180,12 @@ export default {
         notice: [],                              // 评审完通知人 id 1546，1564，1564 逗号分隔
       },
       rules: {
+        projectId: [
+          { required: true, message: '请选择项目', trigger: 'blur' }
+        ],
+        projectCommentId: [
+          { required: true, message: '请选择评价项目', trigger: 'blur' }
+        ],
         fine: [
           { required: true, validator: fineRule, trigger: 'blur' }
         ],
@@ -192,20 +221,49 @@ export default {
     }
   },
   created () {
-    this.getCompanyData()
-    this.getProjectData()
     this.doCreat()
   },
   mounted () {
 
   },
   methods: {
+    // 初始化
     doCreat () {
+      this.getCompany()
+      this.getProject()
     },
+    // 根据项目id获取所有评价项目id
     getSetData (id) {
+      evaluateProject(id).then(res => {
+        if (res.code === 0) {
+          let data = res.data
+          data.forEach(p => {
+            p.name = p.name || ''
+          })
+          this.projectData = data
+        }
+      })
+    },
+    // 根据企业id获取所有项目id
+    getProject () {
+      projectData({ companyId: getCompanyId() }).then(res => {
+        if (res.code === 0) {
+          let data = res.data
+          this.projectList = data
+        }
+      })
+    },
+    // 评价项目下拉框展开
+    doNext (value) {
+      if (value && !this.setForm.id) {
+        this.$message({ type: 'error', message: '请选择项目' })
+      }
+    },
+    // 选择评价项目
+    doChooseProject (id) {
       let params = {
         companyId: getCompanyId(),
-        projectId: id
+        projectCommentId: id
       }
       setData(params).then(res => {
         if (res.code === 0) {
@@ -228,6 +286,8 @@ export default {
                 this.setForm[v] = true
               } else if (v === 'noticeMethod' || v === 'notice') {
                 this.setForm[v] = []
+              } else if (v === 'projectCommentId' || v === 'projectId') {
+                continue
               } else {
                 this.setForm[v] = ''
               }
@@ -236,17 +296,8 @@ export default {
         }
       })
     },
-    // 根据企业id获取所有项目id
-    getProjectData () {
-      projectData({ companyId: getCompanyId() }).then(res => {
-        if (res.code === 0) {
-          let data = res.data
-          this.projectList = data
-        }
-      })
-    },
     // 根据公司id获取所有项目
-    getCompanyData () {
+    getCompany () {
       // this.companyId // 公司id暂时先默认为1001
       let params = {
         companyId: getCompanyId(),
@@ -272,7 +323,7 @@ export default {
         })
       } else {
         data.employees.forEach(p => {
-          let flag = this.companyList.some(n => n.id === data.employeeId)
+          let flag = this.companyList.some(n => n.id === p.employeeId)
           if (!flag) {
             this.companyList.push({ id: p.employeeId, label: p.label })
           }
@@ -283,17 +334,17 @@ export default {
     // 优单表得分率
     doFine (num) {
       let value = Number(num)
-      this.setForm.fine = value.toFixed(1)
+      this.setForm.fine = value.toFixed(0)
     },
     // 优单表得分率
     doFineSingle (num) {
       let value = Number(num)
-      this.setForm.fineSingle = value.toFixed(1)
+      this.setForm.fineSingle = value.toFixed(0)
     },
     // 良得分率
     doWell (num) {
       let value = Number(num)
-      this.setForm.good = value.toFixed(1)
+      this.setForm.good = value.toFixed(0)
 
       if (value !== '' && value > Number(this.setForm.fine)) {
         this.setForm.good = this.setForm.fine
@@ -303,7 +354,7 @@ export default {
     // 单张表良得分率
     doWellSingle (num) {
       let value = Number(num)
-      this.setForm.goodSingle = value.toFixed(1)
+      this.setForm.goodSingle = value.toFixed(0)
 
       if (value !== '' && value > Number(this.setForm.fineSingle)) {
         this.setForm.goodSingle = this.setForm.fineSingle
@@ -313,7 +364,7 @@ export default {
     // 良得分率
     doCommon (num) {
       let value = Number(num)
-      this.setForm.common = value.toFixed(1)
+      this.setForm.common = value.toFixed(0)
       if (value !== '' && value > Number(this.setForm.good)) {
         this.setForm.common = this.setForm.good
         this.$message({ message: '一般得分率不能高于良得分率', type: 'error' })
@@ -335,7 +386,9 @@ export default {
             common: this.setForm.common,
             fineSingle: this.setForm.fineSingle,
             goodSingle: this.setForm.goodSingle,
-            projectId: this.setForm.id,
+            projectId: this.setForm.projectId,
+            id: this.setForm.id || null,
+            projectCommentId: this.setForm.projectCommentId
           }
           this.screenLoading = true
           setSubmit(params).then(res => {

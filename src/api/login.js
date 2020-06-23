@@ -36,14 +36,11 @@ export function sendVerificationCode(data) {
 }
 
 //手机号码登录
-export function codeIN(phone, code) {
+export function codeIN(data) {
   return request({
     url: '/user/auth/phone',
     method: 'post',
-    data: {
-      phone,
-      code
-    }
+    data
   })
 }
 //我的公司列表
