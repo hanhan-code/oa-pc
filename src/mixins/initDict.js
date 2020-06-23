@@ -18,7 +18,7 @@ export default {
       return new Promise((resolve, reject) => {
         get(name)
           .then(res => {
-            this.dicts = res.data.list;
+            this.dicts = res.data;
             resolve(res);
           })
           .catch(err => {
