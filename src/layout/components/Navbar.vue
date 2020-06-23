@@ -32,10 +32,8 @@
 				</el-dropdown-menu>
 			</el-dropdown>
 		</div>
-		<div v-show="showSwitch">
-			<!-- <div class="icon" @click="doSwitch">
-				<i class="el-icon-close"></i>
-			</div> -->
+		<div class="index-dome" v-show="showSwitch">
+			<p class="index-left" @click="showDome"></p>
 			<Switchcompany @change="doSwitchChange"></Switchcompany>
 		</div>
 	</div>
@@ -80,9 +78,9 @@ export default {
 		toSwitch() {
 			this.showSwitch = true
 		},
-		// doSwitch() {
-		// 	this.showSwitch = false
-		// },
+		showDome() {
+			this.showSwitch = false
+		},
 		open() {
 			this.$confirm('确定注销并退出系统吗？', '提示', {
 				confirmButtonText: '确定',
@@ -183,6 +181,23 @@ export default {
 			font-size: 24px;
 			line-height: 48px;
 			color: #fff;
+		}
+	}
+	.index-dome{
+		width: 100%;
+		height: 100%;
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 10000;
+		.index-left{
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			position: fixed;
+			top: 0;
+			left: -240px;
+			z-index: 10001;
 		}
 	}
 }

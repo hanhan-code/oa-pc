@@ -75,6 +75,7 @@ export default {
 		float: right;
 		height: 100%;
 		margin: 0;
+		padding-right: 20px;
 		h1 {
 			font-size: 22px;
 			line-height: 40px;

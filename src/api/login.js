@@ -29,8 +29,8 @@ export function changeCompany(companyId) {
 //发送验证码
 export function sendVerificationCode(data) {
   return request({
-    url: 'auth/auth/sendVerificationCode',
-    method: 'post',
+    url: `/message/sms/code?phone=${data.phone}&templateType=${data.templateType}`,
+    method: 'get',
     data
   })
 }
@@ -38,7 +38,7 @@ export function sendVerificationCode(data) {
 //手机号码登录
 export function codeIN(phone, code) {
   return request({
-    url: 'auth/auth/phone/code',
+    url: '/user/auth/phone',
     method: 'post',
     data: {
       phone,
@@ -65,7 +65,7 @@ export function myCompany(min) {
 // 切换公司-认证信息
 export function toSwitch(id) {
   return request({
-    url: 'user/auth/company/switch?companyId='+id,
+    url: 'user/auth/company/switch?companyId=' + id,
     method: 'get',
   })
 }

@@ -44,7 +44,7 @@
 				<div class="switch-company" v-show="switchCompany">
 					<h3 class="title">请选择要登陆的账号</h3>
 					<div class="index-body">
-						<ul class="infinite-list" v-infinite-scroll="load" style="overflow:auto">
+						<ul class="infinite-list" style="overflow:auto">
 							<li v-for="(item,id) in companyMine" :key="id">
 								<img src="@/assets/common/company.png" />
 								<p>
@@ -436,13 +436,17 @@ export default {
 					this.canClick = true //这里重新开启
 				}
 			}, 1000)
-			const phoneUser = {
-				bizType: this.verificationCode.bizType,
-				companyId: this.verificationCode.companyId,
-				phoneNum: this.verificationCode.phoneNum,
-				templateType: this.verificationCode.templateType
+			// const phoneUser = {
+			// 	bizType: this.verificationCode.bizType,
+			// 	companyId: this.verificationCode.companyId,
+			// 	phoneNum: this.verificationCode.phoneNum,
+			// 	templateType: this.verificationCode.templateType
+			// }
+			// let phoneData = phoneUser
+			let phoneData = {
+				phone:phoneForm,//手机号码
+				templateType:5 //2:忘记密码 3: 用户注册 5: 用户登录 7: 公司注册
 			}
-			let phoneData = phoneUser
 			sendVerificationCode(phoneData).then(res => {
 				// if (res.code == 0) {
 				//   alert("获取验证码成功")
