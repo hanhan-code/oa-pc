@@ -36,7 +36,7 @@
         <el-input v-model="addForm.visualProgress" type="textarea" placeholder="请填写工程形象进度"></el-input>&nbsp;
       </el-form-item>
       <el-form-item label="项目监理机构工作评价">
-        <el-table size="small" :data="formInfoList" border v-show="formInfoList.length > 0">
+        <el-table size="small" :data="formInfoList" border v-if="formInfoList.length > 0">
           <el-table-column type="index" label="序号" align="center
           "></el-table-column>
           <el-table-column label="表的名称" show-overflow-tooltip>
