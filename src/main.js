@@ -31,14 +31,14 @@ Vue.use(ElementUI, {
 })
 Vue.config.productionTip = false
 
-Vue.prototype.$filePrefix = 'http://192.168.0.180/' // 文件访问前缀
-Vue.prototype.$network = 'http://192.168.0.185:9999/' // 全局网关地址
-Vue.prototype.$upload = 'http://192.168.0.185:10005/' // 全局文件上传地址（绕过网关）
+// Vue.prototype.$filePrefix = 'http://192.168.0.180/' // 文件访问前缀
+// Vue.prototype.$network = 'http://192.168.0.185:9999/' // 全局网关地址
+// Vue.prototype.$upload = 'http://192.168.0.185:10005/' // 全局文件上传地址（绕过网关）
 //TODO: 附件上传 this.$upload + 'attachment'    云盘中心文件上传 this.$upload + 'file'
 
-// Vue.prototype.$filePrefix = 'http://fdfs.jsztgj.com/'
-// Vue.prototype.$network = 'http://api.jsztgj.com/'
-// Vue.prototype.$upload = 'http://upload.jsztgj.com/'
+Vue.prototype.$filePrefix = 'http://fdfs.jsztgj.com/'
+Vue.prototype.$network = 'http://api.jsztgj.com/'
+Vue.prototype.$upload = 'http://upload.jsztgj.com/'
 
 Vue.prototype.$moment = moment // 添加Vue属性
 Vue.prototype.$utils = {
