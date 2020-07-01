@@ -203,6 +203,7 @@
 import { encrypt } from '@/utils/rsaEncrypt'
 import Config from '@/config'
 import Cookies from 'js-cookie'
+import axios from 'axios'
 import {
 	sendVerificationCode,
 	codeIN,
@@ -310,7 +311,8 @@ export default {
 						trigger: 'blur'
 					}
 				]
-			}
+			},
+			tokener: ''
 		}
 	},
 	watch: {
@@ -336,33 +338,35 @@ export default {
 				if (res.code === 0) {
 					let data = res.data
 					let token = data.token
+					this.tokener = token
 					let userId = data.userId
-					setToken(data.token, user.rememberMe)
-					// setPassword(password, user.password)
-					localStorage.setItem('password', user.password)
-					//我的公司列表传参
-					let min = {
-						pageNum: 1,
-						pageSize: 100,
-						userId: userId,
-						keyword: '' //查询关键词
-					}
-
-					myCompany(min).then(res => {
-						if (res.code === 0) {
-							this.loginRight = false //登录
-							this.switchCompany = true //选择公司
-							this.companyMine = res.data.records
-						}
-					})
+					axios
+						.get(
+							this.$network +
+								`user/company/mine?pageNum=1&pageSize=100&userId=${userId}&keyword=`,
+							{
+								headers: {
+									Authorization: 'Bearer ' + token
+								}
+							}
+						)
+						.then(row => {
+							if (row.data.code === 0) {
+								this.loginRight = false //登录
+								this.switchCompany = true //选择公司
+								this.companyMine = row.data.data.records
+							}
+						})
 				}
 			})
 		},
 		// 点击公司获取应用
 		toCompany(item) {
 			let id = item.id
+			setToken(this.tokener)
 			this.$refs.loginForm.validate(valid => {
 				this.$store.dispatch('toSwitch', id).then(res => {
+					// console.log(res)
 					this.$router.push('/')
 				})
 			})
@@ -465,38 +469,37 @@ export default {
 				}
 				if (res) {
 					this.loading = true
-						// this.$store.dispatch('CodeIN', phoneLogin).then(res => {
-							codeIN(phoneLogin).then(res => {
-								this.loading = false
-								// this.$router.push({
-								// 	path: self.redirect || '/'
-								// })
-								// this.loading = false
-								if (res.code === 0) {
-									let data = res.data
-									let token = data.token
-									let userId = data.userId
-									setToken(token)
-									//我的公司列表传参
-									let min = {
-										pageNum: 1,
-										pageSize: 100,
-										userId: userId,
-										keyword: '' //查询关键词
-									}
-
-									myCompany(min).then(res => {
-										if (res.code === 0) {
+					// this.$store.dispatch('CodeIN', phoneLogin).then(res => {
+					codeIN(phoneLogin)
+						.then(res => {
+							this.loading = false
+							if (res.code === 0) {
+								let data = res.data
+								let token = data.token
+								this.tokener = token
+								let userId = data.userId
+								axios
+									.get(
+										this.$network +
+											`user/company/mine?pageNum=1&pageSize=100&userId=${userId}&keyword=`,
+										{
+											headers: {
+												Authorization: 'Bearer ' + token
+											}
+										}
+									)
+									.then(row => {
+										if (row.data.code === 0) {
 											this.loginRight = false //登录
 											this.switchCompany = true //选择公司
-											this.companyMine = res.data.records
+											this.companyMine = row.data.data.records
 										}
 									})
-								}
-							})
-							.catch(() => {
-								console.log('catch')
-							})
+							}
+						})
+						.catch(() => {
+							console.log('catch')
+						})
 				} else {
 					console.log('error submit!!')
 					return false
