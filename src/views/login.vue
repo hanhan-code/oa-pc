@@ -44,7 +44,7 @@
 				<div class="switch-company" v-show="switchCompany">
 					<h3 class="title">请选择要登陆的账号</h3>
 					<div class="index-body">
-						<ul class="infinite-list" v-infinite-scroll="load" style="overflow:auto">
+						<ul class="infinite-list" style="overflow:auto">
 							<li v-for="(item,id) in companyMine" :key="id">
 								<img src="@/assets/common/company.png" />
 								<p>
@@ -203,6 +203,7 @@
 import { encrypt } from '@/utils/rsaEncrypt'
 import Config from '@/config'
 import Cookies from 'js-cookie'
+import axios from 'axios'
 import {
 	sendVerificationCode,
 	codeIN,
@@ -310,7 +311,8 @@ export default {
 						trigger: 'blur'
 					}
 				]
-			}
+			},
+			tokener: ''
 		}
 	},
 	watch: {
@@ -336,33 +338,35 @@ export default {
 				if (res.code === 0) {
 					let data = res.data
 					let token = data.token
+					this.tokener = token
 					let userId = data.userId
-					setToken(data.token, user.rememberMe)
-					// setPassword(password, user.password)
-					localStorage.setItem('password', user.password)
-					//我的公司列表传参
-					let min = {
-						pageNum: 1,
-						pageSize: 10,
-						userId: userId,
-						keyword: '' //查询关键词
-					}
-
-					myCompany(min).then(res => {
-						if (res.code === 0) {
-							this.loginRight = false //登录
-							this.switchCompany = true //选择公司
-							this.companyMine = res.data.records
-						}
-					})
+					axios
+						.get(
+							this.$network +
+								`user/company/mine?pageNum=1&pageSize=100&userId=${userId}&keyword=`,
+							{
+								headers: {
+									Authorization: 'Bearer ' + token
+								}
+							}
+						)
+						.then(row => {
+							if (row.data.code === 0) {
+								this.loginRight = false //登录
+								this.switchCompany = true //选择公司
+								this.companyMine = row.data.data.records
+							}
+						})
 				}
 			})
 		},
 		// 点击公司获取应用
 		toCompany(item) {
 			let id = item.id
+			setToken(this.tokener)
 			this.$refs.loginForm.validate(valid => {
 				this.$store.dispatch('toSwitch', id).then(res => {
+					// console.log(res)
 					this.$router.push('/')
 				})
 			})
@@ -436,13 +440,17 @@ export default {
 					this.canClick = true //这里重新开启
 				}
 			}, 1000)
-			const phoneUser = {
-				bizType: this.verificationCode.bizType,
-				companyId: this.verificationCode.companyId,
-				phoneNum: this.verificationCode.phoneNum,
-				templateType: this.verificationCode.templateType
+			// const phoneUser = {
+			// 	bizType: this.verificationCode.bizType,
+			// 	companyId: this.verificationCode.companyId,
+			// 	phoneNum: this.verificationCode.phoneNum,
+			// 	templateType: this.verificationCode.templateType
+			// }
+			// let phoneData = phoneUser
+			let phoneData = {
+				phone: phoneForm, //手机号码
+				templateType: 5 //2:忘记密码 3: 用户注册 5: 用户登录 7: 公司注册
 			}
-			let phoneData = phoneUser
 			sendVerificationCode(phoneData).then(res => {
 				// if (res.code == 0) {
 				//   alert("获取验证码成功")
@@ -460,21 +468,38 @@ export default {
 					code: this.phoneForm.code
 				}
 				if (res) {
-					;(this.loading = true),
-						this.$store
-							.dispatch('CodeIN', phoneLogin)
-							.then(() => {
-								this.loading = false
-								// self.redirect = this.paths;
-								this.$router.push({
-									path: self.redirect || '/'
-								})
-								this.loading = false
-								// alert(res.msg)
-							})
-							.catch(() => {
-								console.log('catch')
-							})
+					this.loading = true
+					// this.$store.dispatch('CodeIN', phoneLogin).then(res => {
+					codeIN(phoneLogin)
+						.then(res => {
+							this.loading = false
+							if (res.code === 0) {
+								let data = res.data
+								let token = data.token
+								this.tokener = token
+								let userId = data.userId
+								axios
+									.get(
+										this.$network +
+											`user/company/mine?pageNum=1&pageSize=100&userId=${userId}&keyword=`,
+										{
+											headers: {
+												Authorization: 'Bearer ' + token
+											}
+										}
+									)
+									.then(row => {
+										if (row.data.code === 0) {
+											this.loginRight = false //登录
+											this.switchCompany = true //选择公司
+											this.companyMine = row.data.data.records
+										}
+									})
+							}
+						})
+						.catch(() => {
+							console.log('catch')
+						})
 				} else {
 					console.log('error submit!!')
 					return false

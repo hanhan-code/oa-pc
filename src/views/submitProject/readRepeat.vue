@@ -261,8 +261,8 @@ export default {
       for (let i = 0; i < file.length; i++) {
         if (reg.test(file[i].name)) {
           this.progress.visible = false
-          this.$message({ message: "暂不支持此类文件上传 " + file[i].name, type: 'error' })
-          break
+          this.$message({ message: "暂不支持包含此类文件上传 .exe .bat .ibat .sh .cmd .dex .py .apk .ipa", type: 'error' })
+          return
         }
         size += file[i].size
         form.append('files ', file[i])

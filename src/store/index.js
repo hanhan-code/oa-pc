@@ -10,7 +10,7 @@ import getters from './getters'
 import VuexPersistence from "vuex-persist" // vuex 持久化存储
 
 const vuexLocal = new VuexPersistence({
-  storage: window.sessionStorage,
+  storage: window.localStorage,
 })
 
 Vue.use(Vuex)
