@@ -311,24 +311,34 @@ export default {
       selects: []
     }
   },
-  mounted () {
-    this.init()
-  },
-
   watch: {
-    pathFiles (value) {
-      sessionStorage.setItem('pathFiles', JSON.stringify(value))
+    // 文件路劲变化，重新存储session
+    pathFiles (value, newValue) {
+      sessionStorage.setItem('pathFiles', JSON.stringify(newValue))
     }
   },
+  mounted () {
+    // 判断session是否存在
+    if (sessionStorage.getItem('pathFiles')) {
+      let pathFiles = JSON.parse(sessionStorage.getItem('pathFiles'))
+      this.pageParams.parentId = pathFiles[pathFiles.length - 1].id
+    }
+    // 浏览器刷新时执行
+    window.onload = () => {
+      if (sessionStorage.getItem('pathFiles')) {
+        this.pathFiles = JSON.parse(sessionStorage.getItem('pathFiles'))
+      }
+    }
+    this.init()
+  },
   beforeDestroy () {
+    window.onload = null
     sessionStorage.removeItem('pathFiles')
   },
   methods: {
 
     init () {
-      if (sessionStorage.getItem('pathFiles')) {
-        this.pathFiles = JSON.parse(sessionStorage.getItem('pathFiles'))
-      }
+
       filePage(this.pageParams).then(res => {
         if (res.code === 0) {
           this.pageData.data = res.data.records
