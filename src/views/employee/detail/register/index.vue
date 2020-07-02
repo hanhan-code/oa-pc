@@ -109,7 +109,7 @@
     components: { Form },
     data() {
       return {
-        name: '注册记录',
+        name: '注册记录文字信息修改',
         fileList: [],
         pageParams: {
           employeeName: null,

@@ -567,23 +567,75 @@ export default {
       let that = this    // this 指向，disabledDate 和 onPick 中获取到的 this 指向 el-date-picker 实例
       return {
 
-        shortcuts: [{
-          text: '最近一周',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-            picker.$emit('pick', [start, end])
+        shortcuts: [
+          {
+            text: '今天',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: '上个月',
+            onClick(picker) {
+              const end = gettimeEnd()
+              const start = gettimeStart()
+              picker.$emit('pick', [start, end])
+
+              function gettimeStart() {
+                const nowdays = new Date()
+                let year = nowdays.getFullYear()
+                let month = nowdays.getMonth()
+                if (month === 0) {
+                  month = 12
+                  year = year - 1
+                }
+                if (month < 10) {
+                  month = '0' + month
+                }
+                let firstDayOfPreMonth = year + '-' + month + '-' + '01'
+                firstDayOfPreMonth = firstDayOfPreMonth.toString()
+                return new Date(firstDayOfPreMonth)
+              }
+
+              function gettimeEnd() {
+                const nowdays = new Date()
+                let year = nowdays.getFullYear()
+                let month = nowdays.getMonth()
+                if (month === 0) {
+                  month = 12
+                  year = year - 1
+                }
+                if (month < 10) {
+                  month = '0' + month
+                }
+                const lastDay = new Date(year, month, 0)
+                let lastDayOfPreMonth = year + '-' + month + '-' + lastDay.getDate()
+                lastDayOfPreMonth = lastDayOfPreMonth.toString()
+                return new Date(lastDayOfPreMonth)
+              }
+            }
           }
-        }, {
-          text: '最近一个月',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-            picker.$emit('pick', [start, end])
-          }
-        }],
+        ],
 
         disabledDate (time) {
 

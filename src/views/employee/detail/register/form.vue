@@ -1,6 +1,6 @@
 <template>
   <el-drawer
-    :title="isAdd ? '新增资质注册' : '编辑资质注册'"
+    :title="isAdd ? '新增注册证记录' : '编辑注册证记录'"
     :visible.sync="dialog"
     direction="rtl"
     :show-close="false"
