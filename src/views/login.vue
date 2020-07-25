@@ -14,7 +14,7 @@
 					<el-form ref="loginForm" :model="loginForm">
 						<h3>账号密码登录</h3>
 						<el-form-item prop="phone">
-							<el-input v-model="loginForm.phone" type="text" auto-complete="off" placeholder="账号"></el-input>
+							<el-input v-model="loginForm.phone" type="text" auto-complete="off" placeholder="账号" @input="getList(loginForm.phone)"></el-input>
 						</el-form-item>
 						<el-form-item prop="password">
 							<el-input v-model="loginForm.password" type="password" auto-complete="off" placeholder="密码"></el-input>
@@ -316,17 +316,34 @@ export default {
 		}
 	},
 	watch: {
-		$route: {
-			handler: function(route) {
-				// this.redirect = route.query && route.query.redirect
-			},
-			immediate: true
-		}
+		// loginForm(value){
+		// 	console.log(value,1111)
+		// }
+		// $route: {
+		// 	handler: function(route) {
+		// 		// this.redirect = route.query && route.query.redirect
+		// 	},
+		// 	immediate: true
+		// }
 	},
 	created() {
 		// this.getCookie()
 	},
 	methods: {
+		getList(val){
+			console.log(val)
+			if(val === ''){
+				this.loginForm.password = ''
+			}
+		},
+		// //获取焦点：手机号码
+		// doPhone(value){
+		// 	// console.log(value)
+		// },
+		// //失去焦点
+		// blur(value){
+		// 	// console.log(value,2222)
+		// },
 		//登录
 		handleLogin() {
 			let user = {
@@ -340,10 +357,8 @@ export default {
 					let token = data.token
 					this.tokener = token
 					let userId = data.userId
-					axios
-						.get(
-							this.$network +
-								`user/company/mine?pageNum=1&pageSize=100&userId=${userId}&keyword=`,
+					axios.get(
+							this.$network + `user/company/mine?pageNum=1&pageSize=100&userId=${userId}&keyword=`,
 							{
 								headers: {
 									Authorization: 'Bearer ' + token
@@ -357,6 +372,15 @@ export default {
 								this.companyMine = row.data.data.records
 							}
 						})
+				} else if(res.code === 10003){
+					this.$message.error('账号或密码错误');
+					this.loginForm = {
+						phone:"",
+						password:""
+					}
+				}else {
+					this.$message.error(res.msg);
+					this.loginForm.password = ''
 				}
 			})
 		},
@@ -452,11 +476,14 @@ export default {
 				templateType: 5 //2:忘记密码 3: 用户注册 5: 用户登录 7: 公司注册
 			}
 			sendVerificationCode(phoneData).then(res => {
-				// if (res.code == 0) {
-				//   alert("获取验证码成功")
-				// } else {
-				//   alert(res.mas)
-				// }
+				if (res.code === 0) {
+					this.$message({
+						message: '获取验证码成功',
+						type: 'success'
+					});
+				}else {
+				  this.$message.error('验证码获取失败，请稍后再试');
+				}
 			})
 		},
 		//验证码登录
@@ -470,8 +497,7 @@ export default {
 				if (res) {
 					this.loading = true
 					// this.$store.dispatch('CodeIN', phoneLogin).then(res => {
-					codeIN(phoneLogin)
-						.then(res => {
+					codeIN(phoneLogin).then(res => {
 							this.loading = false
 							if (res.code === 0) {
 								let data = res.data
@@ -495,6 +521,8 @@ export default {
 											this.companyMine = row.data.data.records
 										}
 									})
+							}else if(res.code === 1002){
+								this.$message.error(res.msg);
 							}
 						})
 						.catch(() => {
